@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class DataDictionaryChoicesSpec {
 
-    protected static final String VALUE_REGEX = "(-?\\d+)\\s*,\\s*(.+)";
+    private static final String VALUE_REGEX = "(-?\\d+)\\s*,\\s*(.+)";
 
     private static final Pattern valuePattern = Pattern.compile(VALUE_REGEX);
 
@@ -22,6 +22,10 @@ public class DataDictionaryChoicesSpec {
 
     public DataDictionaryChoicesSpec(String specification) {
         this.specification = specification.trim();
+    }
+
+    public static boolean isChoiceSpec(String spec) {
+        return valuePattern.matcher(spec).matches();
     }
 
     public boolean isText() {

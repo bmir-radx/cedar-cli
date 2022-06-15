@@ -14,6 +14,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class DataDictionaryChoicesSpec_TestCase {
 
     @Test
+    void shouldMatchChoiceSpec() {
+        assertThat(DataDictionaryChoicesSpec.isChoiceSpec("1,Yes")).isTrue();
+    }
+    @Test
+    void shouldNotMatchChoiceSpec() {
+        assertThat(DataDictionaryChoicesSpec.isChoiceSpec("other")).isFalse();
+    }
+
+    @Test
     void isText() {
         var spec = "text";
         var o = new DataDictionaryChoicesSpec(spec);
