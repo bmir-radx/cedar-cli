@@ -6,7 +6,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -59,6 +58,18 @@ public class DataDictionaryParser {
         var values = iterator.readAll();
         values.stream()
               .map(v -> (DataDictionaryRow) v)
-              .forEach(handler::handleDataDictionaryRow);
+              .forEach(row -> {
+                  handler.handleDataDictionaryRow(row);
+                  var choicesCalcsOrSliderLabels = row.choicesCalculationsOrSliderLabels();
+                  if(choicesCalcsOrSliderLabels != null) {
+                      if(DataDictionaryChoicesSpec.isChoiceSpec(choicesCalcsOrSliderLabels)) {
+                          var choices = new DataDictionaryChoicesSpec(choicesCalcsOrSliderLabels);
+                          var choicesHandler = handler.getChoicesHandler();
+                          choicesHandler.handleBeginChoices();
+                          choices.getChoices().forEach(choicesHandler::handleChoice);
+                          choicesHandler.handleEndChoices();
+                      }
+                  }
+              });
     }
 }

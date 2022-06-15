@@ -28,28 +28,14 @@ public class DataDictionaryChoicesSpec {
         return valuePattern.matcher(spec).matches();
     }
 
-    public boolean isText() {
-        return specification.startsWith("text");
-    }
-
-    public boolean isInteger() {
-        return specification.startsWith("integer");
-    }
-
     public boolean isValueSet() {
         return Arrays.stream(specification.split(";"))
                      .map(String::trim)
                      .allMatch(element -> element.matches(VALUE_REGEX));
     }
 
-    public List<DataDictionaryChoice> getDomainValues() {
-        if(isText()) {
-            return Collections.emptyList();
-        }
-        if(isInteger()) {
-            return Collections.emptyList();
-        }
-        return Arrays.stream(specification.split(";"))
+    public List<DataDictionaryChoice> getChoices() {
+        return Arrays.stream(specification.split("[;|]"))
                      .map(String::trim)
                      .map(valuePattern::matcher)
                      .filter(Matcher::matches)

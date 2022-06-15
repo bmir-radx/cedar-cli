@@ -2,10 +2,7 @@ package org.metadatacenter.csvpipeline;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.metadatacenter.csvpipeline.redcap.DataDictionaryHandler;
-import org.metadatacenter.csvpipeline.redcap.DataDictionaryParser;
-import org.metadatacenter.csvpipeline.redcap.DataDictionaryRow;
-import org.metadatacenter.csvpipeline.redcap.Header;
+import org.metadatacenter.csvpipeline.redcap.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -60,10 +57,66 @@ public class ParseDataDictionary_TestCase {
     @Test
     void shouldParseOptions() throws IOException {
         var is = this.getClass().getResourceAsStream("/options.csv");
-        parser.parse(is, Header.WITHOUT_HEADER, row -> {
-            rows.add(row);
-            assertThat(row.choicesCalculationsOrSliderLabels()).isNotEmpty();
+        parser.parse(is, Header.WITHOUT_HEADER, new DataDictionaryHandler() {
+            @Override
+            public void handleBeginDataDictionary() {
+
+            }
+
+            @Override
+            public void handleDataDictionaryRow(DataDictionaryRow row) {
+                rows.add(row);
+                assertThat(row.choicesCalculationsOrSliderLabels()).isNotEmpty();
+            }
+
+            @Override
+            public void handleEndDataDictionary() {
+
+            }
         });
         assertThat(rows).hasSize(1);
+    }
+
+    @Test
+    void shouldHandleChoices() throws IOException {
+        var is = this.getClass().getResourceAsStream("/choices-sample.csv");
+        final var choiceNames = new ArrayList<String>();
+        parser.parse(is, Header.WITHOUT_HEADER, new DataDictionaryHandler() {
+            @Override
+            public void handleDataDictionaryRow(DataDictionaryRow row) {
+
+            }
+
+            @Override
+            public void handleBeginDataDictionary() {
+
+            }
+
+            @Override
+            public void handleEndDataDictionary() {
+
+            }
+
+            @Override
+            public DataDictionaryChoicesHandler getChoicesHandler() {
+                return new DataDictionaryChoicesHandler() {
+                    @Override
+                    public void handleBeginChoices() {
+
+                    }
+
+                    @Override
+                    public void handleChoice(DataDictionaryChoice choice) {
+                        choiceNames.add(choice.label());
+                    }
+
+                    @Override
+                    public void handleEndChoices() {
+
+                    }
+                };
+            }
+        });
+        assertThat(choiceNames).contains("Foo", "Bar", "Baz");
     }
 }

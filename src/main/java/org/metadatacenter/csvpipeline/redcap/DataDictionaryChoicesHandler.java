@@ -1,5 +1,7 @@
 package org.metadatacenter.csvpipeline.redcap;
 
+import java.util.List;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -7,5 +9,9 @@ package org.metadatacenter.csvpipeline.redcap;
  */
 public interface DataDictionaryChoicesHandler {
 
-    void handleChoices();
+    default void handleBeginChoices() {};
+
+    default void handleChoice(DataDictionaryChoice choice) {};
+
+    default void handleEndChoices() {};
 }
