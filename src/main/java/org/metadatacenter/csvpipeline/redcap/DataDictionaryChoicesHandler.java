@@ -11,7 +11,7 @@ public interface DataDictionaryChoicesHandler {
 
     default void handleBeginChoices() {};
 
-    default void handleChoice(DataDictionaryChoice choice) {};
+    void handleChoice(DataDictionaryChoice choice);
 
     default void handleEndChoices() {};
 }

@@ -59,7 +59,6 @@ public class DataDictionaryParser {
         values.stream()
               .map(v -> (DataDictionaryRow) v)
               .forEach(row -> {
-                  handler.handleDataDictionaryRow(row);
                   var choicesCalcsOrSliderLabels = row.choicesCalculationsOrSliderLabels();
                   if(choicesCalcsOrSliderLabels != null) {
                       if(DataDictionaryChoicesSpec.isChoiceSpec(choicesCalcsOrSliderLabels)) {
@@ -70,6 +69,7 @@ public class DataDictionaryParser {
                           choicesHandler.handleEndChoices();
                       }
                   }
+                  handler.handleDataDictionaryRow(row);
               });
     }
 }

@@ -16,21 +16,8 @@ public interface DataDictionaryHandler {
     default void handleEndDataDictionary() {};
 
     default DataDictionaryChoicesHandler getChoicesHandler() {
-        return new DataDictionaryChoicesHandler() {
-            @Override
-            public void handleBeginChoices() {
+        return choice -> {
 
-            }
-
-            @Override
-            public void handleChoice(DataDictionaryChoice choice) {
-
-            }
-
-            @Override
-            public void handleEndChoices() {
-
-            }
         };
     }
 }
