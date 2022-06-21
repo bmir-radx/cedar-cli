@@ -2,7 +2,6 @@ package org.metadatacenter.csvpipeline.ont;
 
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryRow;
 import org.semanticweb.owlapi.model.IRI;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.UUID;
 

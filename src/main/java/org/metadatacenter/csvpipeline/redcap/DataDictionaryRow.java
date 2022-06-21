@@ -1,5 +1,6 @@
 package org.metadatacenter.csvpipeline.redcap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -27,4 +28,8 @@ public record DataDictionaryRow(String variableName,
 
 ) {
 
+    @JsonIgnore
+    public boolean isRequired() {
+        return "y".equals(this.requiredField());
+    }
 }

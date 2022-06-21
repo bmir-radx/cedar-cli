@@ -1,8 +1,10 @@
 package org.metadatacenter.csvpipeline;
 
 import org.metadatacenter.csvpipeline.app.DataDictionaryProcessor;
-import org.metadatacenter.csvpipeline.app.DataDictionaryValuesProcessor;
+import org.metadatacenter.csvpipeline.app.DataDictionaryRowProcessor;
+import org.metadatacenter.csvpipeline.cedar.TemplateFieldWriter;
 import org.metadatacenter.csvpipeline.ont.KnowledgeArtifactGenerator;
+import org.metadatacenter.csvpipeline.ont.VocabularyWriter;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryParser;
 import org.metadatacenter.csvpipeline.redcap.Header;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SpringBootApplication
@@ -70,12 +73,21 @@ public class CsvPipelineApplication implements ApplicationRunner {
 	@Bean
 	DataDictionaryProcessor dataDictionaryProcessor(DataDictionaryParser dataDictionaryParser,
 													Header header,
-													DataDictionaryValuesProcessor valuesProcessor) {
+													DataDictionaryRowProcessor valuesProcessor) {
 		return new DataDictionaryProcessor(header, dataDictionaryParser, valuesProcessor);
 	}
 
 	@Bean
-	DataDictionaryValuesProcessor dataDictionaryValuesProcessor(KnowledgeArtifactGenerator knowledgeArtifactGenerator) {
-		return new DataDictionaryValuesProcessor(knowledgeArtifactGenerator, outputDirectory);
+	VocabularyWriter vocabularyWriter(KnowledgeArtifactGenerator knowledgeArtifactGenerator) {
+		return new VocabularyWriter(knowledgeArtifactGenerator, Path.of(outputDirectory));
+	}
+
+	@Bean
+	DataDictionaryRowProcessor dataDictionaryValuesProcessor(KnowledgeArtifactGenerator knowledgeArtifactGenerator,
+															 TemplateFieldWriter templateFieldWriter,
+															 VocabularyWriter vocabularyWriter) {
+		return new DataDictionaryRowProcessor(knowledgeArtifactGenerator,
+											  vocabularyWriter,
+											  templateFieldWriter, outputDirectory);
 	}
 }

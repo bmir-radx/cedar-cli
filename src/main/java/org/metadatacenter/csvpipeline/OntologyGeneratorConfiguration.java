@@ -1,6 +1,7 @@
 package org.metadatacenter.csvpipeline;
 
 import org.metadatacenter.csvpipeline.ont.*;
+import org.metadatacenter.csvpipeline.redcap.DataDictionaryRow;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,7 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 @Configuration
 public class OntologyGeneratorConfiguration {
 
-    @Value("${iriPrefix:https://cedar.metadatacenter.org/}")
+    @Value("${iri-prefix}")
     private String iriPrefix;
 
     @Value("${lang:en}")
@@ -29,13 +30,13 @@ public class OntologyGeneratorConfiguration {
     @Value("${database-value-property:http://www.w3.org/2004/02/skos/core#notation}")
     private String databaseValuePropertyIri;
 
-    @Value("${local-name-type:UUID}")
-    private ChoiceLocalNameType choiceLocalNameType;
+    @Value("${choice-iri-type:DB_VALUE}")
+    private ChoiceIriType choiceIriType;
 
-    @Value("${output-type:OWL}")
-    private OutputType outputType = OutputType.OWL;
+    @Value("${output-vocabulary:NONE}")
+    private VocabularyType vocabularyType;
 
-    @Value("${artifact-iri-type:VARIABLE_NAME}")
+    @Value("${vocabulary-iri-type:VARIABLE_NAME}")
     private OntologyIriType ontologyIriType;
 
     @Bean
@@ -67,6 +68,26 @@ public class OntologyGeneratorConfiguration {
     }
 
     @Bean
+    OntologyLabelStrategy ontologyLabelStrategy() {
+        return new OntologyLabelStrategy() {
+            @Override
+            public String getOntologyLabel(DataDictionaryRow row) {
+                return "http://purl.org/ontology/" + row.variableName();
+            }
+        };
+    }
+
+    @Bean
+    OntologyAcronymStrategy ontologyAcronymStrategy() {
+        return new OntologyAcronymStrategy() {
+            @Override
+            public String getOntologyAcronym(DataDictionaryRow row) {
+                return row.variableName().toUpperCase();
+            }
+        };
+    }
+
+    @Bean
     OntologyAnnotationStrategy ontologyAnnotationStrategy(OWLDataFactory dataFactory) {
         return new BasicOntologyAnnotationStrategy(dataFactory);
     }
@@ -74,17 +95,25 @@ public class OntologyGeneratorConfiguration {
     @Bean
     @Scope("prototype")
     ChoiceIriStrategy choiceIriStrategy() {
-        return new UuidChoiceIriStrategy(iriPrefix, choiceLocalNameType);
+        if(choiceIriType == ChoiceIriType.UUID) {
+            return new UuidChoiceIriStrategy(iriPrefix);
+        }
+        else {
+            return new VariableNameCodeChoiceIriStrategy(iriPrefix);
+        }
     }
 
     @Bean
     @Scope("prototype")
     ChoiceAxiomsStrategy choiceAxiomsStrategy(OWLDataFactory dataFactory) {
-        if(outputType == OutputType.OWL) {
+        if(vocabularyType == VocabularyType.OWL) {
             return new OntologyChoiceAxiomsStrategy(lang, dataFactory, IRI.create(choiceLabelPropertyIri), IRI.create(databaseValuePropertyIri));
         }
-        else {
+        else if(vocabularyType == VocabularyType.SKOS) {
             return new SkosChoiceAxiomsStrategy(lang, dataFactory, IRI.create(choiceLabelPropertyIri), IRI.create(databaseValuePropertyIri));
+        }
+        else {
+            return new NoOpAxiomStrategy();
         }
     }
 

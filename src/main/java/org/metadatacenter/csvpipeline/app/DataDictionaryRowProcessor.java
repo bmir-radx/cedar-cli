@@ -1,6 +1,8 @@
 package org.metadatacenter.csvpipeline.app;
 
+import org.metadatacenter.csvpipeline.cedar.TemplateFieldWriter;
 import org.metadatacenter.csvpipeline.ont.KnowledgeArtifactGenerator;
+import org.metadatacenter.csvpipeline.ont.VocabularyWriter;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryChoice;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryRow;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
@@ -23,24 +25,27 @@ import java.util.UUID;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-16
  */
-public class DataDictionaryValuesProcessor {
+public class DataDictionaryRowProcessor {
 
-    private final KnowledgeArtifactGenerator knowledgeArtifactGenerator;
+    private final VocabularyWriter vocabularyWriter;
+
+    private final TemplateFieldWriter templateFieldWriter;
 
     private final String out;
 
-    public DataDictionaryValuesProcessor(KnowledgeArtifactGenerator knowledgeArtifactGenerator, String out) {
-        this.knowledgeArtifactGenerator = knowledgeArtifactGenerator;
+    public DataDictionaryRowProcessor(KnowledgeArtifactGenerator knowledgeArtifactGenerator,
+                                      VocabularyWriter vocabularyWriter,
+                                      TemplateFieldWriter templateFieldWriter,
+                                      String out) {
+        this.vocabularyWriter = vocabularyWriter;
+        this.templateFieldWriter = templateFieldWriter;
         this.out = out;
     }
 
     public void processRow(DataDictionaryRow row, List<DataDictionaryChoice> choices) throws OWLOntologyCreationException, OWLOntologyStorageException, IOException {
-        var artifact = knowledgeArtifactGenerator.generateArtifact(row, choices);
-        var outPath = Paths.get(out);
-        Files.createDirectories(outPath);
-        var fileName = row.variableName() + ".ttl";
-        var outFile = outPath.resolve(fileName);
-        artifact.saveOntology(new TurtleDocumentFormat(), new FileDocumentTarget(outFile.toFile()));
-        System.out.printf("Saved %s to %s\n", fileName, outFile.toRealPath());
+        vocabularyWriter.writeVocabulary(row, choices);
+        templateFieldWriter.writeTemplateField(row, choices);
+
+
     }
 }

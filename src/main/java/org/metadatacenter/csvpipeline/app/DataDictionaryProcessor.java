@@ -20,15 +20,15 @@ public class DataDictionaryProcessor {
 
     private final DataDictionaryParser dataDictionaryParser;
 
-    private final DataDictionaryValuesProcessor valuesProcessor;
+    private final DataDictionaryRowProcessor rowProcessor;
 
 
     public DataDictionaryProcessor(Header header,
                                    DataDictionaryParser dataDictionaryParser,
-                                   DataDictionaryValuesProcessor valuesProcessor) {
+                                   DataDictionaryRowProcessor rowProcessor) {
         this.header = header;
         this.dataDictionaryParser = dataDictionaryParser;
-        this.valuesProcessor = valuesProcessor;
+        this.rowProcessor = rowProcessor;
     }
 
     public void processDataDictionary(InputStream inputStream) throws IOException {
@@ -60,15 +60,13 @@ public class DataDictionaryProcessor {
 
         @Override
         public void handleDataDictionaryRow(DataDictionaryRow row) {
-            if (!choices.isEmpty()) {
                 try {
                     System.out.println("Processing row: " + row.variableName());
-                    valuesProcessor.processRow(row, new ArrayList<>(choices));
+                    rowProcessor.processRow(row, new ArrayList<>(choices));
                     choices.clear();
                 } catch (OWLOntologyCreationException | OWLOntologyStorageException | IOException e) {
                     e.printStackTrace();
                 }
-            }
         }
 
         @Override

@@ -5,9 +5,11 @@ package org.metadatacenter.csvpipeline.ont;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-16
  */
-public enum ChoiceLocalNameType {
+public enum VocabularyType {
 
-    UUID,
+    OWL,
 
-    DB_VALUE;
+    SKOS,
+
+    NONE
 }

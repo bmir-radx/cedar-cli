@@ -5,9 +5,9 @@ package org.metadatacenter.csvpipeline.ont;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-16
  */
-public enum OutputType {
+public enum ChoiceIriType {
 
-    OWL,
+    UUID,
 
-    SKOS
+    DB_VALUE;
 }

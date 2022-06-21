@@ -1,0 +1,59 @@
+{
+  "@type": "https://schema.metadatacenter.org/core/TemplateField",
+  "type": "object",
+  "title": "The title",
+  "description": "The description",
+  "_ui": {
+    "inputType": "${inputType}"
+  },
+  "_valueConstraints": {
+    "requiredValue": "${requiredValue}",
+    "multipleChoice": "${multipleChoice}",
+    "literals": [],
+    "classes" : []
+  },
+  "properties": {
+    "@type": {
+      "oneOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "format": "uri"
+          },
+          "uniqueItems": true
+        }
+      ]
+    },
+    "@value": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "rdfs:label": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "@value"
+  ],
+  "schema:name": "The name",
+  "schema:description": "The description",
+  "pav:lastUpdatedOn": "2022-05-17T18:05:53-07:00",
+  "pav:version": "0.0.1",
+  "bibo:status": "bibo:draft",
+  "schema:schemaVersion": "1.6.0",
+  "additionalProperties": false,
+  "schema:identifier": "identifier",
+  "skos:prefLabel": "Preferred Label",
+  "$schema": "http://json-schema.org/draft-04/schema#"
+}
