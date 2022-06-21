@@ -5,7 +5,7 @@ package org.metadatacenter.csvpipeline.cedar;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-20
  */
-public enum TemporalGranularity {
+public enum CedarTemporalGranularity {
 
     YEAR("year"),
 
@@ -23,7 +23,7 @@ public enum TemporalGranularity {
 
     private final String name;
 
-    TemporalGranularity(String name) {
+    CedarTemporalGranularity(String name) {
         this.name = name;
     }
 
