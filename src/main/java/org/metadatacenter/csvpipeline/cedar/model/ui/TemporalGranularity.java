@@ -1,11 +1,11 @@
-package org.metadatacenter.csvpipeline.cedar;
+package org.metadatacenter.csvpipeline.cedar.model.ui;
 
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-20
  */
-public enum CedarTemporalGranularity {
+public enum TemporalGranularity {
 
     YEAR("year"),
 
@@ -23,7 +23,7 @@ public enum CedarTemporalGranularity {
 
     private final String name;
 
-    CedarTemporalGranularity(String name) {
+    TemporalGranularity(String name) {
         this.name = name;
     }
 

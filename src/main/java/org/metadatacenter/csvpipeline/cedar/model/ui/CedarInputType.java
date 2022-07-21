@@ -1,4 +1,6 @@
-package org.metadatacenter.csvpipeline.cedar;
+package org.metadatacenter.csvpipeline.cedar.model.ui;
+
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Matthew Horridge
@@ -33,6 +35,7 @@ public enum CedarInputType {
         this.name = name;
     }
 
+    @JsonValue
     public String getName() {
         return name;
     }

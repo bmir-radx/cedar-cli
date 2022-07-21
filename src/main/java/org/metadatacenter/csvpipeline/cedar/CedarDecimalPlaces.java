@@ -24,4 +24,5 @@ public enum CedarDecimalPlaces {
     public int getDecimalPlace() {
         return decimalPlace;
     }
+
 }

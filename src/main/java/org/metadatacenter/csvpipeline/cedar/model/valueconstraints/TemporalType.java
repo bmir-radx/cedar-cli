@@ -1,4 +1,4 @@
-package org.metadatacenter.csvpipeline.cedar;
+package org.metadatacenter.csvpipeline.cedar.model.valueconstraints;
 
 /**
  * Matthew Horridge

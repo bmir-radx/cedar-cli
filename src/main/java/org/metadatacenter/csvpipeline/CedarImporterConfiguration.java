@@ -1,6 +1,7 @@
 package org.metadatacenter.csvpipeline;
 
 import org.metadatacenter.csvpipeline.cedar.*;
+import org.metadatacenter.csvpipeline.cedar.model.valueconstraints.NumericBoundParser;
 import org.metadatacenter.csvpipeline.ont.ChoiceIriStrategy;
 import org.metadatacenter.csvpipeline.ont.OntologyAcronymStrategy;
 import org.metadatacenter.csvpipeline.ont.OntologyIriStrategy;
@@ -51,8 +52,13 @@ public class CedarImporterConfiguration {
     }
 
     @Bean
-    TemplateFieldGenerator templateFieldGenerator(CedarValuesStrategy valuesStrategy) {
-        return new TemplateFieldGenerator(valuesStrategy, templateFieldDescription);
+    TemplateFieldGenerator templateFieldGenerator(CedarValuesStrategy valuesStrategy, NumericBoundParser numericBoundParser) {
+        return new TemplateFieldGenerator(valuesStrategy, templateFieldDescription, numericBoundParser);
+    }
+
+    @Bean
+    NumericBoundParser numericBoundParser() {
+        return new NumericBoundParser();
     }
 
     @Bean
