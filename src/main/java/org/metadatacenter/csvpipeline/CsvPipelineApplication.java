@@ -2,7 +2,9 @@ package org.metadatacenter.csvpipeline;
 
 import org.metadatacenter.csvpipeline.app.DataDictionaryProcessor;
 import org.metadatacenter.csvpipeline.app.DataDictionaryRowProcessor;
-import org.metadatacenter.csvpipeline.cedar.TemplateFieldWriter;
+import org.metadatacenter.csvpipeline.cedar.csv.CedarCsvParser;
+import org.metadatacenter.csvpipeline.cli.CedarCsvCli;
+import org.metadatacenter.csvpipeline.redcap.TemplateFieldWriter;
 import org.metadatacenter.csvpipeline.ont.KnowledgeArtifactGenerator;
 import org.metadatacenter.csvpipeline.ont.VocabularyWriter;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryParser;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
@@ -21,20 +24,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @SpringBootApplication
-public class CsvPipelineApplication implements ApplicationRunner {
+public class CsvPipelineApplication implements ApplicationRunner, ExitCodeGenerator {
 
-	@Value("${input}")
-	private String input;
+	private String input = "";
 
-	@Value("${no-header:#{null}}")
-	private String noHeader;
+	private String noHeader = "";
 
-	@Value("${output}")
-	private String outputDirectory;
+	private String outputDirectory = "";
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
+	private int exitCode;
 
 	public CsvPipelineApplication() {
 	}
@@ -43,14 +44,23 @@ public class CsvPipelineApplication implements ApplicationRunner {
 		SpringApplication.run(CsvPipelineApplication.class, args);
 	}
 
+
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		var processor = applicationContext.getAutowireCapableBeanFactory()
-				.createBean(DataDictionaryProcessor.class);
-		var workingDirectory = Paths.get(".").toAbsolutePath();
-		var inputFile = workingDirectory.resolve(input);
-		var dataDictionaryInputStream = Files.newInputStream(inputFile);
-		processor.processDataDictionary(dataDictionaryInputStream);
+		var cli = applicationContext.getBean(CedarCsvCli.class);
+		exitCode = cli.run(args.getSourceArgs());
+
+//		var processor = applicationContext.getAutowireCapableBeanFactory()
+//				.createBean(DataDictionaryProcessor.class);
+//		var workingDirectory = Paths.get(".").toAbsolutePath();
+//		var inputFile = workingDirectory.resolve(input);
+//		var dataDictionaryInputStream = Files.newInputStream(inputFile);
+//		processor.processDataDictionary(dataDictionaryInputStream);
+	}
+
+	@Override
+	public int getExitCode() {
+		return exitCode;
 	}
 
 	@Bean

@@ -2,7 +2,6 @@ package org.metadatacenter.csvpipeline.cedar;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.metadatacenter.csvpipeline.cedar.model.valueconstraints.ClassConstraintValue;
 import org.metadatacenter.csvpipeline.ont.ChoiceIriStrategy;
 import org.metadatacenter.csvpipeline.ont.OntologyLabelStrategy;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryChoice;
@@ -21,7 +20,7 @@ public class ValuesFromClassesListStrategy implements CedarValuesStrategy {
 
     private static final String URI = "uri";
 
-    private static final String PREF_LABEL = "prefLabel";
+    private static final String PREF_LABEL = "skosPrefLabel";
 
     private static final String TYPE = "type";
 
@@ -51,7 +50,7 @@ public class ValuesFromClassesListStrategy implements CedarValuesStrategy {
         var classesArray = nodeFactory.arrayNode();
         for (var choice : choices) {
             var iri = choiceIriStrategy.generateIriForChoice(row, choice);
-            new ClassConstraintValue(iri, choice.label(), ontologyLabelStrategy.getOntologyLabel(row), choice.code())
+//            new ClassConstraintValue(iri, choice.label(), ontologyLabelStrategy.getOntologyLabel(row), choice.code());
 
             var classNode = nodeFactory.objectNode();
 //            classNode.set(URI, nodeFactory.textNode(iri.toString()));

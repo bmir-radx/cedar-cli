@@ -18,25 +18,18 @@ import uk.ac.manchester.cs.owl.owlapi.OWLDataFactoryImpl;
 @Configuration
 public class OntologyGeneratorConfiguration {
 
-    @Value("${iri-prefix}")
     private String iriPrefix;
 
-    @Value("${lang:en}")
     private String lang;
 
-    @Value("${label-property:http://www.w3.org/2004/02/skos/core#prefLabel}")
     private String choiceLabelPropertyIri;
 
-    @Value("${database-value-property:http://www.w3.org/2004/02/skos/core#notation}")
     private String databaseValuePropertyIri;
 
-    @Value("${choice-iri-type:DB_VALUE}")
     private ChoiceIriType choiceIriType;
 
-    @Value("${output-vocabulary:NONE}")
     private VocabularyType vocabularyType;
 
-    @Value("${vocabulary-iri-type:VARIABLE_NAME}")
     private OntologyIriType ontologyIriType;
 
     @Bean

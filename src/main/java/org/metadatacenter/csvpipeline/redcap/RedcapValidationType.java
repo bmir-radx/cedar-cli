@@ -1,9 +1,8 @@
 package org.metadatacenter.csvpipeline.redcap;
 
-import org.metadatacenter.csvpipeline.cedar.CedarDecimalPlaces;
-import org.metadatacenter.csvpipeline.cedar.model.ui.CedarInputType;
-import org.metadatacenter.csvpipeline.cedar.model.ui.TemporalGranularity;
-import org.metadatacenter.csvpipeline.cedar.model.valueconstraints.TemporalType;
+import org.metadatacenter.csvpipeline.cedar.api.CedarInputType;
+import org.metadatacenter.csvpipeline.cedar.api.TemporalGranularity;
+import org.metadatacenter.csvpipeline.cedar.api.CedarTemporalType;
 
 import java.util.Optional;
 
@@ -19,17 +18,17 @@ public enum RedcapValidationType {
     AMEL_Record_ID("amel_id", CedarInputType.TEXTFIELD),
     Custom_ID("custom_id", CedarInputType.TEXTFIELD), // (STAN-P001)
     Dash_Id("dash-id", CedarInputType.TEXTFIELD), // (12-456) numbers only
-    Date_DMY("date_dmy", TemporalType.DATE, TemporalGranularity.DAY), // (D-M-Y)
-    Date_MDY("date_mdy", TemporalType.DATE, TemporalGranularity.DAY), // (M-D-Y)
-    Date_MY("date_my", TemporalType.DATE, TemporalGranularity.MONTH), // (M-Y)
-    Date_YMD("date_ymd", TemporalType.DATE, TemporalGranularity.DAY), // (Y-M-D)
-    Date_YM("date_ym", TemporalType.DATE, TemporalGranularity.MONTH), // (Y-M)
-    Datetime_DMY_HM("datetime_dmy", TemporalType.DATE_TIME, TemporalGranularity.DAY), // (D-M-Y H:M)
-    Datetime_MDY_HM("datetime_mdy", TemporalType.DATE_TIME, TemporalGranularity.DAY), // (M-D-Y H:M)
-    Datetime_YMD_HM("datetime_ymd", TemporalType.DATE_TIME, TemporalGranularity.DAY), // (Y-M-D H:M)
-    Datetime_Seconds_DMY("datetime_seconds_dmy", TemporalType.DATE_TIME, TemporalGranularity.SECOND), // (D-M-Y H:M:S)
-    Datetime_Seconds_MDY("datetime_seconds_mdy", TemporalType.DATE_TIME, TemporalGranularity.SECOND), // (M-D-Y H:M:S)
-    Datetime_Seconds_YMD("datetime_seconds_ymd", TemporalType.DATE_TIME, TemporalGranularity.SECOND), // (Y-M-D H:M:S)
+    Date_DMY("date_dmy", CedarTemporalType.DATE, TemporalGranularity.DAY), // (D-M-Y)
+    Date_MDY("date_mdy", CedarTemporalType.DATE, TemporalGranularity.DAY), // (M-D-Y)
+    Date_MY("date_my", CedarTemporalType.DATE, TemporalGranularity.MONTH), // (M-Y)
+    Date_YMD("date_ymd", CedarTemporalType.DATE, TemporalGranularity.DAY), // (Y-M-D)
+    Date_YM("date_ym", CedarTemporalType.DATE, TemporalGranularity.MONTH), // (Y-M)
+    Datetime_DMY_HM("datetime_dmy", CedarTemporalType.DATE_TIME, TemporalGranularity.DAY), // (D-M-Y H:M)
+    Datetime_MDY_HM("datetime_mdy", CedarTemporalType.DATE_TIME, TemporalGranularity.DAY), // (M-D-Y H:M)
+    Datetime_YMD_HM("datetime_ymd", CedarTemporalType.DATE_TIME, TemporalGranularity.DAY), // (Y-M-D H:M)
+    Datetime_Seconds_DMY("datetime_seconds_dmy", CedarTemporalType.DATE_TIME, TemporalGranularity.SECOND), // (D-M-Y H:M:S)
+    Datetime_Seconds_MDY("datetime_seconds_mdy", CedarTemporalType.DATE_TIME, TemporalGranularity.SECOND), // (M-D-Y H:M:S)
+    Datetime_Seconds_YMD("datetime_seconds_ymd", CedarTemporalType.DATE_TIME, TemporalGranularity.SECOND), // (Y-M-D H:M:S)
     DirectNet_ID("directnet_id", CedarInputType.TEXTFIELD),
     Email("email", CedarInputType.EMAIL),
     Integer("integer", CedarInputType.NUMERIC),
@@ -49,9 +48,9 @@ public enum RedcapValidationType {
     Phone("phone", CedarInputType.PHONE_NUMBER), // (North America)
     REDCap_API_Token("api_token", CedarInputType.TEXTFIELD), // (32char)
     SUNet_ID("sunet_id", CedarInputType.TEXTFIELD),
-    Time_HH_MM_SS("time_hh_mm_ss", TemporalType.TIME, TemporalGranularity.SECOND), // (HH:MM:SS)
-    Time_HH_MM("time", TemporalType.TIME, TemporalGranularity.MINUTE), // (HH:MM)
-    Time_HHMM("time_shorthand", TemporalType.TIME, TemporalGranularity.MINUTE), // (HHMM)
+    Time_HH_MM_SS("time_hh_mm_ss", CedarTemporalType.TIME, TemporalGranularity.SECOND), // (HH:MM:SS)
+    Time_HH_MM("time", CedarTemporalType.TIME, TemporalGranularity.MINUTE), // (HH:MM)
+    Time_HHMM("time_shorthand", CedarTemporalType.TIME, TemporalGranularity.MINUTE), // (HHMM)
     TPC_Record_ID("tpc_id", CedarInputType.TEXTFIELD),
     TPF_Record_ID("tpf_id", CedarInputType.TEXTFIELD),
     Zipcode("zipcode", CedarInputType.TEXTFIELD); // (U.S.)
@@ -61,7 +60,7 @@ public enum RedcapValidationType {
 
     private final CedarInputType cedarInputType;
 
-    private final TemporalType temporalType;
+    private final CedarTemporalType temporalType;
 
     private final TemporalGranularity temporalGranularity;
 
@@ -76,7 +75,7 @@ public enum RedcapValidationType {
     }
 
     RedcapValidationType(String name,
-                         TemporalType temporalType,
+                         CedarTemporalType temporalType,
                          TemporalGranularity temporalGranularity) {
         this.name = name;
         this.cedarInputType = CedarInputType.TEMPORAL;
@@ -111,7 +110,7 @@ public enum RedcapValidationType {
         return cedarInputType;
     }
 
-    public Optional<TemporalType> getTemporalType() {
+    public Optional<CedarTemporalType> getTemporalType() {
         return Optional.ofNullable(temporalType);
     }
 

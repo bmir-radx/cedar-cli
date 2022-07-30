@@ -1,24 +1,15 @@
 package org.metadatacenter.csvpipeline.app;
 
-import org.metadatacenter.csvpipeline.cedar.TemplateFieldWriter;
+import org.metadatacenter.csvpipeline.redcap.TemplateFieldWriter;
 import org.metadatacenter.csvpipeline.ont.KnowledgeArtifactGenerator;
 import org.metadatacenter.csvpipeline.ont.VocabularyWriter;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryChoice;
 import org.metadatacenter.csvpipeline.redcap.DataDictionaryRow;
-import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
-import org.semanticweb.owlapi.io.FileDocumentTarget;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
-import org.springframework.beans.factory.annotation.Value;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Matthew Horridge
