@@ -13,11 +13,11 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record CedarVersionInfo(@JsonProperty("pav:version") String pavVersion,
-                               @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
+                               @JsonProperty("bibo:status") CedarArtifactStatus biboStatus,
                                @JsonProperty("pav:previousVersion") String pavPreviousVersion) {
 
     @JsonCreator
-    public CedarVersionInfo(@JsonProperty("pav:Version") String pavVersion,
+    public CedarVersionInfo(@JsonProperty("pav:version") String pavVersion,
                             @JsonProperty("bibo:status") CedarArtifactStatus biboStatus,
                             @JsonProperty("pav:previousVersion") String pavPreviousVersion) {
         this.pavVersion = Objects.requireNonNullElse(pavVersion, "");

@@ -1,6 +1,7 @@
 package org.metadatacenter.csvpipeline.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.csvpipeline.cedar.csv.Cardinality;
 
@@ -10,9 +11,9 @@ import org.metadatacenter.csvpipeline.cedar.csv.Cardinality;
  * 2022-07-27
  */
 public record CedarTemporalValueConstraints(CedarTemporalType temporalType,
-                                            TemporalGranularity temporalGranularity,
-                                            InputTimeFormat inputTimeFormat,
-                                            boolean timeZoneEnabled,
+                                            @JsonIgnore TemporalGranularity temporalGranularity,
+                                            @JsonIgnore InputTimeFormat inputTimeFormat,
+                                            @JsonIgnore boolean timeZoneEnabled,
                                             Required requiredValue,
                                             Cardinality cardinality) implements CedarFieldValueConstraints {
 

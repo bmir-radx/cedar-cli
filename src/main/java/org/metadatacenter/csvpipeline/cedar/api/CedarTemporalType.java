@@ -1,5 +1,7 @@
 package org.metadatacenter.csvpipeline.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -23,6 +25,7 @@ public enum CedarTemporalType {
         this.name = name;
     }
 
+    @JsonValue
     public String getName() {
         return name;
     }

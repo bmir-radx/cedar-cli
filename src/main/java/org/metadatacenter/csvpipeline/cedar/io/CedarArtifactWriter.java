@@ -1,11 +1,9 @@
 package org.metadatacenter.csvpipeline.cedar.io;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.metadatacenter.csvpipeline.cedar.api.CedarArtifact;
+import org.metadatacenter.csvpipeline.cedar.api.CedarTemplateField;
+import org.metadatacenter.csvpipeline.cedar.api.CedarTemplateFieldWrapper;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,8 +21,21 @@ public class CedarArtifactWriter {
         this.jsonMapper = jsonMapper;
     }
 
-    public void writeCedarArtifact(CedarArtifact cedarArtifact, OutputStream outputStream) throws IOException {
-        jsonMapper.writerWithDefaultPrettyPrinter()
-                .writeValue(outputStream, cedarArtifact);
+    public void writeCedarArtifact(CedarArtifact cedarArtifact,
+                                   String jsonSchemaTitle,
+                                   String jsonSchemaDescription,
+                                   OutputStream outputStream) throws IOException {
+        if(cedarArtifact instanceof CedarTemplateField) {
+            var wrappedField = CedarTemplateFieldWrapper.wrap((CedarTemplateField) cedarArtifact,
+                                                              jsonSchemaTitle,
+                                                              jsonSchemaDescription);
+            jsonMapper.writerWithDefaultPrettyPrinter()
+                      .writeValue(outputStream, wrappedField);
+        }
+        else {
+            jsonMapper.writerWithDefaultPrettyPrinter()
+                      .writeValue(outputStream, cedarArtifact);
+        }
+
     }
 }

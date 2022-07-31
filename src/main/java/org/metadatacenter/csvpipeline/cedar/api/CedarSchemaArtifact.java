@@ -12,9 +12,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 public interface CedarSchemaArtifact extends CedarArtifact {
 
-    @JsonProperty("schema:schemaVersion")
-    ModelVersion modelVersion();
-
     /**
      * Holds pavVersion information for this artifact.  At the time of writing instances in CEDAR are not versioned.
      * @return An object that holds the pavVersion information for this artifact.

@@ -1,9 +1,8 @@
 package org.metadatacenter.csvpipeline.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.Optional;
 
 /**
  * Matthew Horridge
@@ -12,57 +11,60 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum CedarInputType {
 
-    // Ontology terms
-    @JsonProperty("checkbox")
-    CHECKBOX("checkbox"),
+    CHECKBOX("checkbox", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // Ontology terms
-    @JsonProperty("radio")
-    @JsonAlias("radiobutton")
-    RADIO("radio"),
+    RADIO("radio", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // Ontology terms
-    @JsonProperty("list")
-    LIST("list"),
+    LIST("list", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // Ontology terms – Weirdly
-    // Also String?!
-    @JsonProperty("textfield")
-    @JsonAlias("textbox")
-    TEXTFIELD("textfield"),
+    TEXTFIELD("textfield", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // No additional constraints (Why not min len max len?)
-    TEXTAREA("textarea"),
+    TEXTAREA("textarea", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // Numeric constraints
-    NUMERIC("numeric"),
+    NUMERIC("numeric", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // No additional constraints
-    SECTION_BREAK("section-break"),
+    SECTION_BREAK("section-break", null, JsonSchemaObject.CedarFieldValueType.LITERAL, true),
 
-    // No additional constraints
-    PHONE_NUMBER("phone-number"),
+    PHONE_NUMBER("phone-number", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // No additional constraints
-    EMAIL("email"),
+    EMAIL("email", JsonSchemaFormat.EMAIL, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // Temporal constraints
-    @JsonAlias({"date", "datetime"})
-    TEMPORAL("temporal"),
+    TEMPORAL("temporal", JsonSchemaFormat.DATE_TIME, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
 
-    // No extra constraints
-    @JsonProperty("url")
-    @JsonAlias({"link", "iri"})
-    LINK("link");
+    LINK("link", JsonSchemaFormat.URI, JsonSchemaObject.CedarFieldValueType.IRI, false);
 
     private final String name;
 
-    CedarInputType(String name) {
+    private final JsonSchemaFormat jsonSchemaFormat;
+
+    private final JsonSchemaObject.CedarFieldValueType cedarFieldValueType;
+
+    private final boolean isStatic;
+
+    CedarInputType(String name,
+                   JsonSchemaFormat jsonSchemaFormat,
+                   JsonSchemaObject.CedarFieldValueType cedarFieldValueType,
+                   boolean isStatic) {
         this.name = name;
+        this.jsonSchemaFormat = jsonSchemaFormat;
+        this.cedarFieldValueType = cedarFieldValueType;
+        this.isStatic = isStatic;
+    }
+
+    public Optional<JsonSchemaObject.CedarFieldValueType> getJsonSchemaType() {
+        return Optional.ofNullable(cedarFieldValueType);
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 
     @JsonValue
     public String getName() {
         return name;
+    }
+
+    public Optional<JsonSchemaFormat> getJsonSchemaFormat() {
+        return Optional.ofNullable(jsonSchemaFormat);
     }
 }

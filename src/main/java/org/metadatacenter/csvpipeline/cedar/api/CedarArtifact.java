@@ -11,12 +11,6 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 public interface CedarArtifact {
 
     @JsonUnwrapped
-    JsonLdInfo jsonLdInfo();
-
-    @JsonUnwrapped
-    JsonSchemaObject jsonSchemaObject();
-
-    @JsonUnwrapped
     CedarArtifactInfo cedarArtifactInfo();
 
     /**

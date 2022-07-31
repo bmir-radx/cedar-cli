@@ -30,8 +30,6 @@ import java.util.*;
  */
 public class CedarCsvParser {
 
-    private final String jsonSchemaDescription;
-
     private final CedarArtifactStatus defaultArtifactStatus;
 
     private final String version;
@@ -40,20 +38,10 @@ public class CedarCsvParser {
 
     private final ModelVersion modelVersion;
 
-    public static void main(String[] args) throws Exception {
-        var p = Path.of("/tmp/metadata.csv");
-        var inputStream = Files.newInputStream(p);
-        var parser = new CedarCsvParser("Generated from " + p.getFileName().toString() + " by CEDAR-CSV on " + Instant.now(),
-                                        CedarArtifactStatus.PUBLISHED, "1.0.0", "", ModelVersion.V1_6_0);
-        var template = parser.parse(inputStream);
-    }
-
-    public CedarCsvParser(String jsonSchemaDescription,
-                          CedarArtifactStatus defaultArtifactStatus,
+    public CedarCsvParser(CedarArtifactStatus defaultArtifactStatus,
                           String version,
                           String previousVersion,
                           ModelVersion modelVersion) {
-        this.jsonSchemaDescription = jsonSchemaDescription;
         this.defaultArtifactStatus = defaultArtifactStatus;
         this.version = version;
         this.previousVersion = previousVersion;
@@ -144,9 +132,9 @@ public class CedarCsvParser {
                                  modelVersion,
                                  new CedarArtifactInfo("Generated Template",
                                                        "Template generated from CEDAR CSV",
-                                                       "",
+                                                       null,
                                                        "Generated template",
-                                                       "", ""),
+                                                       null, null),
                                  CedarVersionInfo.initialDraft(),
                                  childNodes);
     }
@@ -159,10 +147,10 @@ public class CedarCsvParser {
             return new CedarTemplateElement(JsonSchemaObject.empty(),
                                             JsonLdInfo.of(CedarArtifactType.TEMPLATE_ELEMENT),
                                             modelVersion,
-                                            new CedarArtifactInfo("",
+                                            new CedarArtifactInfo(node.row.getStrippedElementName().toLowerCase().replace(" ", "_"),
                                                                   node.row.getStrippedElementName(),
                                                                   node.row.description(),
-                                                                  "", "", ""),
+                                                                  null, node.row.getStrippedElementName(), List.of()),
                                             CedarVersionInfo.initialDraft(),
                                             childNodes);
         }
@@ -171,23 +159,19 @@ public class CedarCsvParser {
             return translateToField(node.row);
         }
         else if(node.isSection()) {
-            return new CedarTemplateField(JsonSchemaObject.empty(),
-                                          JsonLdInfo.of(CedarArtifactType.TEMPLATE_FIELD),
-                                          modelVersion,
-                                          null,
-                                          new CedarArtifactInfo("",
+            return new CedarTemplateField(null,
+                                          new CedarArtifactInfo(node.row.section(),
                                                                 node.row.section(),
                                                                 "",
                                                                 "",
                                                                 node.row.section(),
-                                                                ""),
+                                                                List.of()),
                                           CedarVersionInfo.initialDraft(),
                                           CedarFieldValueConstraints.empty(),
                                           new CedarUi(
                                                   CedarInputType.SECTION_BREAK,
                                                   false
-                                          ),
-                                          null);
+                                          ));
         }
         else {
             throw new RuntimeException();
@@ -195,29 +179,18 @@ public class CedarCsvParser {
     }
 
     private CedarTemplateField translateToField(CedarCsvRow fieldRow) {
-        return new CedarTemplateField(getJsonSchemaObject(fieldRow),
-                                      JsonLdInfo.of(CedarArtifactType.TEMPLATE_FIELD),
-                                      modelVersion,
-                                      null,
+        return new CedarTemplateField(null,
                                       new CedarArtifactInfo(getFieldIdentifier(fieldRow),
                                                             fieldRow.fieldTitle(),
                                                             fieldRow.description(),
                                                             "",
                                                             fieldRow.fieldTitle(),
-                                                            ""),
+                                                            Collections.emptyList()),
                                       new CedarVersionInfo(version, defaultArtifactStatus, previousVersion),
                                       getValueConstraints(fieldRow),
                                       new CedarUi(fieldRow.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(CedarInputType.TEXTFIELD),
-                                                  false),
-                                      fieldRow.inputType().getJsonSchemaFormat().orElse(null)
+                                                  false)
         );
-    }
-
-    private JsonSchemaObject getJsonSchemaObject(CedarCsvRow row) {
-        return new JsonSchemaObject(row.getJsonSchemaTitle(""),
-                                    jsonSchemaDescription,
-                                    row.inputType().getJsonSchemaValueType().orElse(null),
-                                    row.inputType().getJsonSchemaFormat().orElse(null));
     }
 
     private static CedarCsvInputType getInputType(CedarCsvRow row) {
@@ -292,7 +265,7 @@ public class CedarCsvParser {
         else if(theLookupSpec.getOntology().isPresent()) {
             return List.of(new AllOntologyTermsSelector(theLookupSpec.getOntology().get(),
                                                         theLookupSpec.getOntologyAcronym().orElse(""),
-                                                        "??? Ontology Name ???"));
+                                                        theLookupSpec.getOntologyAcronym().orElse("")));
         }
         else {
             return Collections.emptyList();

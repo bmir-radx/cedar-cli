@@ -15,6 +15,8 @@ public enum CedarArtifactType {
 
     TEMPLATE_FIELD("https://schema.metadatacenter.org/core/TemplateField"),
 
+    STATIC_TEMPLATE_FIELD("https://schema.metadatacenter.org/core/StaticTemplateField"),
+
     INSTANCE("https://schema.metadatacenter.org/core/TemplateInstance");
 
     private final String iri;

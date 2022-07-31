@@ -3,11 +3,9 @@ package org.metadatacenter.csvpipeline.cedar.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,15 +17,47 @@ import java.util.Map;
 @JsonPropertyOrder({"$schema", "type", "title", "description", "properties"})
 public record JsonSchemaObject(@JsonProperty("title") String title,
                                @JsonProperty("description") String description,
-                               @JsonIgnore ValueType valueType,
-                               @JsonIgnore JsonSchemaFormat format) {
+                               @JsonIgnore CedarFieldValueType cedarFieldValueType,
+                               @JsonIgnore JsonSchemaFormat format,
+                               @JsonIgnore boolean multiValued) {
 
-    public enum ValueType {
-        LITERAL,
-        IRI
+
+    private static final Map<String, Object> propertiesForValue;
+
+    private static final Map<String, Object> propertiesForId;
+
+    static {
+        propertiesForValue = readMap("/json-schema-properties-for-value.json");
+        propertiesForId = readMap("/json-schema-properties-for-id.json");
     }
 
-    private static final JsonSchemaObject EMPTY = new JsonSchemaObject("", "", ValueType.LITERAL, null);
+    private static Map<String, Object> readMap(String resource) {
+        try {
+            var is = JsonSchemaObject.class.getResourceAsStream(resource);
+            return (Map<String, Object>) new ObjectMapper().readValue(is, Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Map.of();
+        }
+    }
+
+    public enum CedarFieldValueType {
+        LITERAL("@value"),
+        IRI("@id");
+
+        private final String jsonProperty;
+
+
+        CedarFieldValueType(String jsonProperty) {
+            this.jsonProperty = jsonProperty;
+        }
+
+        public String getJsonProperty() {
+            return jsonProperty;
+        }
+    }
+
+    private static final JsonSchemaObject EMPTY = new JsonSchemaObject("", "", CedarFieldValueType.LITERAL, null, false);
 
     /**
      * Gets empty title and description properties
@@ -54,37 +84,17 @@ public record JsonSchemaObject(@JsonProperty("title") String title,
 
     @JsonProperty("properties")
     public Map<String, Object> properties() {
-        try {
-            var om = new ObjectMapper();
-            var is = getClass().getResourceAsStream("/json-schema-field-properties.json");
-
-            var props = om.readValue(is, Map.class);
-            return props;
-        } catch (JsonProcessingException e) {
-            return null;
-        } catch (IOException ioException) {
-            return null;
+        if(cedarFieldValueType.equals(CedarFieldValueType.LITERAL)) {
+            return propertiesForValue;
         }
-        //
-//        var typeObject = new HashMap<>();
-//
-//
-//        if(valueType.equals(ValueType.LITERAL)) {
-//            typeObject.put("type", "string");
-//            if(format != null) {
-//                typeObject.put("format", format.getName());
-//            }
-//            return Map.of("@value", typeObject);
-//        }
-//        else {
-//            typeObject.put("type", "string");
-//            typeObject.put("format", "uri");
-//            return Map.of("@id", typeObject);
-//        }
+        else {
+            return propertiesForId;
+        }
     }
+
 
     @JsonProperty("required")
     public List<String> required() {
-        return List.of("@value");
+        return List.of(cedarFieldValueType.getJsonProperty());
     }
 }

@@ -3,6 +3,7 @@ package org.metadatacenter.csvpipeline.cedar.api;
 import com.fasterxml.jackson.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -13,39 +14,28 @@ import java.util.function.Consumer;
  */
 @JsonIgnoreProperties({"$schema", "@context", "type", "properties", "required"})
 @JsonPropertyOrder({"@id", "jsonLdInfo", "jsonSchemaObject", "schema:schemaVersion", "identifier", "cedarArtifactInfo", "_valueConstraints"})
-public record CedarTemplateField(@JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) JsonSchemaObject jsonSchemaObject,
-                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY)JsonLdInfo jsonLdInfo,
-                                 @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
-                                 @JsonProperty("@id") CedarId identifier,
-                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY)CedarArtifactInfo cedarArtifactInfo,
-                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY)CedarVersionInfo versionInfo,
+public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
+                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarArtifactInfo cedarArtifactInfo,
+                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarVersionInfo versionInfo,
                                  @JsonProperty("_valueConstraints")
                                  CedarFieldValueConstraints valueConstraints,
                                  @JsonProperty("_ui")
-                                 CedarUi ui,
-                                 @JsonIgnore JsonSchemaFormat jsonSchemaFormat) implements CedarTemplateNode, CedarSchemaArtifact {
+                                 CedarUi ui) implements CedarTemplateNode, CedarSchemaArtifact {
 
     @JsonCreator
-    public static CedarTemplateField fromJson(@JsonProperty("title") String title,
-                                              @JsonProperty("description") String description,
-                                              @JsonProperty("@type") CedarArtifactType type,
-                                              @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
-                                              @JsonProperty("@id") CedarId identifier,
+    public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,
                                               @JsonProperty("schema:identifier") String schemaIdentifier,
                                               @JsonProperty("schema:name") String schemaName,
                                               @JsonProperty("schema:description") String schemaDescription,
                                               @JsonProperty("pav:derivedFrom") String pavDerivedFrom,
                                               @JsonProperty("skos:prefLabel") String skosPrefLabel,
-                                              @JsonProperty("skos:altLabel") String skosAltLabel,
+                                              @JsonProperty("skos:altLabel") List<String> skosAltLabel,
                                               @JsonProperty("pav:version") String version,
                                               @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
                               @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
                               @JsonProperty("_ui") CedarUi ui) {
-        return new CedarTemplateField(new JsonSchemaObject(title, description, null, null),
-                                      new JsonLdInfo(type),
-                                      modelVersion,
-                                      identifier,
+        return new CedarTemplateField(identifier,
                                       new CedarArtifactInfo(
                                               schemaIdentifier,
                                               schemaName,
@@ -60,8 +50,7 @@ public record CedarTemplateField(@JsonUnwrapped @JsonProperty(access = JsonPrope
                                               version
                                       ),
                                        valueConstraints,
-                                      ui,
-                                      JsonSchemaFormat.IRI);
+                                      ui);
     }
 
     @Override

@@ -16,10 +16,14 @@
       }
     ]
   },
-  "@value": {
+  "rdfs:label": {
     "type": [
       "string",
       "null"
     ]
+  },
+  "@id": {
+    "type": "string",
+    "format": "uri"
   }
 }

@@ -1,12 +1,11 @@
 package org.metadatacenter.csvpipeline.cli;
 
 import org.metadatacenter.csvpipeline.cedar.CedarFolderId;
+import org.metadatacenter.csvpipeline.cedar.api.CedarArtifact;
 import org.metadatacenter.csvpipeline.cedar.api.CedarArtifactStatus;
 import org.metadatacenter.csvpipeline.cedar.api.CedarTemplateField;
 import org.metadatacenter.csvpipeline.cedar.api.ModelVersion;
-import org.metadatacenter.csvpipeline.cedar.csv.CedarCsvParser;
 import org.metadatacenter.csvpipeline.cedar.csv.CedarCsvParserFactory;
-import org.metadatacenter.csvpipeline.cedar.io.CedarArtifactWriter;
 import org.metadatacenter.csvpipeline.cedar.io.TemplateFieldCedarImporter;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -14,11 +13,10 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Matthew Horridge
@@ -30,10 +28,10 @@ import java.util.concurrent.Callable;
 public class GenerateFieldsCommand implements CedarCsvCliCommand {
 
     @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format")
-    private Path inputCsv;
+    public Path inputCsv;
 
     @Option(names = "--out", required = true, description = "A path to a directory where JSON+LD CEDAR template fields will be written to")
-    private Path outputDirectory;
+    public Path outputDirectory;
 
     @Option(names = "--json-schema-description")
     private String jsonSchemaDescription;
@@ -45,7 +43,7 @@ public class GenerateFieldsCommand implements CedarCsvCliCommand {
     private String version;
 
     @Option(names = "--previous-version", defaultValue = "")
-    private String previousVersion = "";
+    private String previousVersion;
 
     @Option(names = "--push-to-cedar", defaultValue = "false")
     private boolean pushToCedar;
@@ -63,6 +61,8 @@ public class GenerateFieldsCommand implements CedarCsvCliCommand {
 
     private final CliCedarArtifactWriter writer;
 
+    private String jsonSchemaTitle;
+
     public GenerateFieldsCommand(TemplateFieldCedarImporter importer,
                                  CedarCsvParserFactory cedarCsvParserFactory,
                                  CliCedarArtifactWriter writer) {
@@ -73,26 +73,30 @@ public class GenerateFieldsCommand implements CedarCsvCliCommand {
 
     @Override
     public Integer call() throws Exception {
+        if(jsonSchemaDescription == null) {
+            jsonSchemaDescription = "Generated from " + inputCsv.getFileName().toString() + " by CEDAR-CSV on " + Instant.now();
+        }
         if(version == null) {
-            version = "Generated from " + inputCsv.getFileName().toString() + " by CEDAR-CSV on " + Instant.now();
+            version = "1.0.0";
         }
         if(!Files.exists(outputDirectory)) {
             Files.createDirectories(outputDirectory);
         }
         var inputStream = Files.newInputStream(inputCsv);
-        var cedarCsvParser = cedarCsvParserFactory.createParser(jsonSchemaDescription, artifactStatus,
+        var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
                                                                 version, previousVersion, ModelVersion.V1_6_0);
         var template = cedarCsvParser.parse(inputStream);
         var fields = template.getFields();
+        var counter = new AtomicInteger();
         fields.forEach(this::writeCedarField);
         if(pushToCedar) {
             fields.forEach(f -> {
                 try {
-                    importer.postToCedar(f, CedarFolderId.valueOf(cedarFolderId), cedarApiKey);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    importer.postToCedar(f, CedarFolderId.valueOf(cedarFolderId), cedarApiKey, f.toCompactString(), jsonSchemaDescription);
+                    counter.incrementAndGet();
+                    System.err.printf("Posted %d of %d fields to CEDAR\n", counter.get(), fields.size());
+                } catch (IOException | InterruptedException e) {
+                    System.err.println(e.getMessage());
                 }
             });
         }
@@ -101,7 +105,8 @@ public class GenerateFieldsCommand implements CedarCsvCliCommand {
 
     private void writeCedarField(CedarTemplateField f) {
         try {
-            writer.writeCedarArtifact(f, outputDirectory);
+            var jsonSchemaTitle = f.toCompactString();
+            writer.writeCedarArtifact(f, outputDirectory, jsonSchemaTitle, jsonSchemaDescription);
         } catch (IOException e) {
             System.err.println("Could not write field " + e.getMessage());
         }

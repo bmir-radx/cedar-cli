@@ -25,10 +25,14 @@ public class TemplateFieldCedarImporter {
 
     public void postToCedar(CedarTemplateField templateField,
                             CedarFolderId templateFieldFolder,
-                            String cedarApiKey) throws IOException, InterruptedException {
+                            String cedarApiKey,
+                            String jsonSchemaTitle,
+                            String jsonSchemaDescription) throws IOException, InterruptedException {
 
         var outputStream = new ByteArrayOutputStream();
-        artifactWriter.writeCedarArtifact(templateField, outputStream);
+        artifactWriter.writeCedarArtifact(templateField,
+                                          jsonSchemaTitle,
+                                          jsonSchemaDescription, outputStream);
         var publisher = HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray());
         var folderUuid = templateFieldFolder.uuid();
         var folderId = "https://repo.metadatacenter.org/folders/" + folderUuid;
@@ -42,9 +46,10 @@ public class TemplateFieldCedarImporter {
 
         var client = HttpClient.newBuilder().build();
         var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.err.println(new String(outputStream.toByteArray()));
-        System.err.println("Posted template field to CEDAR Server and received a response of " + response.statusCode());
-        System.err.println(response.body());
+        if(response.statusCode() != 201) {
+            System.err.printf("Posted %s template field to CEDAR Server and received an error response of %s\n", templateField.toCompactString(),response.statusCode());
+        }
+
     }
 
 }

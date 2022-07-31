@@ -12,13 +12,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class CedarCsvParserFactory {
 
-    public CedarCsvParser createParser(String jsonSchemaDescription,
-                                       CedarArtifactStatus artifactStatus,
+    public CedarCsvParser createParser(CedarArtifactStatus artifactStatus,
                                        String version,
                                        String previousVersion,
                                        ModelVersion modelVersion) {
-        return new CedarCsvParser(jsonSchemaDescription,
-                                  artifactStatus,
+        return new CedarCsvParser(artifactStatus,
                                   version,
                                   previousVersion,
                                   modelVersion);
