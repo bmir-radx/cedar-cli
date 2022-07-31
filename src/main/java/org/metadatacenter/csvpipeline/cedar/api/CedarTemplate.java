@@ -12,7 +12,6 @@ import java.util.List;
  * 2022-07-26
  */
 public record CedarTemplate(@JsonUnwrapped JsonSchemaObject jsonSchemaObject,
-                            @JsonUnwrapped JsonLdInfo jsonLdInfo,
                             ModelVersion modelVersion,
                             @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
                             @JsonUnwrapped CedarVersionInfo versionInfo,

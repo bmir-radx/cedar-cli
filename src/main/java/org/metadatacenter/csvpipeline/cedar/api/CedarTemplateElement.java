@@ -11,7 +11,6 @@ import java.util.function.Consumer;
  * 2022-07-26
  */
 public record CedarTemplateElement(@JsonUnwrapped JsonSchemaObject jsonSchemaObject,
-                                   @JsonUnwrapped JsonLdInfo jsonLdInfo,
                                    ModelVersion modelVersion,
                                    @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
                                    @JsonUnwrapped CedarVersionInfo versionInfo,

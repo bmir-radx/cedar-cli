@@ -128,7 +128,6 @@ public class CedarCsvParser {
         var childNodes = rootNode.childNodes.stream().map(this::translateToCedarNode)
                 .toList();
         return new CedarTemplate(JsonSchemaObject.empty(),
-                                 JsonLdInfo.of(CedarArtifactType.TEMPLATE),
                                  modelVersion,
                                  new CedarArtifactInfo("Generated Template",
                                                        "Template generated from CEDAR CSV",
@@ -145,7 +144,6 @@ public class CedarCsvParser {
                 .toList();
         if(node.isElement()) {
             return new CedarTemplateElement(JsonSchemaObject.empty(),
-                                            JsonLdInfo.of(CedarArtifactType.TEMPLATE_ELEMENT),
                                             modelVersion,
                                             new CedarArtifactInfo(node.row.getStrippedElementName().toLowerCase().replace(" ", "_"),
                                                                   node.row.getStrippedElementName(),

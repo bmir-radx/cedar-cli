@@ -20,13 +20,13 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-29
  */
-public record JsonLdInfo(@JsonProperty("@type") CedarArtifactType type) {
+public record JsonLdInfo() {
 
     private static final Map<String, Object> contextBoilerPlate = parseContextBoilerPlate();
 
     @JsonCreator
-    public static JsonLdInfo of(@JsonProperty("@type") CedarArtifactType type) {
-        return new JsonLdInfo(type);
+    public static JsonLdInfo get() {
+        return new JsonLdInfo();
     }
 
     @JsonProperty(value = "@context", access = READ_ONLY)

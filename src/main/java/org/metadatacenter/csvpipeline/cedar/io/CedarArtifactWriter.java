@@ -3,7 +3,7 @@ package org.metadatacenter.csvpipeline.cedar.io;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import org.metadatacenter.csvpipeline.cedar.api.CedarArtifact;
 import org.metadatacenter.csvpipeline.cedar.api.CedarTemplateField;
-import org.metadatacenter.csvpipeline.cedar.api.CedarTemplateFieldWrapper;
+import org.metadatacenter.csvpipeline.cedar.api.WrappedCedarTemplateField;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,7 +26,7 @@ public class CedarArtifactWriter {
                                    String jsonSchemaDescription,
                                    OutputStream outputStream) throws IOException {
         if(cedarArtifact instanceof CedarTemplateField) {
-            var wrappedField = CedarTemplateFieldWrapper.wrap((CedarTemplateField) cedarArtifact,
+            var wrappedField = WrappedCedarTemplateField.wrap((CedarTemplateField) cedarArtifact,
                                                               jsonSchemaTitle,
                                                               jsonSchemaDescription);
             jsonMapper.writerWithDefaultPrettyPrinter()

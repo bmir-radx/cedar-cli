@@ -1,9 +1,6 @@
 package org.metadatacenter.csvpipeline.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.*;
 
 import java.util.List;
 
@@ -14,17 +11,18 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-30
  */
-public record CedarTemplateFieldWrapper(@JsonUnwrapped @JsonProperty(access = READ_ONLY) JsonSchemaObject jsonSchemaObject,
-                                        @JsonUnwrapped @JsonProperty(access = READ_ONLY)JsonLdInfo jsonLdInfo,
+@JsonTypeName("https://schema.metadatacenter.org/core/TemplateField")
+public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) JsonSchemaObject jsonSchemaObject,
                                         @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                         @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarTemplateField templateField,
-                                        @JsonIgnore JsonSchemaFormat jsonSchemaFormat) {
+                                        @JsonIgnore JsonSchemaFormat jsonSchemaFormat) implements WrappedCedarArtifact {
 
-    public static CedarTemplateFieldWrapper wrap(CedarTemplateField templateField,
+    private static final JsonLdInfo JSON_LD_INFO = new JsonLdInfo();
+
+    public static WrappedCedarTemplateField wrap(CedarTemplateField templateField,
                                                  String jsonSchemaTitle,
                                                  String jsonSchemaDescription) {
 
-        var jsonLdInfo = getJsonLdInfo(templateField);
         var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
         var jsonSchemaInfo = new JsonSchemaObject(jsonSchemaTitle,
                                                   jsonSchemaDescription,
@@ -32,20 +30,17 @@ public record CedarTemplateFieldWrapper(@JsonUnwrapped @JsonProperty(access = RE
                                                           JsonSchemaObject.CedarFieldValueType.LITERAL),
                                                   format,
                                                   templateField.valueConstraints().isMultipleChoice());
-        return new CedarTemplateFieldWrapper(jsonSchemaInfo,
-                                             jsonLdInfo,
+        return new WrappedCedarTemplateField(jsonSchemaInfo,
+//                                             jsonLdInfo,
                                              ModelVersion.V1_6_0,
                                              templateField,
                                              format);
     }
 
-    private static JsonLdInfo getJsonLdInfo(CedarTemplateField templateField) {
-        if(templateField.ui().inputType().isStatic()) {
-            return new JsonLdInfo(CedarArtifactType.STATIC_TEMPLATE_FIELD);
-        }
-        else {
-            return new JsonLdInfo(CedarArtifactType.TEMPLATE_FIELD);
-        }
+    @JsonUnwrapped
+    @JsonProperty(access = READ_ONLY)
+    public JsonLdInfo getJsonLdInfo() {
+        return JSON_LD_INFO;
     }
 
     @JsonCreator

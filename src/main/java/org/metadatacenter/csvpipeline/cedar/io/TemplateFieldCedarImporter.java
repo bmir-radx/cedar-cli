@@ -48,6 +48,7 @@ public class TemplateFieldCedarImporter {
         var response = client.send(request, HttpResponse.BodyHandlers.ofString());
         if(response.statusCode() != 201) {
             System.err.printf("Posted %s template field to CEDAR Server and received an error response of %s\n", templateField.toCompactString(),response.statusCode());
+            System.err.println(response.body());
         }
 
     }

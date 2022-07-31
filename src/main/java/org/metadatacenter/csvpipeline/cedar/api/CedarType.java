@@ -1,6 +1,7 @@
 package org.metadatacenter.csvpipeline.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Matthew Horridge
@@ -9,13 +10,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public enum CedarType {
 
-    @JsonProperty("https://schema.metadatacenter.org/core/Template")
     TEMPLATE("https://schema.metadatacenter.org/core/Template"),
 
-    @JsonProperty("https://schema.metadatacenter.org/core/TemplateElement")
     ELEMENT("https://schema.metadatacenter.org/core/TemplateElement"),
 
-    @JsonProperty("https://schema.metadatacenter.org/core/TemplateField")
     FIELD("https://schema.metadatacenter.org/core/TemplateField");
 
     private final String iri;
@@ -24,7 +22,10 @@ public enum CedarType {
         this.iri = iri;
     }
 
+    @JsonValue
     public String iri() {
         return iri;
     }
+
+
 }
