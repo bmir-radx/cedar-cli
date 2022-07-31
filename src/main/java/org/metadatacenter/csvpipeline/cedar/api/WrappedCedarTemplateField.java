@@ -31,7 +31,6 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                                   format,
                                                   templateField.valueConstraints().isMultipleChoice());
         return new WrappedCedarTemplateField(jsonSchemaInfo,
-//                                             jsonLdInfo,
                                              ModelVersion.V1_6_0,
                                              templateField,
                                              format);
