@@ -54,7 +54,7 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
                                               @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                                              @JsonProperty("_ui") CedarUi ui) {
+                                              @JsonProperty("_ui") CedarFieldUi ui) {
         return new CedarTemplateField(identifier,
                                       new CedarArtifactInfo(
                                               schemaIdentifier,

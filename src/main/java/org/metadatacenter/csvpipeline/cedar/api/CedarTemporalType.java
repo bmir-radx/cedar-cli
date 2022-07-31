@@ -9,11 +9,20 @@ import com.fasterxml.jackson.annotation.JsonValue;
  */
 public enum CedarTemporalType {
 
-    DATE_TIME("xsd:dateTime"),
+    DATE_TIME("xsd:dateTime", new TemporalFieldUi(TemporalGranularity.DECIMAL_SECOND,
+                                                  true,
+                                                  InputTimeFormat.TWENTY_FOUR_HOUR,
+                                                  true)),
 
-    DATE("xsd:date"),
+    DATE("xsd:date", new TemporalFieldUi(TemporalGranularity.DAY,
+                                         false,
+                                         null,
+                                         true)),
 
-    TIME("xsd:time");
+    TIME("xsd:time", new TemporalFieldUi(TemporalGranularity.DECIMAL_SECOND,
+                                         true,
+                                         InputTimeFormat.TWENTY_FOUR_HOUR,
+                                         true));
 
     public CedarTemporalType getDefaultType() {
         return CedarTemporalType.DATE_TIME;
@@ -21,12 +30,19 @@ public enum CedarTemporalType {
 
     private final String name;
 
-    CedarTemporalType(String name) {
+    private final TemporalFieldUi defaultTemporalFieldUi;
+
+    CedarTemporalType(String name, TemporalFieldUi defaultTemporalFieldUi) {
         this.name = name;
+        this.defaultTemporalFieldUi = defaultTemporalFieldUi;
     }
 
     @JsonValue
     public String getName() {
         return name;
+    }
+
+    public TemporalFieldUi getDefaultTemporalFieldUi() {
+        return defaultTemporalFieldUi;
     }
 }

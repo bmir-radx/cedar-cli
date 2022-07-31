@@ -1,6 +1,5 @@
 package org.metadatacenter.csvpipeline.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
@@ -9,6 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * 2022-07-29
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public record CedarUi(CedarInputType inputType,
-                      boolean valueRecommendationEnabled) {
+public record BasicFieldUi(CedarInputType inputType,
+                           boolean valueRecommendationEnabled) implements CedarFieldUi {
 }

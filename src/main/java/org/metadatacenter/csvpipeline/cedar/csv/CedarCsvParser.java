@@ -1,10 +1,8 @@
 package org.metadatacenter.csvpipeline.cedar.csv;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -18,9 +16,6 @@ import org.metadatacenter.csvpipeline.cedar.api.CedarTemporalType;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.time.Instant;
 import java.util.*;
 
 /**
@@ -162,7 +157,7 @@ public class CedarCsvParser {
                                                                 List.of()),
                                           CedarVersionInfo.initialDraft(),
                                           CedarFieldValueConstraints.empty(),
-                                          new CedarUi(
+                                          new BasicFieldUi(
                                                   CedarInputType.SECTION_BREAK,
                                                   false
                                           ));
@@ -172,7 +167,24 @@ public class CedarCsvParser {
         }
     }
 
+    private static CedarFieldUi getFieldUi(CedarCsvRow row) {
+        if(row.getInputType().flatMap(CedarCsvInputType::getCedarTemporalType).isPresent()) {
+            return row.getInputType()
+                    .flatMap(CedarCsvInputType::getCedarTemporalType)
+                    .map(CedarTemporalType::getDefaultTemporalFieldUi)
+                    .orElse(TemporalFieldUi.getDefault());
+        }
+        else if(row.isSection()) {
+            return new StaticFieldUi(CedarInputType.SECTION_BREAK, false);
+        }
+        else {
+            return new BasicFieldUi(row.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(CedarInputType.TEXTFIELD),
+                             false);
+        }
+    }
+
     private CedarTemplateField translateToField(CedarCsvRow fieldRow) {
+
         return new CedarTemplateField(null,
                                       new CedarArtifactInfo(getFieldIdentifier(fieldRow),
                                                             fieldRow.fieldTitle(),
@@ -182,8 +194,7 @@ public class CedarCsvParser {
                                                             Collections.emptyList()),
                                       new CedarVersionInfo(version, defaultArtifactStatus, previousVersion),
                                       getValueConstraints(fieldRow),
-                                      new CedarUi(fieldRow.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(CedarInputType.TEXTFIELD),
-                                                  false)
+                                      getFieldUi(fieldRow)
         );
     }
 

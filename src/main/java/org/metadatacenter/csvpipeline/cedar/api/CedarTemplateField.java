@@ -2,9 +2,7 @@ package org.metadatacenter.csvpipeline.cedar.api;
 
 import com.fasterxml.jackson.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 
 /**
@@ -19,8 +17,7 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
                                  @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarVersionInfo versionInfo,
                                  @JsonProperty("_valueConstraints")
                                  CedarFieldValueConstraints valueConstraints,
-                                 @JsonProperty("_ui")
-                                 CedarUi ui) implements CedarTemplateNode, CedarSchemaArtifact {
+                                 @JsonProperty("_ui") CedarFieldUi ui) implements CedarTemplateNode, CedarSchemaArtifact {
 
     @JsonCreator
     public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,
@@ -34,7 +31,7 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
                                               @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
                               @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                              @JsonProperty("_ui") CedarUi ui) {
+                              @JsonProperty("_ui") CedarFieldUi ui) {
         return new CedarTemplateField(identifier,
                                       new CedarArtifactInfo(
                                               schemaIdentifier,
