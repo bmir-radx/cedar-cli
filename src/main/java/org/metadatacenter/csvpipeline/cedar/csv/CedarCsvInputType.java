@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.metadatacenter.csvpipeline.cedar.api.JsonSchemaFormat;
-import org.metadatacenter.csvpipeline.cedar.api.JsonSchemaObject;
+import org.metadatacenter.csvpipeline.cedar.api.JsonSchemaInfo;
 import org.metadatacenter.csvpipeline.cedar.api.CedarInputType;
 import org.metadatacenter.csvpipeline.cedar.api.CedarNumberType;
 import org.metadatacenter.csvpipeline.cedar.api.CedarTemporalType;
@@ -21,58 +21,58 @@ public enum CedarCsvInputType {
 
     // Ontology terms
     @JsonProperty("checkbox")
-    CHECKBOX("checkbox", CedarInputType.CHECKBOX, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaObject.CedarFieldValueType.IRI),
+    CHECKBOX("checkbox", CedarInputType.CHECKBOX, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaInfo.CedarFieldValueType.IRI),
 
     // Ontology terms
     @JsonAlias("radiobutton")
-    RADIO("radio", CedarInputType.RADIO, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaObject.CedarFieldValueType.IRI),
+    RADIO("radio", CedarInputType.RADIO, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaInfo.CedarFieldValueType.IRI),
 
-    BOOLEAN("boolean", CedarInputType.RADIO, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaObject.CedarFieldValueType.IRI),
+    BOOLEAN("boolean", CedarInputType.RADIO, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaInfo.CedarFieldValueType.IRI),
 
     // Ontology terms
-    LIST("list", CedarInputType.LIST, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaObject.CedarFieldValueType.IRI),
+    LIST("list", CedarInputType.LIST, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaInfo.CedarFieldValueType.IRI),
 
-    TYPEAHEAD("typeadhead", CedarInputType.TEXTFIELD, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaObject.CedarFieldValueType.IRI),
+    TYPEAHEAD("typeadhead", CedarInputType.TEXTFIELD, CedarConstraintsType.ONTOLOGY_TERMS, null, JsonSchemaInfo.CedarFieldValueType.IRI),
 
     // Ontology terms – Weirdly
     // Also String?!
     @JsonAlias("textbox")
     @JsonEnumDefaultValue
-    TEXTFIELD("textfield", CedarInputType.TEXTFIELD, CedarConstraintsType.STRING, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    TEXTFIELD("textfield", CedarInputType.TEXTFIELD, CedarConstraintsType.STRING, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
     // No additional constraints (Why not min len max len?)
-    TEXTAREA("textarea", CedarInputType.TEXTAREA, CedarConstraintsType.STRING, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    TEXTAREA("textarea", CedarInputType.TEXTAREA, CedarConstraintsType.STRING, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
     // Numeric constraints
-    NUMERIC("numeric", CedarInputType.NUMERIC, CedarConstraintsType.NUMERIC, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    NUMERIC("numeric", CedarInputType.NUMERIC, CedarConstraintsType.NUMERIC, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
     @JsonAlias("int")
-    INTEGER("integer", CedarNumberType.INT, CedarConstraintsType.NUMERIC, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    INTEGER("integer", CedarNumberType.INT, CedarConstraintsType.NUMERIC, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    LONG("long", CedarNumberType.LONG, CedarConstraintsType.NUMERIC, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    LONG("long", CedarNumberType.LONG, CedarConstraintsType.NUMERIC, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    DECIMAL("decimal", CedarNumberType.DECIMAL, CedarConstraintsType.NUMERIC, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    DECIMAL("decimal", CedarNumberType.DECIMAL, CedarConstraintsType.NUMERIC, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    FLOAT("float", CedarNumberType.FLOAT, CedarConstraintsType.NUMERIC, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    FLOAT("float", CedarNumberType.FLOAT, CedarConstraintsType.NUMERIC, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    DOUBLE("double", CedarNumberType.DOUBLE, CedarConstraintsType.NUMERIC, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
-
-    // No additional constraints
-    PHONE_NUMBER("phone-number", CedarInputType.PHONE_NUMBER, CedarConstraintsType.NONE, null, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    DOUBLE("double", CedarNumberType.DOUBLE, CedarConstraintsType.NUMERIC, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
     // No additional constraints
-    EMAIL("email", CedarInputType.EMAIL, CedarConstraintsType.NONE, JsonSchemaFormat.EMAIL, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    PHONE_NUMBER("phone-number", CedarInputType.PHONE_NUMBER, CedarConstraintsType.NONE, null, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    DATE("date", CedarTemporalType.DATE, CedarConstraintsType.TEMPORAL, JsonSchemaFormat.DATE, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    // No additional constraints
+    EMAIL("email", CedarInputType.EMAIL, CedarConstraintsType.NONE, JsonSchemaFormat.EMAIL, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    TIME("time", CedarTemporalType.TIME, CedarConstraintsType.TEMPORAL, JsonSchemaFormat.TIME, JsonSchemaObject.CedarFieldValueType.LITERAL),
+    DATE("date", CedarTemporalType.DATE, CedarConstraintsType.TEMPORAL, JsonSchemaFormat.DATE, JsonSchemaInfo.CedarFieldValueType.LITERAL),
+
+    TIME("time", CedarTemporalType.TIME, CedarConstraintsType.TEMPORAL, JsonSchemaFormat.TIME, JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
     DATE_TIME("datetime", CedarTemporalType.DATE_TIME, CedarConstraintsType.TEMPORAL, JsonSchemaFormat.DATE_TIME,
-              JsonSchemaObject.CedarFieldValueType.LITERAL),
+              JsonSchemaInfo.CedarFieldValueType.LITERAL),
 
-    URL("url", CedarInputType.LINK, CedarConstraintsType.NONE, JsonSchemaFormat.URI, JsonSchemaObject.CedarFieldValueType.IRI),
+    URL("url", CedarInputType.LINK, CedarConstraintsType.NONE, JsonSchemaFormat.URI, JsonSchemaInfo.CedarFieldValueType.IRI),
 
-    IRI("iri", CedarInputType.LINK, CedarConstraintsType.NONE, JsonSchemaFormat.IRI, JsonSchemaObject.CedarFieldValueType.IRI);
+    IRI("iri", CedarInputType.LINK, CedarConstraintsType.NONE, JsonSchemaFormat.IRI, JsonSchemaInfo.CedarFieldValueType.IRI);
 
     private final String name;
 
@@ -86,7 +86,7 @@ public enum CedarCsvInputType {
 
     private final JsonSchemaFormat jsonSchemaFormat;
 
-    private final JsonSchemaObject.CedarFieldValueType cedarFieldValueType;
+    private final JsonSchemaInfo.CedarFieldValueType cedarFieldValueType;
 
     public static CedarCsvInputType getDefaultInputType() {
         return TEXTFIELD;
@@ -96,7 +96,7 @@ public enum CedarCsvInputType {
     CedarCsvInputType(String name,
                       CedarInputType cedarInputType,
                       CedarConstraintsType cedarConstraintsType,
-                      JsonSchemaFormat jsonSchemaFormat, JsonSchemaObject.CedarFieldValueType cedarFieldValueType) {
+                      JsonSchemaFormat jsonSchemaFormat, JsonSchemaInfo.CedarFieldValueType cedarFieldValueType) {
         this.name = name;
         this.cedarInputType = cedarInputType;
         this.cedarConstraintsType = cedarConstraintsType;
@@ -109,7 +109,7 @@ public enum CedarCsvInputType {
     CedarCsvInputType(String name,
                       CedarNumberType numberType,
                       CedarConstraintsType cedarConstraintsType,
-                      JsonSchemaFormat jsonSchemaFormat, JsonSchemaObject.CedarFieldValueType cedarFieldValueType) {
+                      JsonSchemaFormat jsonSchemaFormat, JsonSchemaInfo.CedarFieldValueType cedarFieldValueType) {
         this.name = name;
         this.cedarConstraintsType = cedarConstraintsType;
         this.jsonSchemaFormat = jsonSchemaFormat;
@@ -122,7 +122,7 @@ public enum CedarCsvInputType {
     CedarCsvInputType(String name,
                       CedarTemporalType temporalType,
                       CedarConstraintsType cedarConstraintsType,
-                      JsonSchemaFormat jsonSchemaFormat, JsonSchemaObject.CedarFieldValueType cedarFieldValueType) {
+                      JsonSchemaFormat jsonSchemaFormat, JsonSchemaInfo.CedarFieldValueType cedarFieldValueType) {
         this.name = name;
         this.cedarConstraintsType = cedarConstraintsType;
         this.jsonSchemaFormat = jsonSchemaFormat;
@@ -157,7 +157,7 @@ public enum CedarCsvInputType {
         return Optional.ofNullable(jsonSchemaFormat);
     }
 
-    public Optional<JsonSchemaObject.CedarFieldValueType> getJsonSchemaValueType() {
+    public Optional<JsonSchemaInfo.CedarFieldValueType> getJsonSchemaValueType() {
         return Optional.ofNullable(cedarFieldValueType);
     }
 }

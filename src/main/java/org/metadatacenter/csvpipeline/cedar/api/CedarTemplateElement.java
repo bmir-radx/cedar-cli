@@ -10,9 +10,7 @@ import java.util.function.Consumer;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-26
  */
-public record CedarTemplateElement(@JsonUnwrapped JsonSchemaObject jsonSchemaObject,
-                                   ModelVersion modelVersion,
-                                   @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
+public record CedarTemplateElement(@JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
                                    @JsonUnwrapped CedarVersionInfo versionInfo,
                                    List<CedarTemplateNode> nodes) implements CedarTemplateNode, CedarSchemaArtifact {
     @Override

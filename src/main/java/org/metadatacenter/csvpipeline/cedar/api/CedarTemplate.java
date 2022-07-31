@@ -11,9 +11,7 @@ import java.util.List;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-26
  */
-public record CedarTemplate(@JsonUnwrapped JsonSchemaObject jsonSchemaObject,
-                            ModelVersion modelVersion,
-                            @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
+public record CedarTemplate(@JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
                             @JsonUnwrapped CedarVersionInfo versionInfo,
                             List<CedarTemplateNode> nodes) implements CedarSchemaArtifact {
 

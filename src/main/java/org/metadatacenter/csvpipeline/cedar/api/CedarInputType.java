@@ -11,39 +11,39 @@ import java.util.Optional;
  */
 public enum CedarInputType {
 
-    CHECKBOX("checkbox", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    CHECKBOX("checkbox", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    RADIO("radio", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    RADIO("radio", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    LIST("list", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    LIST("list", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    TEXTFIELD("textfield", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    TEXTFIELD("textfield", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    TEXTAREA("textarea", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    TEXTAREA("textarea", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    NUMERIC("numeric", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    NUMERIC("numeric", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    SECTION_BREAK("section-break", null, JsonSchemaObject.CedarFieldValueType.LITERAL, true),
+    SECTION_BREAK("section-break", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, true),
 
-    PHONE_NUMBER("phone-number", null, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    PHONE_NUMBER("phone-number", null, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    EMAIL("email", JsonSchemaFormat.EMAIL, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    EMAIL("email", JsonSchemaFormat.EMAIL, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    TEMPORAL("temporal", JsonSchemaFormat.DATE_TIME, JsonSchemaObject.CedarFieldValueType.LITERAL, false),
+    TEMPORAL("temporal", JsonSchemaFormat.DATE_TIME, JsonSchemaInfo.CedarFieldValueType.LITERAL, false),
 
-    LINK("link", JsonSchemaFormat.URI, JsonSchemaObject.CedarFieldValueType.IRI, false);
+    LINK("link", JsonSchemaFormat.URI, JsonSchemaInfo.CedarFieldValueType.IRI, false);
 
     private final String name;
 
     private final JsonSchemaFormat jsonSchemaFormat;
 
-    private final JsonSchemaObject.CedarFieldValueType cedarFieldValueType;
+    private final JsonSchemaInfo.CedarFieldValueType cedarFieldValueType;
 
     private final boolean isStatic;
 
     CedarInputType(String name,
                    JsonSchemaFormat jsonSchemaFormat,
-                   JsonSchemaObject.CedarFieldValueType cedarFieldValueType,
+                   JsonSchemaInfo.CedarFieldValueType cedarFieldValueType,
                    boolean isStatic) {
         this.name = name;
         this.jsonSchemaFormat = jsonSchemaFormat;
@@ -51,7 +51,7 @@ public enum CedarInputType {
         this.isStatic = isStatic;
     }
 
-    public Optional<JsonSchemaObject.CedarFieldValueType> getJsonSchemaType() {
+    public Optional<JsonSchemaInfo.CedarFieldValueType> getJsonSchemaType() {
         return Optional.ofNullable(cedarFieldValueType);
     }
 

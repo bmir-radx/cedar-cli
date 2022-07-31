@@ -12,7 +12,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * 2022-07-30
  */
 @JsonTypeName("https://schema.metadatacenter.org/core/TemplateField")
-public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) JsonSchemaObject jsonSchemaObject,
+public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) JsonSchemaInfo jsonSchemaInfo,
                                         @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                         @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarTemplateField templateField,
                                         @JsonIgnore JsonSchemaFormat jsonSchemaFormat) implements WrappedCedarArtifact {
@@ -24,12 +24,12 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                                  String jsonSchemaDescription) {
 
         var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
-        var jsonSchemaInfo = new JsonSchemaObject(jsonSchemaTitle,
-                                                  jsonSchemaDescription,
-                                                  templateField.ui().inputType().getJsonSchemaType().orElse(
-                                                          JsonSchemaObject.CedarFieldValueType.LITERAL),
-                                                  format,
-                                                  templateField.valueConstraints().isMultipleChoice());
+        var jsonSchemaInfo = new JsonSchemaInfo(jsonSchemaTitle,
+                                                jsonSchemaDescription,
+                                                templateField.ui().inputType().getJsonSchemaType().orElse(
+                                                        JsonSchemaInfo.CedarFieldValueType.LITERAL),
+                                                format,
+                                                templateField.valueConstraints().isMultipleChoice());
         return new WrappedCedarTemplateField(jsonSchemaInfo,
                                              ModelVersion.V1_6_0,
                                              templateField,

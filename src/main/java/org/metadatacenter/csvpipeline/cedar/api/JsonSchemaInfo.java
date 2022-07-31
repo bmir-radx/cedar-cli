@@ -15,11 +15,11 @@ import java.util.Map;
  * 2022-07-27
  */
 @JsonPropertyOrder({"$schema", "type", "title", "description", "properties"})
-public record JsonSchemaObject(@JsonProperty("title") String title,
-                               @JsonProperty("description") String description,
-                               @JsonIgnore CedarFieldValueType cedarFieldValueType,
-                               @JsonIgnore JsonSchemaFormat format,
-                               @JsonIgnore boolean multiValued) {
+public record JsonSchemaInfo(@JsonProperty("title") String title,
+                             @JsonProperty("description") String description,
+                             @JsonIgnore CedarFieldValueType cedarFieldValueType,
+                             @JsonIgnore JsonSchemaFormat format,
+                             @JsonIgnore boolean multiValued) {
 
 
     private static final Map<String, Object> propertiesForValue;
@@ -33,7 +33,7 @@ public record JsonSchemaObject(@JsonProperty("title") String title,
 
     private static Map<String, Object> readMap(String resource) {
         try {
-            var is = JsonSchemaObject.class.getResourceAsStream(resource);
+            var is = JsonSchemaInfo.class.getResourceAsStream(resource);
             return (Map<String, Object>) new ObjectMapper().readValue(is, Map.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,13 +57,13 @@ public record JsonSchemaObject(@JsonProperty("title") String title,
         }
     }
 
-    private static final JsonSchemaObject EMPTY = new JsonSchemaObject("", "", CedarFieldValueType.LITERAL, null, false);
+    private static final JsonSchemaInfo EMPTY = new JsonSchemaInfo("", "", CedarFieldValueType.LITERAL, null, false);
 
     /**
      * Gets empty title and description properties
      * @return Empty title and description
      */
-    public static JsonSchemaObject empty() {
+    public static JsonSchemaInfo empty() {
         return EMPTY;
     }
 
