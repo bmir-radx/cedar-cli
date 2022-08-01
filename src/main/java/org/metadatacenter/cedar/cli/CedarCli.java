@@ -25,6 +25,7 @@ public class CedarCli {
     public int run(String... args) throws Exception {
         var cli = new CommandLine(new CedarCommand(), factory);
         commandList.forEach(cli::addSubcommand);
+        cli.addSubcommand(new CommandLine.HelpCommand());
         return cli.execute(args);
     }
 }
