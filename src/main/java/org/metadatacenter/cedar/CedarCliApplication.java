@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 import java.nio.file.Path;
 
 @SpringBootApplication
-public class CsvPipelineApplication implements ApplicationRunner, ExitCodeGenerator {
+public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator {
 
 	private String input = "";
 
@@ -33,11 +33,11 @@ public class CsvPipelineApplication implements ApplicationRunner, ExitCodeGenera
 
 	private int exitCode;
 
-	public CsvPipelineApplication() {
+	public CedarCliApplication() {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(CsvPipelineApplication.class, args);
+		SpringApplication.run(CedarCliApplication.class, args);
 	}
 
 
