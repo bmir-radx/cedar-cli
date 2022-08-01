@@ -22,8 +22,6 @@ import java.nio.file.Path;
 @SpringBootApplication
 public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator {
 
-	private String input = "";
-
 	private String noHeader = "";
 
 	private String outputDirectory = "";
@@ -45,13 +43,6 @@ public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator
 	public void run(ApplicationArguments args) throws Exception {
 		var cli = applicationContext.getBean(CedarCli.class);
 		exitCode = cli.run(args.getSourceArgs());
-
-//		var processor = applicationContext.getAutowireCapableBeanFactory()
-//				.createBean(DataDictionaryProcessor.class);
-//		var workingDirectory = Paths.get(".").toAbsolutePath();
-//		var inputFile = workingDirectory.resolve(input);
-//		var dataDictionaryInputStream = Files.newInputStream(inputFile);
-//		processor.processDataDictionary(dataDictionaryInputStream);
 	}
 
 	@Override
@@ -62,11 +53,9 @@ public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator
 	@Bean
 	Header header() {
 		if(noHeader != null) {
-			System.out.print("Processing file without header\n");
 			return Header.WITHOUT_HEADER;
 		}
 		else {
-			System.out.print("Processing file with header\n");
 			return Header.WITH_HEADER;
 		}
 	}
