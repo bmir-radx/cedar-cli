@@ -2,7 +2,6 @@ package org.metadatacenter.cedar.redcap;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.metadatacenter.cedar.CedarValuesStrategy;
 import org.metadatacenter.cedar.csv.NumericBoundParser;
 
 import java.util.List;

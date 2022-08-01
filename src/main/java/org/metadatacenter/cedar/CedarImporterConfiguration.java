@@ -2,7 +2,6 @@ package org.metadatacenter.cedar;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import org.metadatacenter.cedar.*;
 import org.metadatacenter.cedar.csv.NumericBoundParser;
 import org.metadatacenter.cedar.io.CedarArtifactWriter;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
@@ -10,8 +9,7 @@ import org.metadatacenter.cedar.ont.ChoiceIriStrategy;
 import org.metadatacenter.cedar.ont.OntologyAcronymStrategy;
 import org.metadatacenter.cedar.ont.OntologyIriStrategy;
 import org.metadatacenter.cedar.ont.OntologyLabelStrategy;
-import org.metadatacenter.cedar.redcap.TemplateFieldGenerator;
-import org.metadatacenter.cedar.redcap.TemplateFieldWriter;
+import org.metadatacenter.cedar.redcap.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

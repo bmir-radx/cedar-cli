@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar;
+package org.metadatacenter.cedar.redcap;
 
 /**
  * Matthew Horridge
