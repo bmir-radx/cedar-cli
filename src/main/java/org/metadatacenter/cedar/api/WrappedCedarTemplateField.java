@@ -3,6 +3,7 @@ package org.metadatacenter.cedar.api;
 import com.fasterxml.jackson.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
@@ -23,11 +24,13 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                                  String jsonSchemaTitle,
                                                  String jsonSchemaDescription) {
 
+        var jsonSchemaType = templateField.ui().inputType().getFixedValueType().orElse(templateField.valueConstraints().getJsonSchemaType());
+
+
         var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
         var jsonSchemaInfo = new JsonSchemaInfo(jsonSchemaTitle,
                                                 jsonSchemaDescription,
-                                                templateField.ui().inputType().getJsonSchemaType().orElse(
-                                                        JsonSchemaInfo.CedarFieldValueType.LITERAL),
+                                                jsonSchemaType,
                                                 format,
                                                 templateField.valueConstraints().isMultipleChoice());
         return new WrappedCedarTemplateField(jsonSchemaInfo,

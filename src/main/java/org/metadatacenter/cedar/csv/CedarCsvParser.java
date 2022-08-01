@@ -247,14 +247,15 @@ public class CedarCsvParser {
                                                 fieldRow.getCardinality());
     }
 
-    private static CedarOntologyPrimitivesValueConstaints getOntologyTermsConstaints(CedarCsvRow row) {
+    private static EnumerationValueConstraints getOntologyTermsConstaints(CedarCsvRow row) {
         var lookupSpec = row.getLookupSpec();
         if(lookupSpec.isPresent()) {
             var ontologyTermSelectors = getOntologyTermsSelectors(lookupSpec.get());
-            return CedarOntologyPrimitivesValueConstaints.of(ontologyTermSelectors, row.getRequired(), row.getCardinality());
+            return EnumerationValueConstraints.of(ontologyTermSelectors, row.getRequired(), row.getCardinality());
         }
         else {
-            return CedarOntologyPrimitivesValueConstaints.empty();
+            return new EnumerationValueConstraints(Required.OPTIONAL, Cardinality.SINGLE, Collections.emptyList(),
+                                                   Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         }
     }
 

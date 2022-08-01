@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.csv.Cardinality;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,5 +38,37 @@ public record EnumerationValueConstraints(Required requiredValue,
                 ontologies,
                 literals
         );
+    }
+
+    public static EnumerationValueConstraints of(List<OntologyTermsSelector> ontologyTermSelectors,
+                                                Required required,
+                                                Cardinality cardinality) {
+        var ontologies = new ArrayList<AllOntologyTermsSelector>();
+        var branches = new ArrayList<OntologyBranchTermsSelector>();
+        var classes = new ArrayList<SpecificOntologyClassSelector>();
+        ontologyTermSelectors.forEach(ts -> {
+            ts.accept(new OntologyTermsSelectorVisitor() {
+                @Override
+                public void visit(OntologyBranchTermsSelector selector) {
+                    branches.add(selector);
+                }
+
+                @Override
+                public void visit(SpecificOntologyClassSelector selector) {
+                    classes.add(selector);
+                }
+
+                @Override
+                public void visit(AllOntologyTermsSelector selector) {
+                    ontologies.add(selector);
+                }
+            });
+        });
+        return new EnumerationValueConstraints(required, cardinality, classes, branches, ontologies, Collections.emptyList());
+    }
+
+    @Override
+    public JsonSchemaInfo.CedarFieldValueType getJsonSchemaType() {
+        return JsonSchemaInfo.CedarFieldValueType.IRI;
     }
 }

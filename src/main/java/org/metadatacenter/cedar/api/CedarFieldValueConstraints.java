@@ -35,17 +35,9 @@ public interface CedarFieldValueConstraints {
     }
 
     static CedarFieldValueConstraints empty() {
-        return new CedarFieldValueConstraints() {
-            @Override
-            public Required requiredValue() {
-                return Required.OPTIONAL;
-            }
-
-            @Override
-            public Cardinality cardinality() {
-                return Cardinality.SINGLE;
-            }
-        };
+        return new CedarStringValueConstraints(null, null, Required.OPTIONAL, Cardinality.SINGLE);
     }
 
+    @JsonIgnore
+    JsonSchemaInfo.CedarFieldValueType getJsonSchemaType();
 }

@@ -37,4 +37,9 @@ public record CedarStringValueConstraints(Integer minLength,
     public Optional<Integer> getMaxLength() {
         return Optional.ofNullable(maxLength);
     }
+
+    @Override
+    public JsonSchemaInfo.CedarFieldValueType getJsonSchemaType() {
+        return JsonSchemaInfo.CedarFieldValueType.LITERAL;
+    }
 }

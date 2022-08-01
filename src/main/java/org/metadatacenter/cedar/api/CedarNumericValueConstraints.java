@@ -33,4 +33,9 @@ public record CedarNumericValueConstraints(CedarNumberType numberType,
                                                 requiredValue ? Required.REQUIRED : Required.OPTIONAL,
                                                 multipleChoice ? Cardinality.MULTIPLE : Cardinality.SINGLE);
     }
+
+    @Override
+    public JsonSchemaInfo.CedarFieldValueType getJsonSchemaType() {
+        return JsonSchemaInfo.CedarFieldValueType.LITERAL;
+    }
 }
