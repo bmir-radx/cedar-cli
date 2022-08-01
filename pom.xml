@@ -8,11 +8,11 @@
 		<version>2.7.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>org.metadatacenter.csvpipeline</groupId>
-	<artifactId>csv-pipeline</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>org.metadatacenter.cedar</groupId>
+	<artifactId>cedar-cli</artifactId>
+	<version>0.0.1</version>
 	<name>csv-pipeline</name>
-	<description>A pipeline for processing CSV representations of forms and turning them into vocabularies and templates</description>
+	<description>A command line interface for interacting with CEDAR</description>
 	<properties>
 		<java.version>18</java.version>
 	</properties>
