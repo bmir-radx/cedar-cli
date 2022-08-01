@@ -8,6 +8,7 @@ import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
@@ -23,36 +24,39 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 2022-07-29
  */
 @Component
-@Command(name = "generate-fields")
-public class GenerateFieldsCommand implements CedarCliCommand {
+@Command(name = "csv2artifacts", description = "Generate CEDAR artifacts from a Comma Separated Values (CSV) file.  Artifacts are generated as CEDAR JSON-LD and are output as a set of JSON files.  Artifacts can also pushed directly into CEDAR.")
+public class Csv2ArtifactsCommand implements CedarCliCommand {
 
-    @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format")
-    public Path inputCsv;
+    @Option(order = 5, names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format")
+    Path inputCsv;
 
     @Option(names = "--out", required = true, description = "A path to a directory where JSON+LD CEDAR template fields will be written to")
-    public Path outputDirectory;
+    Path outputDirectory;
 
-    @Option(names = "--json-schema-description")
-    private String jsonSchemaDescription;
+    @Option(names = "--json-schema-title", description = "A string that will be inserted into the JSON-Schema 'title' property of all generated CEDAR artifacts.")
+    String jsonSchemaTitle;
 
-    @Option(names = "--artifact-status", description = "Specifies the status of the artifacts that are generated", defaultValue = "DRAFT", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    private CedarArtifactStatus artifactStatus;
+    @Option(names = "--json-schema-description", description = "A string that will be inserted into the JSON-Schema 'description' property of all generated CEDAR artifact objects.")
+    String jsonSchemaDescription;
 
-    @Option(names = "--version")
-    private String version;
+    @Option(names = "--artifact-status",
+            description = "Specifies the status of the artifacts that are generated.  Valid values are ${COMPLETION-CANDIDATES}",
+            defaultValue = "DRAFT",
+            showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    CedarArtifactStatus artifactStatus;
 
-    @Option(names = "--previous-version", defaultValue = "")
-    private String previousVersion;
+    @Option(names = "--artifact-version",
+            required = true,
+            description = "A string in the format major.minor.patch that specifies the version number for generatated artifacts")
+    String version;
 
-    @Option(names = "--push-to-cedar", defaultValue = "false")
-    private boolean pushToCedar;
 
-    @Option(names = "--cedar-api-key", required = true,
-            prompt = "Enter your CEDAR API Key", description = "The API key for CEDAR")
-    private String cedarApiKey;
+    @Option(names = "--artifact-previous-version", defaultValue = "", hidden = true)
+    public String previousVersion;
 
-    @Option(names = "--cedar-folder-id", description = "The UUID CEDAR Folder ID in which to create the CEDAR fields")
-    private String cedarFolderId;
+    @ArgGroup(exclusive = false,
+            heading = "CEDAR Connection Details")
+    public PushToCedarOptions pushToCedar;
 
     private final TemplateFieldCedarImporter importer;
 
@@ -60,11 +64,9 @@ public class GenerateFieldsCommand implements CedarCliCommand {
 
     private final CliCedarArtifactWriter writer;
 
-    private String jsonSchemaTitle;
-
-    public GenerateFieldsCommand(TemplateFieldCedarImporter importer,
-                                 CedarCsvParserFactory cedarCsvParserFactory,
-                                 CliCedarArtifactWriter writer) {
+    public Csv2ArtifactsCommand(TemplateFieldCedarImporter importer,
+                                CedarCsvParserFactory cedarCsvParserFactory,
+                                CliCedarArtifactWriter writer) {
         this.importer = importer;
         this.cedarCsvParserFactory = cedarCsvParserFactory;
         this.writer = writer;
@@ -88,10 +90,12 @@ public class GenerateFieldsCommand implements CedarCliCommand {
         var fields = template.getFields();
         var counter = new AtomicInteger();
         fields.forEach(this::writeCedarField);
-        if(pushToCedar) {
+        if(pushToCedar.pushToCedar) {
             fields.forEach(f -> {
                 try {
-                    importer.postToCedar(f, CedarFolderId.valueOf(cedarFolderId), cedarApiKey, f.toCompactString(), jsonSchemaDescription);
+                    importer.postToCedar(f, pushToCedar.getCedarFolderId(),
+                                         pushToCedar.getCedarApiKey(),
+                                         f.toCompactString(), jsonSchemaDescription);
                     counter.incrementAndGet();
                     System.err.printf("Posted %d of %d fields to CEDAR\n", counter.get(), fields.size());
                 } catch (IOException | InterruptedException e) {

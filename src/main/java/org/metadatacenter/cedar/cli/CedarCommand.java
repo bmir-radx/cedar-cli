@@ -7,7 +7,7 @@ import picocli.CommandLine.Command;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-29
  */
-@Command(name = "cedar-csv")
+@Command(name = "cedarcli")
 public class CedarCommand implements CedarCliCommand {
 
     @Override

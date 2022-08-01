@@ -25,7 +25,7 @@ public class TemplateFieldCedarImporter {
 
     public void postToCedar(CedarTemplateField templateField,
                             CedarFolderId templateFieldFolder,
-                            String cedarApiKey,
+                            CedarApiKey cedarApiKey,
                             String jsonSchemaTitle,
                             String jsonSchemaDescription) throws IOException, InterruptedException {
 
@@ -38,7 +38,7 @@ public class TemplateFieldCedarImporter {
         var folderId = "https://repo.metadatacenter.org/folders/" + folderUuid;
 
         var request = HttpRequest.newBuilder()
-                                 .header("Authorization", "apiKey " + cedarApiKey)
+                                 .header("Authorization", "apiKey " + cedarApiKey.key())
                                  .header("Content-Type", "application/json")
                                  .uri(URI.create("https://resource.metadatacenter.org/template-fields?folder_id=" + folderId))
                                  .POST(publisher)

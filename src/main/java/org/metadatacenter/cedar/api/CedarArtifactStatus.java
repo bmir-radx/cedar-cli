@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public enum CedarArtifactStatus {
 
-//    @JsonEnumDefaultValue
     @JsonProperty("bibo:draft")
     DRAFT,
 
