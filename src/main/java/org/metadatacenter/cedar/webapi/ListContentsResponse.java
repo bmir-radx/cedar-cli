@@ -1,6 +1,7 @@
 package org.metadatacenter.cedar.webapi;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.metadatacenter.cedar.webapi.model.CedarResource;
 
 import java.util.List;
 

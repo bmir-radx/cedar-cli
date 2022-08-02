@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.webapi;
+package org.metadatacenter.cedar.webapi.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
@@ -10,9 +10,9 @@ import org.metadatacenter.cedar.api.CedarId;
  * 2022-08-01
  */
 @JsonTypeName("field")
-public record CedarTemplateFieldResource(@JsonProperty("@id") CedarId id,
-                                         @JsonProperty("schema:name") String schemaName,
-                                         @JsonProperty("schema:description") String schemaDescription) implements CedarResource {
+public record TemplateFieldResource(@JsonProperty("@id") CedarId id,
+                                    @JsonProperty("schema:name") String schemaName,
+                                    @JsonProperty("schema:description") String schemaDescription) implements CedarResource {
 
     @Override
     public String getType() {

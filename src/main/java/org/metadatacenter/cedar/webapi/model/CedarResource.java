@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.webapi;
+package org.metadatacenter.cedar.webapi.model;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -11,11 +11,11 @@ import org.metadatacenter.cedar.api.CedarId;
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "resourceType")
 @JsonSubTypes({
-        @Type(CedarFolderResource.class),
-        @Type(CedarTemplateFieldResource.class),
-        @Type(CedarTemplateResource.class),
-        @Type(CedarTemplateInstanceResource.class),
-        @Type(CedarTemplateElementResource.class)
+        @Type(FolderResource.class),
+        @Type(TemplateFieldResource.class),
+        @Type(TemplateResource.class),
+        @Type(TemplateInstanceResource.class),
+        @Type(TemplateElementResource.class)
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public interface CedarResource {

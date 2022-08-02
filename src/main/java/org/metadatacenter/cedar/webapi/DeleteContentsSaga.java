@@ -2,6 +2,7 @@ package org.metadatacenter.cedar.webapi;
 
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.io.CedarApiKey;
+import org.metadatacenter.cedar.webapi.model.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -37,16 +38,16 @@ public class DeleteContentsSaga {
     }
 
     private void deleteResource(CedarResource resource, CedarApiKey apiKey) {
-        if(resource instanceof CedarFolderResource) {
+        if(resource instanceof FolderResource) {
             deleteFolder(resource.id(), apiKey);
         }
-        else if(resource instanceof CedarTemplateFieldResource) {
+        else if(resource instanceof TemplateFieldResource) {
             deleteField(resource.id(), apiKey);
         }
-        else if(resource instanceof CedarTemplateElementResource) {
+        else if(resource instanceof TemplateElementResource) {
             deleteElement(resource.id(), apiKey);
         }
-        else if(resource instanceof CedarTemplateResource) {
+        else if(resource instanceof TemplateResource) {
             deleteTemplate(resource.id(), apiKey);
         }
     }

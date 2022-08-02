@@ -1,9 +1,9 @@
 package org.metadatacenter.cedar.webapi;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.CedarId;
+import org.metadatacenter.cedar.webapi.model.FolderResource;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 public record CreateFolderResponse(@JsonProperty("@id") CedarId id,
                                    @JsonProperty("schema:name") String schemaName,
                                    @JsonProperty("schema:description") String schemaDescription,
-                                   @JsonProperty("pathInfo") List<CedarFolderResource> pathInfo) {
+                                   @JsonProperty("pathInfo") List<FolderResource> pathInfo) {
 
     /*
 
