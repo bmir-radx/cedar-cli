@@ -1,6 +1,6 @@
 package org.metadatacenter.cedar.cli;
 
-import org.metadatacenter.cedar.api.CedarFolderId;
+import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.io.CedarApiKey;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
@@ -24,14 +24,14 @@ public class PushToCedarOptions {
             prompt = "Enter your CEDAR API Key", description = "The API key for CEDAR.  This will be used for pushing artifacts to CEDAR.")
     public String cedarApiKey;
 
-    @Option(names = "--cedar-folder-id",
+    @Option(names = "--folder-id",
             required = true,
             description = "The UUID of the CEDAR Folder ID in which to create the CEDAR artifacts")
     public String cedarFolderId;
 
 
-    public CedarFolderId getCedarFolderId() {
-        return CedarFolderId.valueOf(cedarFolderId);
+    public CedarId getCedarFolderId() {
+        return CedarId.resolveFolderId(cedarFolderId);
     }
 
     public CedarApiKey getCedarApiKey() {

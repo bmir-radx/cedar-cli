@@ -1,6 +1,6 @@
 package org.metadatacenter.cedar.io;
 
-import org.metadatacenter.cedar.api.CedarFolderId;
+import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.CedarTemplateField;
 
 import java.io.ByteArrayOutputStream;
@@ -24,7 +24,7 @@ public class TemplateFieldCedarImporter {
     }
 
     public void postToCedar(CedarTemplateField templateField,
-                            CedarFolderId templateFieldFolder,
+                            CedarId templateFieldFolder,
                             CedarApiKey cedarApiKey,
                             String jsonSchemaTitle,
                             String jsonSchemaDescription) throws IOException, InterruptedException {
@@ -34,7 +34,7 @@ public class TemplateFieldCedarImporter {
                                           jsonSchemaTitle,
                                           jsonSchemaDescription, outputStream);
         var publisher = HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray());
-        var folderUuid = templateFieldFolder.uuid();
+        var folderUuid = templateFieldFolder.value();
         var folderId = "https://repo.metadatacenter.org/folders/" + folderUuid;
 
         var request = HttpRequest.newBuilder()

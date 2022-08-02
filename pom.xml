@@ -23,6 +23,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli-spring-boot-starter</artifactId>
 			<version>4.6.3</version>
@@ -58,6 +63,7 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
 
 	<build>
 		<plugins>
