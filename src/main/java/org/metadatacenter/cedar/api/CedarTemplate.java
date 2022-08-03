@@ -16,6 +16,7 @@ import java.util.List;
 public record CedarTemplate(@JsonProperty("@id") CedarId id,
                             @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
                             @JsonUnwrapped CedarVersionInfo versionInfo,
+                            @JsonUnwrapped CedarArtifactModificationInfo modificationInfo,
                             List<CedarTemplateNode> nodes) implements CedarSchemaArtifact {
 
     @Override
