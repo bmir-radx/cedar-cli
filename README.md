@@ -1,2 +1,2 @@
 # csvpipeline
-A pipeline for processing redcap CSV representations of forms and turning them into vocabularies and templates
+A Command Line Interface (CLI) for working with CEDAR
