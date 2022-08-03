@@ -3,7 +3,6 @@ package org.metadatacenter.cedar.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**

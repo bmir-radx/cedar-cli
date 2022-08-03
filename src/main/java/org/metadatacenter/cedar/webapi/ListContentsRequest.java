@@ -5,8 +5,6 @@ import org.metadatacenter.cedar.io.CedarApiKey;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 
-import java.net.URI;
-
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research

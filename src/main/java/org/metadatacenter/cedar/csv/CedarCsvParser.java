@@ -8,10 +8,6 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.google.common.base.Strings;
 import org.metadatacenter.cedar.api.*;
-import org.metadatacenter.cedar.api.TemporalGranularity;
-import org.metadatacenter.cedar.api.CedarInputType;
-import org.metadatacenter.cedar.api.CedarNumberType;
-import org.metadatacenter.cedar.api.CedarTemporalType;
 import org.metadatacenter.cedar.api.constraints.*;
 
 import java.io.IOException;

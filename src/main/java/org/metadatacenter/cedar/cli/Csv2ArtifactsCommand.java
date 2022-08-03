@@ -1,6 +1,8 @@
 package org.metadatacenter.cedar.cli;
 
-import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.api.ArtifactStatus;
+import org.metadatacenter.cedar.api.CedarArtifact;
+import org.metadatacenter.cedar.api.CedarVersionInfo;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
 import org.springframework.stereotype.Component;

@@ -1,7 +1,6 @@
 package org.metadatacenter.cedar.cli;
 
 import org.springframework.stereotype.Component;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 /**

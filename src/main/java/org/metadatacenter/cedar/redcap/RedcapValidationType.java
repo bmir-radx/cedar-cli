@@ -1,8 +1,8 @@
 package org.metadatacenter.cedar.redcap;
 
+import org.metadatacenter.cedar.api.CedarInputType;
 import org.metadatacenter.cedar.api.CedarTemporalType;
 import org.metadatacenter.cedar.api.TemporalGranularity;
-import org.metadatacenter.cedar.api.CedarInputType;
 
 import java.util.Optional;
 

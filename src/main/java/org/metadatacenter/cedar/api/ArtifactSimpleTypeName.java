@@ -1,6 +1,5 @@
 package org.metadatacenter.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 /**

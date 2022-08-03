@@ -2,12 +2,8 @@ package org.metadatacenter.cedar.webapi;
 
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.io.CedarApiKey;
-import org.metadatacenter.cedar.io.CedarApiRequest;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
 

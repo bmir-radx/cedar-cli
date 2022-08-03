@@ -3,7 +3,7 @@ package org.metadatacenter.cedar.io;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.api.CedarTemplateElement;
 
 import java.util.List;
 import java.util.Map;

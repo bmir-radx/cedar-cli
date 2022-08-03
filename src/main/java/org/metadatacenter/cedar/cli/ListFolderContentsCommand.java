@@ -6,7 +6,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static picocli.CommandLine.*;
+import static picocli.CommandLine.Command;
+import static picocli.CommandLine.Mixin;
 
 /**
  * Matthew Horridge

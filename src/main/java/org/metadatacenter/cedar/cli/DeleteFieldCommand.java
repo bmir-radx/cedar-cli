@@ -1,15 +1,10 @@
 package org.metadatacenter.cedar.cli;
 
-import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.webapi.DeleteFieldRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
-import picocli.CommandLine.Option;
-
-import static picocli.CommandLine.*;
 
 /**
  * Matthew Horridge

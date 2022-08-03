@@ -2,7 +2,10 @@ package org.metadatacenter.cedar.ont;
 
 import org.metadatacenter.cedar.redcap.DataDictionaryChoice;
 import org.metadatacenter.cedar.redcap.DataDictionaryRow;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLDataFactory;
 
 import java.util.HashSet;
 import java.util.Set;

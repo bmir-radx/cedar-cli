@@ -1,7 +1,5 @@
 package org.metadatacenter.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import javax.annotation.Nonnull;
 import java.util.List;
 

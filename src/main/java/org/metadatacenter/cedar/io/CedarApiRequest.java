@@ -1,7 +1,5 @@
 package org.metadatacenter.cedar.io;
 
-import java.net.URI;
-
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
