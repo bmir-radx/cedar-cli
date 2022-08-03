@@ -1,4 +1,7 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.api.constraints;
+
+import org.metadatacenter.cedar.api.constraints.OntologyTermsSelector;
+import org.metadatacenter.cedar.api.constraints.OntologyTermsSelectorVisitor;
 
 /**
  * Matthew Horridge

@@ -1,6 +1,8 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.api.constraints;
 
 import com.fasterxml.jackson.annotation.*;
+import org.metadatacenter.cedar.api.Required;
+import org.metadatacenter.cedar.api.TemplateFieldJsonSchemaMixin;
 import org.metadatacenter.cedar.csv.Cardinality;
 
 /**

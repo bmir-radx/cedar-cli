@@ -1,7 +1,10 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.api.constraints;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.metadatacenter.cedar.api.CedarNumberType;
+import org.metadatacenter.cedar.api.Required;
+import org.metadatacenter.cedar.api.TemplateFieldJsonSchemaMixin;
 import org.metadatacenter.cedar.csv.Cardinality;
 
 /**

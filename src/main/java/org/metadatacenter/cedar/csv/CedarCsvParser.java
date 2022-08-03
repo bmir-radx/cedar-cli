@@ -12,6 +12,7 @@ import org.metadatacenter.cedar.api.TemporalGranularity;
 import org.metadatacenter.cedar.api.CedarInputType;
 import org.metadatacenter.cedar.api.CedarNumberType;
 import org.metadatacenter.cedar.api.CedarTemporalType;
+import org.metadatacenter.cedar.api.constraints.*;
 
 import java.io.IOException;
 import java.io.InputStream;
