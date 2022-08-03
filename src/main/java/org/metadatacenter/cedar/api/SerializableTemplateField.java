@@ -2,8 +2,9 @@ package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
@@ -12,15 +13,15 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-30
  */
-@JsonTypeName("https://schema.metadatacenter.org/core/TemplateField")
-public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) JsonSchemaInfo jsonSchemaInfo,
+@JsonTypeName(SerializableTemplateField.TYPE)
+public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateFieldJsonSchemaMixin jsonSchemaMixin,
                                         @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                         @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarTemplateField templateField,
-                                        @JsonIgnore JsonSchemaFormat jsonSchemaFormat) implements WrappedCedarArtifact {
+                                        @JsonIgnore JsonSchemaFormat jsonSchemaFormat) implements SerializableTemplateNode {
 
-    private static final JsonLdInfo JSON_LD_INFO = new JsonLdInfo();
+    static final String TYPE = "https://schema.metadatacenter.org/core/TemplateField";
 
-    public static WrappedCedarTemplateField wrap(CedarTemplateField templateField,
+    public static SerializableTemplateField wrap(CedarTemplateField templateField,
                                                  String jsonSchemaTitle,
                                                  String jsonSchemaDescription) {
 
@@ -28,21 +29,25 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
 
 
         var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
-        var jsonSchemaInfo = new JsonSchemaInfo(jsonSchemaTitle,
-                                                jsonSchemaDescription,
-                                                jsonSchemaType,
-                                                format,
-                                                templateField.valueConstraints().isMultipleChoice());
-        return new WrappedCedarTemplateField(jsonSchemaInfo,
+        var jsonSchemaInfo = new TemplateFieldJsonSchemaMixin(jsonSchemaTitle,
+                                                              jsonSchemaDescription,
+                                                              jsonSchemaType,
+                                                              format,
+                                                              templateField.valueConstraints().isMultipleChoice());
+        return new SerializableTemplateField(jsonSchemaInfo,
                                              ModelVersion.V1_6_0,
                                              templateField,
                                              format);
     }
 
-    @JsonUnwrapped
-    @JsonProperty(access = READ_ONLY)
-    public JsonLdInfo getJsonLdInfo() {
-        return JSON_LD_INFO;
+    @JsonProperty("@type")
+    public String getType() {
+        return TYPE;
+    }
+
+    @JsonProperty("@context")
+    public Map<String, Object> getContext() {
+        return JsonLdInfo.get().getFieldContextBoilerPlate();
     }
 
     @JsonCreator
@@ -57,7 +62,11 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
                                               @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                                              @JsonProperty("_ui") CedarFieldUi ui) {
+                                              @JsonProperty("_ui") CedarFieldUi ui,@JsonProperty("pav:createdOn") Instant pavCreatedOn,
+                                              @JsonProperty("pav:createdBy") String pavCreatedBy,
+                                              @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
+                                              @JsonProperty("oslc:modifiedBy") String oslcModifiedBy
+                                              ) {
         return new CedarTemplateField(identifier,
                                       new CedarArtifactInfo(
                                               schemaIdentifier,
@@ -73,6 +82,15 @@ public record WrappedCedarTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               version
                                       ),
                                       valueConstraints,
-                                      ui);
+                                      ui,
+                                      new CedarArtifactModificationInfo(pavCreatedOn,
+                                                                        pavCreatedBy,
+                                                                        pavLastUpdatedOn,
+                                                                        oslcModifiedBy));
+    }
+
+    @Override
+    public String getSchemaName() {
+        return templateField.cedarArtifactInfo().schemaName();
     }
 }

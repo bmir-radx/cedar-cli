@@ -2,6 +2,8 @@ package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.*;
 
+import javax.annotation.Nonnull;
+import java.time.Instant;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -12,12 +14,12 @@ import java.util.function.Consumer;
  */
 @JsonIgnoreProperties({"$schema", "@context", "type", "properties", "required"})
 @JsonPropertyOrder({"@id", "jsonLdInfo", "jsonSchemaObject", "schema:schemaVersion", "identifier", "cedarArtifactInfo", "_valueConstraints"})
-public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
+public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                  @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarArtifactInfo cedarArtifactInfo,
                                  @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarVersionInfo versionInfo,
-                                 @JsonProperty("_valueConstraints")
-                                 CedarFieldValueConstraints valueConstraints,
-                                 @JsonProperty("_ui") CedarFieldUi ui) implements CedarTemplateNode, CedarSchemaArtifact {
+                                 @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
+                                 @JsonProperty("_ui") CedarFieldUi ui,
+                                 @JsonUnwrapped CedarArtifactModificationInfo modificationInfo) implements CedarTemplateNode, CedarSchemaArtifact {
 
     @JsonCreator
     public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,
@@ -30,8 +32,12 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
                                               @JsonProperty("pav:version") String version,
                                               @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
-                              @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                              @JsonProperty("_ui") CedarFieldUi ui) {
+                                              @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
+                                              @JsonProperty("_ui") CedarFieldUi ui,
+                                              @JsonProperty("pav:createdOn") Instant pavCreatedOn,
+                                              @JsonProperty("pav:createdBy") String pavCreatedBy,
+                                              @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
+                                              @JsonProperty("oslc:modifiedBy") String oslcModifiedBy) {
         return new CedarTemplateField(identifier,
                                       new CedarArtifactInfo(
                                               schemaIdentifier,
@@ -47,12 +53,26 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
                                               version
                                       ),
                                        valueConstraints,
-                                      ui);
+                                      ui,
+                                      new CedarArtifactModificationInfo(pavCreatedOn,
+                                                                        pavCreatedBy,
+                                                                        pavLastUpdatedOn,
+                                                                        oslcModifiedBy));
     }
 
     @Override
     public <R, E extends Exception> R accept(CedarSchemaArtifactVisitor<R, E> visitor) throws E {
         return visitor.visit(this);
+    }
+
+    @Override
+    public String getSchemaName() {
+        return cedarArtifactInfo.schemaName();
+    }
+
+    @Override
+    public String getSchemaDescription() {
+        return cedarArtifactInfo.schemaDescription();
     }
 
     @Override
@@ -70,9 +90,13 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId identifier,
         return "Field(" + cedarArtifactInfo.schemaName() + ")";
     }
 
+    @Override
+    public @Nonnull ArtifactSimpleTypeName getSimpleTypeName() {
+        return ArtifactSimpleTypeName.FIELD;
+    }
 
 
-//    @JsonProperty("_ui")
+    //    @JsonProperty("_ui")
 //    public void setUi(Map<String, Object> m) {
 //
 //    }

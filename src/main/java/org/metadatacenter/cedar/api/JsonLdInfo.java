@@ -17,22 +17,28 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  */
 public record JsonLdInfo() {
 
-    private static final Map<String, Object> contextBoilerPlate = parseContextBoilerPlate();
+    private static final Map<String, Object> fieldContextBoilerPlate = parseContextBoilerPlate("/json-ld-field-context.json");
+
+    private static final Map<String, Object> elementContextBoilerPlate = parseContextBoilerPlate("/json-ld-element-context.json");
 
     @JsonCreator
     public static JsonLdInfo get() {
         return new JsonLdInfo();
     }
 
-    @JsonProperty(value = "@context", access = READ_ONLY)
-    public Map<String, Object> getContextBoilerPlate() {
-        return contextBoilerPlate;
+    public Map<String, Object> getFieldContextBoilerPlate() {
+        return fieldContextBoilerPlate;
     }
 
+    public Map<String, Object> getElementContextBoilerPlate() {
+        return elementContextBoilerPlate;
+    }
+
+
     @SuppressWarnings("unchecked")
-    private static Map<String, Object> parseContextBoilerPlate() {
+    private static Map<String, Object> parseContextBoilerPlate(String path) {
         try {
-            var contextInputStream = JsonLdInfo.class.getResourceAsStream("/json-ld-context.json");
+            var contextInputStream = JsonLdInfo.class.getResourceAsStream(path);
             var mapper = JsonMapper.builder()
                     .build();
             return (Map<String, Object>) mapper.reader().readValue(contextInputStream, Map.class);

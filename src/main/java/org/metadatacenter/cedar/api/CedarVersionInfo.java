@@ -25,7 +25,11 @@ public record CedarVersionInfo(@JsonProperty("pav:version") String pavVersion,
         this.pavPreviousVersion = Objects.requireNonNull(pavPreviousVersion);
     }
 
+    /**
+     * Gets the version info for an initial draft.  This has a version number of 0.0.1
+     * a status of draft and no previous version specified.
+     */
     public static CedarVersionInfo initialDraft() {
-        return new CedarVersionInfo("1.0", CedarArtifactStatus.DRAFT, "");
+        return new CedarVersionInfo("0.0.1", CedarArtifactStatus.DRAFT, "");
     }
 }

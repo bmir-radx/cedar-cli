@@ -35,7 +35,7 @@ public record CedarNumericValueConstraints(CedarNumberType numberType,
     }
 
     @Override
-    public JsonSchemaInfo.CedarFieldValueType getJsonSchemaType() {
-        return JsonSchemaInfo.CedarFieldValueType.LITERAL;
+    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL;
     }
 }

@@ -1,6 +1,9 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+
+import javax.annotation.Nonnull;
 
 /**
  * Matthew Horridge
@@ -8,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
  * 2022-07-31
  */
 @JsonTypeName("https://schema.metadatacenter.org/core/TemplateField")
-public record CedarStaticTemplateField(CedarArtifactInfo cedarArtifactInfo,
+public record CedarStaticTemplateField(@JsonProperty("@id") CedarId id,
+                                       CedarArtifactInfo cedarArtifactInfo,
                                        CedarVersionInfo versionInfo,
                                        CedarStaticInputType staticInputType) implements CedarSchemaArtifact {
 
@@ -16,6 +20,11 @@ public record CedarStaticTemplateField(CedarArtifactInfo cedarArtifactInfo,
     @Override
     public String toCompactString() {
         return "StaticTemplateField(" + cedarArtifactInfo.schemaName() + ")";
+    }
+
+    @Override
+    public @Nonnull ArtifactSimpleTypeName getSimpleTypeName() {
+        return ArtifactSimpleTypeName.TEMPLATE;
     }
 
     @Override

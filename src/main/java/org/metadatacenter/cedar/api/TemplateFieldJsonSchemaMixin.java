@@ -15,25 +15,24 @@ import java.util.Map;
  * 2022-07-27
  */
 @JsonPropertyOrder({"$schema", "type", "title", "description", "properties"})
-public record JsonSchemaInfo(@JsonProperty("title") String title,
-                             @JsonProperty("description") String description,
-                             @JsonIgnore CedarFieldValueType cedarFieldValueType,
-                             @JsonIgnore JsonSchemaFormat format,
-                             @JsonIgnore boolean multiValued) {
+public record TemplateFieldJsonSchemaMixin(@JsonProperty("title") String title,
+                                           @JsonProperty("description") String description,
+                                           @JsonIgnore CedarFieldValueType cedarFieldValueType,
+                                           @JsonIgnore JsonSchemaFormat format,
+                                           @JsonIgnore boolean multiValued) implements JsonSchema {
 
+    private static final Map<String, Object> propertiesForLiterals;
 
-    private static final Map<String, Object> propertiesForValue;
-
-    private static final Map<String, Object> propertiesForId;
+    private static final Map<String, Object> propertiesForIris;
 
     static {
-        propertiesForValue = readMap("/json-schema-properties-for-value.json");
-        propertiesForId = readMap("/json-schema-properties-for-id.json");
+        propertiesForLiterals = readMap("/template-field-literals-json-schema-properties.json");
+        propertiesForIris = readMap("/template-field-iris-json-schema-properties.json");
     }
 
     private static Map<String, Object> readMap(String resource) {
         try {
-            var is = JsonSchemaInfo.class.getResourceAsStream(resource);
+            var is = TemplateFieldJsonSchemaMixin.class.getResourceAsStream(resource);
             return (Map<String, Object>) new ObjectMapper().readValue(is, Map.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -57,42 +56,20 @@ public record JsonSchemaInfo(@JsonProperty("title") String title,
         }
     }
 
-    private static final JsonSchemaInfo EMPTY = new JsonSchemaInfo("", "", CedarFieldValueType.LITERAL, null, false);
+    private static final TemplateFieldJsonSchemaMixin EMPTY = new TemplateFieldJsonSchemaMixin("", "", CedarFieldValueType.LITERAL, null, false);
 
-    /**
-     * Gets empty title and description properties
-     * @return Empty title and description
-     */
-    public static JsonSchemaInfo empty() {
-        return EMPTY;
-    }
-
-    @JsonProperty("$schema")
-    public String schema() {
-        return "http://json-schema.org/draft-04/schema#";
-    }
-
-    @JsonProperty("type")
-    public String type() {
-        return "object";
-    }
-
-    @JsonProperty("additionalProperties")
-    public boolean additionalProperties() {
-        return false;
-    }
-
+    @Override
     @JsonProperty("properties")
     public Map<String, Object> properties() {
         if(cedarFieldValueType.equals(CedarFieldValueType.LITERAL)) {
-            return propertiesForValue;
+            return propertiesForLiterals;
         }
         else {
-            return propertiesForId;
+            return propertiesForIris;
         }
     }
 
-
+    @Override
     @JsonProperty("required")
     public List<String> required() {
         return List.of(cedarFieldValueType.getJsonProperty());

@@ -39,7 +39,7 @@ public record CedarStringValueConstraints(Integer minLength,
     }
 
     @Override
-    public JsonSchemaInfo.CedarFieldValueType getJsonSchemaType() {
-        return JsonSchemaInfo.CedarFieldValueType.LITERAL;
+    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL;
     }
 }

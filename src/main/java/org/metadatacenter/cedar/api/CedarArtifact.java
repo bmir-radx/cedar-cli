@@ -1,6 +1,11 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Matthew Horridge
@@ -9,11 +14,23 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 public interface CedarArtifact {
 
+    @JsonProperty("@id")
+    @Nullable
+    CedarId id();
+
     @JsonUnwrapped
+    @Nonnull
     CedarArtifactInfo cedarArtifactInfo();
 
     /**
      * Renders this CEDAR Artifact object in a compact form.
      */
     String toCompactString();
+
+    /**
+     * Gets the simple type name
+     */
+    @JsonIgnore
+    @Nonnull
+    ArtifactSimpleTypeName getSimpleTypeName();
 }

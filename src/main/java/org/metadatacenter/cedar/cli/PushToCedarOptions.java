@@ -21,7 +21,8 @@ public class PushToCedarOptions {
 
     @Option(names = "--cedar-api-key",
             required = true,
-            prompt = "Enter your CEDAR API Key", description = "The API key for CEDAR.  This will be used for pushing artifacts to CEDAR.")
+            prompt = "Enter your CEDAR API Key", description = "The API key for CEDAR.  This will be used for pushing artifacts to CEDAR.",
+    defaultValue = "${CEDAR_API_KEY}")
     public String cedarApiKey;
 
     @Option(names = "--folder-id",

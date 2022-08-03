@@ -31,16 +31,12 @@ public class CedarCsvParser {
 
     private final String previousVersion;
 
-    private final ModelVersion modelVersion;
-
     public CedarCsvParser(CedarArtifactStatus defaultArtifactStatus,
                           String version,
-                          String previousVersion,
-                          ModelVersion modelVersion) {
+                          String previousVersion) {
         this.defaultArtifactStatus = defaultArtifactStatus;
         this.version = version;
         this.previousVersion = previousVersion;
-        this.modelVersion = modelVersion;
     }
 
     /**
@@ -122,7 +118,8 @@ public class CedarCsvParser {
     private CedarTemplate translateToTemplate(Node rootNode) {
         var childNodes = rootNode.childNodes.stream().map(this::translateToCedarNode)
                 .toList();
-        return new CedarTemplate(new CedarArtifactInfo("Generated Template",
+        return new CedarTemplate(null,
+                                 new CedarArtifactInfo("Generated Template",
                                                        "Template generated from CEDAR CSV",
                                                        null,
                                                        "Generated template",
@@ -136,12 +133,7 @@ public class CedarCsvParser {
                 map(this::translateToCedarNode)
                 .toList();
         if(node.isElement()) {
-            return new CedarTemplateElement(new CedarArtifactInfo(node.row.getStrippedElementName().toLowerCase().replace(" ", "_"),
-                                                                  node.row.getStrippedElementName(),
-                                                                  node.row.description(),
-                                                                  null, node.row.getStrippedElementName(), List.of()),
-                                            CedarVersionInfo.initialDraft(),
-                                            childNodes);
+            return translateToElement(node, childNodes);
         }
         else if(node.isField()) {
             // NO child nodes
@@ -160,11 +152,24 @@ public class CedarCsvParser {
                                           new BasicFieldUi(
                                                   CedarInputType.SECTION_BREAK,
                                                   false
-                                          ));
+                                          ),
+                                          CedarArtifactModificationInfo.empty());
         }
         else {
             throw new RuntimeException();
         }
+    }
+
+    private CedarTemplateElement translateToElement(Node node, List<CedarTemplateNode> childNodes) {
+        return new CedarTemplateElement(null,
+                                        new CedarArtifactInfo(node.row.getStrippedElementName().toLowerCase().replace(" ", "_"),
+                                                              node.row.getStrippedElementName(),
+                                                              node.row.description(),
+                                                              null,
+                                                              node.row.getStrippedElementName(),
+                                                              List.of()),
+                                        CedarVersionInfo.initialDraft(),
+                                        CedarArtifactModificationInfo.empty(), childNodes);
     }
 
     private static CedarFieldUi getFieldUi(CedarCsvRow row) {
@@ -194,7 +199,8 @@ public class CedarCsvParser {
                                                             Collections.emptyList()),
                                       new CedarVersionInfo(version, defaultArtifactStatus, previousVersion),
                                       getValueConstraints(fieldRow),
-                                      getFieldUi(fieldRow)
+                                      getFieldUi(fieldRow),
+                                      CedarArtifactModificationInfo.empty()
         );
     }
 

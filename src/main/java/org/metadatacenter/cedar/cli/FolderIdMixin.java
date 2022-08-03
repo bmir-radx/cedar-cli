@@ -12,7 +12,7 @@ public class FolderIdMixin {
 
     @CommandLine.Option(names = "--folder-id",
             required = true,
-            description = "The UUID of the CEDAR Folder ID in which to create the CEDAR artifacts")
+            description = "The UUID of the CEDAR Folder ID")
     public String cedarFolderId;
 
     public CedarId getFolderId() {

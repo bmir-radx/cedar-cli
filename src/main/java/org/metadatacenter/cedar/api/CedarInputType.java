@@ -21,27 +21,27 @@ public enum CedarInputType {
 
     TEXTAREA("textarea", null, null, false),
 
-    NUMERIC("numeric", JsonSchemaInfo.CedarFieldValueType.LITERAL, null, false),
+    NUMERIC("numeric", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
 
     SECTION_BREAK("section-break", null, null, true),
 
-    PHONE_NUMBER("phone-number", JsonSchemaInfo.CedarFieldValueType.LITERAL, null, false),
+    PHONE_NUMBER("phone-number", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
 
-    EMAIL("email", JsonSchemaInfo.CedarFieldValueType.LITERAL, JsonSchemaFormat.EMAIL, false),
+    EMAIL("email", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, JsonSchemaFormat.EMAIL, false),
 
-    TEMPORAL("temporal", JsonSchemaInfo.CedarFieldValueType.LITERAL, JsonSchemaFormat.DATE_TIME, false),
+    TEMPORAL("temporal", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, JsonSchemaFormat.DATE_TIME, false),
 
-    LINK("link", JsonSchemaInfo.CedarFieldValueType.IRI, JsonSchemaFormat.URI, false);
+    LINK("link", TemplateFieldJsonSchemaMixin.CedarFieldValueType.IRI, JsonSchemaFormat.URI, false);
 
     private final String name;
 
-    private final JsonSchemaInfo.CedarFieldValueType fixedValueType;
+    private final TemplateFieldJsonSchemaMixin.CedarFieldValueType fixedValueType;
 
     private final JsonSchemaFormat jsonSchemaFormat;
 
     private final boolean isStatic;
 
-    CedarInputType(String name, JsonSchemaInfo.CedarFieldValueType fixedValueType, JsonSchemaFormat jsonSchemaFormat,
+    CedarInputType(String name, TemplateFieldJsonSchemaMixin.CedarFieldValueType fixedValueType, JsonSchemaFormat jsonSchemaFormat,
                    boolean isStatic) {
         this.name = name;
         this.fixedValueType = fixedValueType;
@@ -67,7 +67,7 @@ public enum CedarInputType {
      * Gets the fixed JSON Schema value type for the input type, if it has one.  If the input type does
      * not have a fixed value type then the value constraints must be consulted for the input type.
      */
-    public Optional<JsonSchemaInfo.CedarFieldValueType> getFixedValueType() {
+    public Optional<TemplateFieldJsonSchemaMixin.CedarFieldValueType> getFixedValueType() {
         return Optional.ofNullable(fixedValueType);
     }
 }

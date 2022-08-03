@@ -68,7 +68,7 @@ public record EnumerationValueConstraints(Required requiredValue,
     }
 
     @Override
-    public JsonSchemaInfo.CedarFieldValueType getJsonSchemaType() {
-        return JsonSchemaInfo.CedarFieldValueType.IRI;
+    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.IRI;
     }
 }

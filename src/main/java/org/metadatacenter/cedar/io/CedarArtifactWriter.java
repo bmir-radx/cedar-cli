@@ -1,9 +1,7 @@
 package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import org.metadatacenter.cedar.api.CedarArtifact;
-import org.metadatacenter.cedar.api.CedarTemplateField;
-import org.metadatacenter.cedar.api.WrappedCedarTemplateField;
+import org.metadatacenter.cedar.api.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,16 +24,51 @@ public class CedarArtifactWriter {
                                    String jsonSchemaDescription,
                                    OutputStream outputStream) throws IOException {
         if(cedarArtifact instanceof CedarTemplateField) {
-            var wrappedField = WrappedCedarTemplateField.wrap((CedarTemplateField) cedarArtifact,
+            var wrappedField = SerializableTemplateField.wrap((CedarTemplateField) cedarArtifact,
                                                               jsonSchemaTitle,
                                                               jsonSchemaDescription);
             jsonMapper.writerWithDefaultPrettyPrinter()
                       .writeValue(outputStream, wrappedField);
         }
+        else if(cedarArtifact instanceof CedarTemplateElement) {
+            var wrappedElement = wrapNode((CedarTemplateElement) cedarArtifact,
+                                          jsonSchemaTitle, jsonSchemaDescription);
+            jsonMapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(outputStream, wrappedElement);
+        }
         else {
             jsonMapper.writerWithDefaultPrettyPrinter()
                       .writeValue(outputStream, cedarArtifact);
         }
-
     }
+
+    private SerializableTemplateNode wrapNode(CedarTemplateNode node,
+                                              String jsonSchemaTitle,
+                                              String jsonSchemaDescription) {
+        if(node instanceof CedarTemplateField) {
+            return SerializableTemplateField.wrap((CedarTemplateField) node,
+                                                  jsonSchemaTitle,
+                                                  jsonSchemaDescription);
+        }
+        else if(node instanceof CedarTemplateElement) {
+            var wrappedFields = ((CedarTemplateElement) node).nodes()
+                    .stream()
+                    .map(n -> wrapNode(n, jsonSchemaTitle, jsonSchemaDescription))
+                    .toList();
+                    return new SerializableTemplateElement(
+                            new TemplateElementJsonSchemaMixin(jsonSchemaTitle,
+                                                               jsonSchemaDescription,
+                                                               false,
+                                                               wrappedFields
+                            ),
+                            ModelVersion.V1_6_0,
+                            (CedarTemplateElement) node,
+                            CedarElementUiMixin.fromTemplateElement((CedarTemplateElement) node)
+            );
+        }
+        else {
+            throw new RuntimeException();
+        }
+    }
+
 }

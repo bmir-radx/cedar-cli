@@ -14,11 +14,9 @@ public class CedarCsvParserFactory {
 
     public CedarCsvParser createParser(CedarArtifactStatus artifactStatus,
                                        String version,
-                                       String previousVersion,
-                                       ModelVersion modelVersion) {
+                                       String previousVersion) {
         return new CedarCsvParser(artifactStatus,
                                   version,
-                                  previousVersion,
-                                  modelVersion);
+                                  previousVersion);
     }
 }

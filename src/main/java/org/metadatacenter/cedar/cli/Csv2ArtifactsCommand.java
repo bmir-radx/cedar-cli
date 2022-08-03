@@ -1,8 +1,6 @@
 package org.metadatacenter.cedar.cli;
 
-import org.metadatacenter.cedar.api.CedarArtifactStatus;
-import org.metadatacenter.cedar.api.CedarTemplateField;
-import org.metadatacenter.cedar.api.ModelVersion;
+import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
 import org.springframework.stereotype.Component;
@@ -15,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -27,11 +26,15 @@ import java.util.concurrent.atomic.AtomicInteger;
         description = "Generate CEDAR artifacts from a Comma Separated Values (CSV) file.  Artifacts are generated as CEDAR JSON-LD and are output as a set of JSON files.  Artifacts can also pushed directly into CEDAR.")
 public class Csv2ArtifactsCommand implements CedarCliCommand {
 
-    @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format")
+    @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format.")
     Path inputCsvFile;
 
-    @Option(names = "--out", required = true, description = "A path to a directory where JSON+LD CEDAR template fields will be written to")
+    @Option(names = "--out", required = true, description = "A path to a directory where JSON-LD CEDAR representations of CEDAR artifacts will be written to.")
     Path outputDirectory;
+
+    @Option(names = "--overwrite", defaultValue = "false",
+            description = "Force generated artifacts to be locally overwritten if the local output directory is not empty")
+    boolean overwrite;
 
     @Option(names = "--json-schema-title",
             description = "A string that will be inserted into the JSON-Schema 'title' property of all generated CEDAR artifacts.")
@@ -51,6 +54,15 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             description = "A string in the format major.minor.patch that specifies the version number for generatated artifacts")
     String version;
 
+    @Option(names = "--generate-fields", defaultValue = "true",
+            description = "Specifies that CEDAR template fields should be individually generated.")
+    boolean generateFields;
+
+    @Option(names = "--generate-elements", defaultValue = "true",
+            description = "Specifies that individual CEDAR template elements should be individually generated.")
+    boolean generateElements;
+
+
 
     @Option(names = "--artifact-previous-version", defaultValue = "", hidden = true)
     public String previousVersion;
@@ -64,6 +76,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     private final CedarCsvParserFactory cedarCsvParserFactory;
 
     private final CliCedarArtifactWriter writer;
+
 
     public Csv2ArtifactsCommand(TemplateFieldCedarImporter importer,
                                 CedarCsvParserFactory cedarCsvParserFactory,
@@ -86,35 +99,60 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             System.exit(1);
         }
         if(version == null) {
-            version = "1.0.0";
+            version = CedarVersionInfo.initialDraft().pavVersion();
         }
         if(!Files.exists(outputDirectory)) {
             Files.createDirectories(outputDirectory);
         }
+        else {
+            var nonEmpty = Files.list(outputDirectory).findFirst().isPresent();
+            if(nonEmpty && !overwrite) {
+                System.err.println("Output directory is not empty.  To overwrite existing files use the --overwrite option.");
+                return 1;
+            }
+
+        }
         var inputStream = Files.newInputStream(inputCsvFile);
         var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
-                                                                version, previousVersion, ModelVersion.V1_6_0);
+                                                                version, previousVersion);
         var template = cedarCsvParser.parse(inputStream);
-        var fields = template.getFields();
+
+        if (generateElements) {
+            var elements = template.getElements();
+            writeArtifacts(elements);
+        }
+
+
+        if (generateFields) {
+            var fields = template.getFields();
+            writeArtifacts(fields);
+        }
+        return 0;
+    }
+
+    private void writeArtifacts(List<? extends CedarArtifact> artifacts) {
+        artifacts.forEach(this::writeCedarArtifact);
         var counter = new AtomicInteger();
-        fields.forEach(this::writeCedarField);
-        if(pushToCedar != null && pushToCedar.pushToCedar) {
-            fields.forEach(f -> {
+        if(shouldPushToCedar()) {
+            artifacts.forEach(artifact -> {
                 try {
-                    importer.postToCedar(f, pushToCedar.getCedarFolderId(),
+                    importer.postToCedar(artifact, pushToCedar.getCedarFolderId(),
                                          pushToCedar.getCedarApiKey(),
-                                         f.toCompactString(), jsonSchemaDescription);
+                                         artifact.toCompactString(), jsonSchemaDescription);
                     counter.incrementAndGet();
-                    System.err.printf("Posted %d of %d fields to CEDAR\n", counter.get(), fields.size());
+                    System.err.printf("Posted %d %s of %d to CEDAR\n", counter.get(), artifact.getSimpleTypeName().getName(), artifacts.size());
                 } catch (IOException | InterruptedException e) {
                     System.err.println(e.getMessage());
                 }
             });
         }
-        return 0;
     }
 
-    private void writeCedarField(CedarTemplateField f) {
+    private boolean shouldPushToCedar() {
+        return pushToCedar != null && pushToCedar.pushToCedar;
+    }
+
+    private void writeCedarArtifact(CedarArtifact f) {
         try {
             var jsonSchemaTitle = f.toCompactString();
             writer.writeCedarArtifact(f, outputDirectory, jsonSchemaTitle, jsonSchemaDescription);

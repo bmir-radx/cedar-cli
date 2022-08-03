@@ -39,5 +39,5 @@ public interface CedarFieldValueConstraints {
     }
 
     @JsonIgnore
-    JsonSchemaInfo.CedarFieldValueType getJsonSchemaType();
+    TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType();
 }

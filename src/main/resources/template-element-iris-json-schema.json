@@ -1,0 +1,23 @@
+{
+  "@type": {
+    "oneOf": [
+      {
+        "type": "string",
+        "format": "uri"
+      },
+      {
+        "type": "array",
+        "minItems": 1,
+        "items": {
+          "type": "string",
+          "format": "uri"
+        },
+        "uniqueItems": true
+      }
+    ]
+  },
+  "@id": {
+    "type": "string",
+    "format": "uri"
+  }
+}
