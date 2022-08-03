@@ -12,11 +12,11 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 public interface CedarSchemaArtifact extends CedarArtifact {
 
     /**
-     * Holds pavVersion information for this artifact.  At the time of writing instances in CEDAR are not versioned.
+     * Holds version information for this artifact.  At the time of writing only instances in CEDAR are not versioned.
      * @return An object that holds the pavVersion information for this artifact.
      */
     @JsonUnwrapped
-    CedarVersionInfo versionInfo();
+    VersionInfo versionInfo();
 
 
     <R, E extends Exception> R accept(CedarSchemaArtifactVisitor<R, E> visitor) throws E;

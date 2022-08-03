@@ -2,7 +2,7 @@ package org.metadatacenter.cedar.cli;
 
 import org.metadatacenter.cedar.api.ArtifactStatus;
 import org.metadatacenter.cedar.api.CedarArtifact;
-import org.metadatacenter.cedar.api.CedarVersionInfo;
+import org.metadatacenter.cedar.api.VersionInfo;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
 import org.springframework.stereotype.Component;
@@ -101,7 +101,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             System.exit(1);
         }
         if(version == null) {
-            version = CedarVersionInfo.initialDraft().pavVersion();
+            version = VersionInfo.initialDraft().pavVersion();
         }
         if(!Files.exists(outputDirectory)) {
             Files.createDirectories(outputDirectory);

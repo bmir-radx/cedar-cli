@@ -19,10 +19,10 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @JsonPropertyOrder({"@id", "jsonLdInfo", "jsonSchemaObject", "schema:schemaVersion", "identifier", "cedarArtifactInfo", "_valueConstraints"})
 public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                  @JsonUnwrapped @JsonProperty(access = READ_ONLY) ArtifactInfo artifactInfo,
-                                 @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarVersionInfo versionInfo,
+                                 @JsonUnwrapped @JsonProperty(access = READ_ONLY) VersionInfo versionInfo,
+                                 @JsonUnwrapped ArtifactModificationInfo modificationInfo,
                                  @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
-                                 @JsonProperty("_ui") FieldUi ui,
-                                 @JsonUnwrapped ArtifactModificationInfo modificationInfo) implements CedarTemplateNode, CedarSchemaArtifact {
+                                 @JsonProperty("_ui") FieldUi ui) implements CedarTemplateNode, CedarSchemaArtifact {
 
     @JsonCreator
     public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,
@@ -50,17 +50,17 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                               skosPrefLabel,
                                               skosAltLabel
                                       ),
-                                      new CedarVersionInfo(
+                                      new VersionInfo(
                                               previousVersion,
                                               biboStatus,
                                               version
                                       ),
-                                       valueConstraints,
-                                      ui,
                                       new ArtifactModificationInfo(pavCreatedOn,
                                                                    pavCreatedBy,
                                                                    pavLastUpdatedOn,
-                                                                   oslcModifiedBy));
+                                                                   oslcModifiedBy),
+                                      valueConstraints,
+                                      ui);
     }
 
     @Override

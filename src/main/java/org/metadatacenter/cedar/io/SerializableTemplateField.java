@@ -78,17 +78,17 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               skosPrefLabel,
                                               skosAltLabel
                                       ),
-                                      new CedarVersionInfo(
+                                      new VersionInfo(
                                               previousVersion,
                                               biboStatus,
                                               version
                                       ),
-                                      valueConstraints,
-                                      ui,
                                       new ArtifactModificationInfo(pavCreatedOn,
                                                                    pavCreatedBy,
                                                                    pavLastUpdatedOn,
-                                                                   oslcModifiedBy));
+                                                                   oslcModifiedBy),
+                                      valueConstraints,
+                                      ui);
     }
 
     @Override

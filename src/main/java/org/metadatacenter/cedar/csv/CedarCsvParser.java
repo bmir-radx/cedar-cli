@@ -121,7 +121,7 @@ public class CedarCsvParser {
                                                   "",
                                                   null,
                                                   null, null),
-                                 CedarVersionInfo.initialDraft(),
+                                 VersionInfo.initialDraft(),
                                  ArtifactModificationInfo.empty(),
                                  childNodes);
     }
@@ -145,13 +145,13 @@ public class CedarCsvParser {
                                                            "",
                                                            node.row.section(),
                                                            List.of()),
-                                          CedarVersionInfo.initialDraft(),
+                                          VersionInfo.initialDraft(),
+                                          ArtifactModificationInfo.empty(),
                                           FieldValueConstraints.empty(),
                                           new BasicFieldUi(
                                                   CedarInputType.SECTION_BREAK,
                                                   false
-                                          ),
-                                          ArtifactModificationInfo.empty());
+                                          ));
         }
         else {
             throw new RuntimeException();
@@ -166,7 +166,7 @@ public class CedarCsvParser {
                                                          null,
                                                          node.row.getStrippedElementName(),
                                                          List.of()),
-                                        CedarVersionInfo.initialDraft(),
+                                        VersionInfo.initialDraft(),
                                         ArtifactModificationInfo.empty(), childNodes);
     }
 
@@ -195,10 +195,10 @@ public class CedarCsvParser {
                                                        "",
                                                        fieldRow.fieldTitle(),
                                                        Collections.emptyList()),
-                                      new CedarVersionInfo(version, defaultArtifactStatus, previousVersion),
+                                      new VersionInfo(version, defaultArtifactStatus, previousVersion),
+                                      ArtifactModificationInfo.empty(),
                                       getValueConstraints(fieldRow),
-                                      getFieldUi(fieldRow),
-                                      ArtifactModificationInfo.empty()
+                                      getFieldUi(fieldRow)
         );
     }
 
