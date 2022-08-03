@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-27
  */
-public enum CedarNumberType {
+public enum NumberType {
 
     DECIMAL("xsd:decimal"),
 
@@ -19,13 +19,13 @@ public enum CedarNumberType {
 
     FLOAT("xsd:float");
 
-    public static CedarNumberType getDefaultType() {
+    public static NumberType getDefaultType() {
         return DECIMAL;
     }
 
     private final String value;
 
-    CedarNumberType(String value) {
+    NumberType(String value) {
         this.value = value;
     }
 

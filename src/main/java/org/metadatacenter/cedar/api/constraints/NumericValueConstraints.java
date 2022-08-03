@@ -2,7 +2,7 @@ package org.metadatacenter.cedar.api.constraints;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.metadatacenter.cedar.api.CedarNumberType;
+import org.metadatacenter.cedar.api.NumberType;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
@@ -12,7 +12,7 @@ import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-27
  */
-public record NumericValueConstraints(CedarNumberType numberType,
+public record NumericValueConstraints(NumberType numberType,
                                       String unitOfMeasure,
                                       Double minValue,
                                       Double maxValue,
@@ -21,7 +21,7 @@ public record NumericValueConstraints(CedarNumberType numberType,
                                       Cardinality cardinality) implements FieldValueConstraints {
 
     @JsonCreator
-    public static NumericValueConstraints fromJson(@JsonProperty("numberType") CedarNumberType numberType,
+    public static NumericValueConstraints fromJson(@JsonProperty("numberType") NumberType numberType,
                                                    @JsonProperty("unitOfMeasure") String unitOfMeasure,
                                                    @JsonProperty("minValue") Double minValue,
                                                    @JsonProperty("maxValue") Double maxValue,

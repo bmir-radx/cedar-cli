@@ -242,7 +242,7 @@ public class CedarCsvParser {
 
     private static NumericValueConstraints getCedarNumericConstraints(CedarCsvRow fieldRow,
                                                                       CedarCsvInputType inputType) {
-        return new NumericValueConstraints(inputType.getCedarNumberType().orElse(CedarNumberType.getDefaultType()),
+        return new NumericValueConstraints(inputType.getCedarNumberType().orElse(NumberType.getDefaultType()),
                                            "",
                                            null,
                                            null,

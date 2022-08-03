@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.metadatacenter.cedar.api.CedarInputType;
-import org.metadatacenter.cedar.api.CedarNumberType;
+import org.metadatacenter.cedar.api.NumberType;
 import org.metadatacenter.cedar.api.CedarTemporalType;
 import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
 
@@ -46,15 +46,15 @@ public enum CedarCsvInputType {
     NUMERIC("numeric", CedarInputType.NUMERIC, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
     @JsonAlias("int")
-    INTEGER("integer", CedarNumberType.INT, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
+    INTEGER("integer", NumberType.INT, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
-    LONG("long", CedarNumberType.LONG, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
+    LONG("long", NumberType.LONG, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
-    DECIMAL("decimal", CedarNumberType.DECIMAL, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
+    DECIMAL("decimal", NumberType.DECIMAL, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
-    FLOAT("float", CedarNumberType.FLOAT, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
+    FLOAT("float", NumberType.FLOAT, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
-    DOUBLE("double", CedarNumberType.DOUBLE, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
+    DOUBLE("double", NumberType.DOUBLE, CedarConstraintsType.NUMERIC, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
     // No additional constraints
     PHONE_NUMBER("phone-number", CedarInputType.PHONE_NUMBER, CedarConstraintsType.NONE, TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL),
@@ -76,7 +76,7 @@ public enum CedarCsvInputType {
 
     private final CedarInputType cedarInputType;
 
-    private final CedarNumberType cedarNumberType;
+    private final NumberType numberType;
 
     private final CedarTemporalType cedarTemporalType;
 
@@ -97,18 +97,18 @@ public enum CedarCsvInputType {
         this.cedarInputType = cedarInputType;
         this.cedarConstraintsType = cedarConstraintsType;
         this.cedarFieldValueType = cedarFieldValueType;
-        this.cedarNumberType = null;
+        this.numberType = null;
         this.cedarTemporalType = null;
     }
 
     CedarCsvInputType(String name,
-                      CedarNumberType numberType,
+                      NumberType numberType,
                       CedarConstraintsType cedarConstraintsType, TemplateFieldJsonSchemaMixin.CedarFieldValueType cedarFieldValueType) {
         this.name = name;
         this.cedarConstraintsType = cedarConstraintsType;
         this.cedarFieldValueType = cedarFieldValueType;
         this.cedarInputType = CedarInputType.NUMERIC;
-        this.cedarNumberType = numberType;
+        this.numberType = numberType;
         this.cedarTemporalType = null;
     }
 
@@ -119,7 +119,7 @@ public enum CedarCsvInputType {
         this.cedarConstraintsType = cedarConstraintsType;
         this.cedarFieldValueType = cedarFieldValueType;
         this.cedarInputType = CedarInputType.TEMPORAL;
-        this.cedarNumberType = null;
+        this.numberType = null;
         this.cedarTemporalType = temporalType;
     }
 
@@ -136,8 +136,8 @@ public enum CedarCsvInputType {
         return cedarInputType;
     }
 
-    public Optional<CedarNumberType> getCedarNumberType() {
-        return Optional.ofNullable(cedarNumberType);
+    public Optional<NumberType> getCedarNumberType() {
+        return Optional.ofNullable(numberType);
     }
 
     public Optional<CedarTemporalType> getCedarTemporalType() {
