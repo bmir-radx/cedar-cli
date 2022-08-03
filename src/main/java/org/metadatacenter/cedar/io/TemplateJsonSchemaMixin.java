@@ -3,7 +3,6 @@ package org.metadatacenter.cedar.io;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.metadatacenter.cedar.api.JsonSchema;
 
 import java.io.IOException;
 import java.util.*;

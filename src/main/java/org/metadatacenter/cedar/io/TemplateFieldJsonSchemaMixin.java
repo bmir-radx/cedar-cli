@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.metadatacenter.cedar.api.JsonSchema;
 import org.metadatacenter.cedar.api.JsonSchemaFormat;
 
 import java.io.IOException;
