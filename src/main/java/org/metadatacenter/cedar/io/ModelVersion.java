@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

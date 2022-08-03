@@ -1,7 +1,8 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.metadatacenter.cedar.api.Multiplicity;
 
 /**
  * Matthew Horridge

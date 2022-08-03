@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 /**
  * Matthew Horridge

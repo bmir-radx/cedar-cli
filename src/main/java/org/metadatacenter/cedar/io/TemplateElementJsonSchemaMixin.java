@@ -1,8 +1,9 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.metadatacenter.cedar.api.JsonSchema;
 
 import java.io.IOException;
 import java.util.*;
@@ -10,11 +11,12 @@ import java.util.*;
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
- * 2022-08-03
+ * 2022-08-02
  */
-public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
-                                      @JsonProperty("description") String description,
-                                      @JsonIgnore List<SerializableTemplateNode> nodes) implements JsonSchema {
+public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title,
+                                             @JsonProperty("description") String description,
+                                             @JsonProperty("multiValued") boolean multiValued,
+                                             @JsonIgnore List<SerializableTemplateNode> fields) implements JsonSchema {
 
     private static final Map<String, Object> propertiesForIris;
 
@@ -34,16 +36,11 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
     }
 
     @Override
-    public boolean multiValued() {
-        return false;
-    }
-
-    @Override
     public Map<String, Object> properties() {
         var union = new HashMap<>(propertiesForIris);
         var contextProperties = new HashMap<String, Object>();
         var requiredList = new ArrayList<String>();
-        nodes.forEach(f -> {
+        fields.forEach(f -> {
             var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();
             contextProperties.put(f.getSchemaName(), Map.of("enum", List.of(propertyIri)));
             requiredList.add(f.getSchemaName());
@@ -55,7 +52,7 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
                 "required", requiredList
         );
         union.put("@context", contextPropertyValue);
-        nodes.forEach(field -> union.put(field.getSchemaName(), field));
+        fields.forEach(field -> union.put(field.getSchemaName(), field));
         return union;
     }
 
@@ -70,9 +67,9 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
         union.add("pav:createdOn");
         union.add("pav:createdBy");
         union.add("pav:lastUpdatedOn");
-        nodes.stream()
-              .map(SerializableCedarArtifact::getSchemaName)
-              .forEach(union::add);
+        fields.stream()
+                .map(SerializableCedarArtifact::getSchemaName)
+                .forEach(union::add);
         return union;
     }
 }

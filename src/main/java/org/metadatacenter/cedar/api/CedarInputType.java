@@ -1,6 +1,7 @@
 package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
 
 import java.util.Optional;
 

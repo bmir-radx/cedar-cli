@@ -1,8 +1,9 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.metadatacenter.cedar.api.CedarTemplate;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public record TemplateUiMixin(@JsonUnwrapped UiPropertyOrderMixin propertyOrderM
     }
 
     public static TemplateUiMixin fromTemplate(CedarTemplate node) {
-        var descriptors = node.getPropertyDescriptors();
+        var descriptors = PropertyDescriptor.getPropertyDescriptors(node);
         return createTemplateUiMixin(descriptors);
 
     }

@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.metadatacenter.cedar.api.CedarNumberType;
 import org.metadatacenter.cedar.api.CedarTemporalType;
-import org.metadatacenter.cedar.api.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
 import org.metadatacenter.cedar.api.CedarInputType;
 
 import java.util.Optional;

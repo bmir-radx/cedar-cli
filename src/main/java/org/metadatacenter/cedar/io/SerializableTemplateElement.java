@@ -1,8 +1,9 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.metadatacenter.cedar.api.CedarTemplateElement;
 
 import java.util.Collections;
 import java.util.Map;
@@ -15,12 +16,9 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * 2022-08-02
  */
 @JsonTypeName(SerializableTemplateElement.TYPE)
-public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = READ_ONLY)
-                                          TemplateElementJsonSchemaMixin jsonSchemaInfo,
-                                          @JsonProperty("schema:schemaVersion")
-                                          ModelVersion modelVersion,
-                                          @JsonUnwrapped @JsonProperty(access = READ_ONLY)
-                                          CedarTemplateElement templateElement,
+public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateElementJsonSchemaMixin jsonSchemaInfo,
+                                          @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
+                                          @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarTemplateElement templateElement,
                                           @JsonProperty("_ui") ElementUiMixin ui) implements SerializableTemplateNode {
 
     protected static final String TYPE = "https://schema.metadatacenter.org/core/TemplateElement";

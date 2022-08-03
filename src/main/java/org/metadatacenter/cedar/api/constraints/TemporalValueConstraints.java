@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.csv.Cardinality;
+import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
 
 /**
  * Matthew Horridge

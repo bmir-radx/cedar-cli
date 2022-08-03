@@ -1,6 +1,7 @@
-package org.metadatacenter.cedar.api;
+package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.*;
+import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.api.constraints.FieldValueConstraints;
 
 import java.time.Instant;
