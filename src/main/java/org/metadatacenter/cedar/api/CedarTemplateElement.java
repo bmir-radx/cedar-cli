@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
                                    @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                    @Nonnull @JsonUnwrapped VersionInfo versionInfo,
-                                   @Nonnull @JsonUnwrapped ArtifactModificationInfo modificationInfo,
+                                   @Nonnull @JsonUnwrapped ModificationInfo modificationInfo,
                                    @Nonnull @JsonIgnore List<CedarTemplateNode> nodes) implements CedarTemplateNode, CedarSchemaArtifact, CedarArtifactContainer {
 
     @Override

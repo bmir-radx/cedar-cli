@@ -83,10 +83,10 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               biboStatus,
                                               version
                                       ),
-                                      new ArtifactModificationInfo(pavCreatedOn,
-                                                                   pavCreatedBy,
-                                                                   pavLastUpdatedOn,
-                                                                   oslcModifiedBy),
+                                      new ModificationInfo(pavCreatedOn,
+                                                           pavCreatedBy,
+                                                           pavLastUpdatedOn,
+                                                           oslcModifiedBy),
                                       valueConstraints,
                                       ui);
     }

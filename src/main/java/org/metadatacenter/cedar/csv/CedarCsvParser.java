@@ -122,7 +122,7 @@ public class CedarCsvParser {
                                                   null,
                                                   null, null),
                                  VersionInfo.initialDraft(),
-                                 ArtifactModificationInfo.empty(),
+                                 ModificationInfo.empty(),
                                  childNodes);
     }
 
@@ -146,7 +146,7 @@ public class CedarCsvParser {
                                                            node.row.section(),
                                                            List.of()),
                                           VersionInfo.initialDraft(),
-                                          ArtifactModificationInfo.empty(),
+                                          ModificationInfo.empty(),
                                           FieldValueConstraints.empty(),
                                           new BasicFieldUi(
                                                   CedarInputType.SECTION_BREAK,
@@ -167,7 +167,7 @@ public class CedarCsvParser {
                                                          node.row.getStrippedElementName(),
                                                          List.of()),
                                         VersionInfo.initialDraft(),
-                                        ArtifactModificationInfo.empty(), childNodes);
+                                        ModificationInfo.empty(), childNodes);
     }
 
     private static FieldUi getFieldUi(CedarCsvRow row) {
@@ -196,7 +196,7 @@ public class CedarCsvParser {
                                                        fieldRow.fieldTitle(),
                                                        Collections.emptyList()),
                                       new VersionInfo(version, defaultArtifactStatus, previousVersion),
-                                      ArtifactModificationInfo.empty(),
+                                      ModificationInfo.empty(),
                                       getValueConstraints(fieldRow),
                                       getFieldUi(fieldRow)
         );
