@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -16,8 +18,8 @@ import java.util.function.Consumer;
 @JsonIgnoreProperties({"$schema", "@context", "type", "properties", "required"})
 @JsonPropertyOrder({"@id", "jsonLdInfo", "jsonSchemaObject", "schema:schemaVersion", "identifier", "cedarArtifactInfo", "_valueConstraints"})
 public record CedarTemplateField(@JsonProperty("@id") CedarId id,
-                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) ArtifactInfo artifactInfo,
-                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarVersionInfo versionInfo,
+                                 @JsonUnwrapped @JsonProperty(access = READ_ONLY) ArtifactInfo artifactInfo,
+                                 @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarVersionInfo versionInfo,
                                  @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
                                  @JsonProperty("_ui") FieldUi ui,
                                  @JsonUnwrapped ArtifactModificationInfo modificationInfo) implements CedarTemplateNode, CedarSchemaArtifact {

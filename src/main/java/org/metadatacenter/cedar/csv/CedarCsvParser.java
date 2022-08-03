@@ -263,9 +263,9 @@ public class CedarCsvParser {
         }
     }
 
-    private static List<OntologyTermsSelector> getOntologyTermsSelectors(LookupSpec theLookupSpec) {
+    private static List<OntologyTermsSpecification> getOntologyTermsSelectors(LookupSpec theLookupSpec) {
         if(theLookupSpec.getBranch().isPresent()) {
-            return List.of(new OntologyBranchTermsSelector(theLookupSpec.getOntology().orElse(""),
+            return List.of(new OntologyBranchTermsSpecification(theLookupSpec.getOntology().orElse(""),
                                                            theLookupSpec.getOntologyAcronym().orElse(""),
                                                            theLookupSpec.getOntologyAcronym().orElse(""),
                                                            theLookupSpec.getBranch().orElse(""),
@@ -273,7 +273,7 @@ public class CedarCsvParser {
                                                            false));
         }
         else if(theLookupSpec.getOntology().isPresent()) {
-            return List.of(new AllOntologyTermsSelector(theLookupSpec.getOntology().get(),
+            return List.of(new AllOntologyTermsSpecification(theLookupSpec.getOntology().get(),
                                                         theLookupSpec.getOntologyAcronym().orElse(""),
                                                         theLookupSpec.getOntologyAcronym().orElse("")));
         }

@@ -20,17 +20,17 @@ import java.util.List;
  */
 public record EnumerationValueConstraints(Required requiredValue,
                                           Cardinality cardinality,
-                                          List<SpecificOntologyClassSelector> classes,
-                                          List<OntologyBranchTermsSelector> branches,
-                                          List<AllOntologyTermsSelector> ontologies,
+                                          List<SpecificOntologyClassSpecification> classes,
+                                          List<OntologyBranchTermsSpecification> branches,
+                                          List<AllOntologyTermsSpecification> ontologies,
                                           List<LiteralValueConstraint> literals) implements FieldValueConstraints {
 
     @JsonCreator
     public static EnumerationValueConstraints fromJson(@JsonProperty("requiredValue") boolean requiredValue,
                                                        @JsonProperty("multipleChoice") boolean multipleChoice,
-                                                       @JsonProperty("classes") List<SpecificOntologyClassSelector> classes,
-                                                       @JsonProperty("branches") List<OntologyBranchTermsSelector> branches,
-                                                       @JsonProperty("ontologies") List<AllOntologyTermsSelector> ontologies,
+                                                       @JsonProperty("classes") List<SpecificOntologyClassSpecification> classes,
+                                                       @JsonProperty("branches") List<OntologyBranchTermsSpecification> branches,
+                                                       @JsonProperty("ontologies") List<AllOntologyTermsSpecification> ontologies,
                                                        @JsonProperty("literals") List<LiteralValueConstraint> literals) {
         return new EnumerationValueConstraints(
                 requiredValue ? Required.REQUIRED : Required.OPTIONAL,
@@ -42,26 +42,26 @@ public record EnumerationValueConstraints(Required requiredValue,
         );
     }
 
-    public static EnumerationValueConstraints of(List<OntologyTermsSelector> ontologyTermSelectors,
+    public static EnumerationValueConstraints of(List<OntologyTermsSpecification> ontologyTermSelectors,
                                                 Required required,
                                                 Cardinality cardinality) {
-        var ontologies = new ArrayList<AllOntologyTermsSelector>();
-        var branches = new ArrayList<OntologyBranchTermsSelector>();
-        var classes = new ArrayList<SpecificOntologyClassSelector>();
+        var ontologies = new ArrayList<AllOntologyTermsSpecification>();
+        var branches = new ArrayList<OntologyBranchTermsSpecification>();
+        var classes = new ArrayList<SpecificOntologyClassSpecification>();
         ontologyTermSelectors.forEach(ts -> {
-            ts.accept(new OntologyTermsSelectorVisitor() {
+            ts.accept(new OntologyTermsSpecificationVisitor() {
                 @Override
-                public void visit(OntologyBranchTermsSelector selector) {
+                public void visit(OntologyBranchTermsSpecification selector) {
                     branches.add(selector);
                 }
 
                 @Override
-                public void visit(SpecificOntologyClassSelector selector) {
+                public void visit(SpecificOntologyClassSpecification selector) {
                     classes.add(selector);
                 }
 
                 @Override
-                public void visit(AllOntologyTermsSelector selector) {
+                public void visit(AllOntologyTermsSpecification selector) {
                     ontologies.add(selector);
                 }
             });
