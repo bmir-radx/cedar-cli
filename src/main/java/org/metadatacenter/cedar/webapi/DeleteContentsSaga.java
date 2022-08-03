@@ -54,29 +54,27 @@ public class DeleteContentsSaga {
 
     public void deleteFolder(CedarId folderId, CedarApiKey apiKey) {
         var contents = listContentsRequest.send(folderId, apiKey);
-        System.err.println("Recursively deleting folder  " + folderId.value() + " that contains " + contents.totalCount() + " resources");
         contents.resources()
                 .forEach(r -> deleteResource(r, apiKey));
         contents.paging()
                 .getNext()
-                .ifPresentOrElse(nextPage -> {
-                                     System.err.println(contents.paging());
-                    deleteFolder(folderId, apiKey);}
-                                 ,
+                .ifPresentOrElse(nextPage -> deleteFolder(folderId, apiKey),
                                  () -> deleteFolderRequest.send(folderId, apiKey));
     }
 
     private void deleteTemplate(CedarId id, CedarApiKey apiKey) {
         deleteTemplateRequest.send(id, apiKey);
+        System.err.println("Deleted template with an ID of " + id.value());
     }
 
     private void deleteElement(CedarId id, CedarApiKey apiKey) {
         deleteElementRequest.send(id, apiKey);
+        System.err.println("Deleted template element with an ID of " + id.value());
     }
 
     private void deleteField(CedarId id, CedarApiKey apiKey) {
         deleteFieldRequest.send(id, apiKey);
-        System.err.println("Deleted field with id " + id);
+        System.err.println("Deleted template field with an ID of " + id.value());
     }
 
 }
