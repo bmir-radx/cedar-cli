@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 public record TemporalFieldUi(TemporalGranularity temporalGranularity,
                               boolean timeZoneEnabled,
                               @Nullable InputTimeFormat inputTimeFormat,
-                              boolean valueRecommendationEnabled) implements CedarFieldUi {
+                              boolean valueRecommendationEnabled) implements FieldUi {
 
     private static final boolean TIME_ZONE_ENABLED = true;
 

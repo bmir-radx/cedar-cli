@@ -13,16 +13,18 @@ import java.util.function.Consumer;
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-26
- *
+ * <p>
  * A CEDAR Template Element is a container for Template Fields and other Template Elements (that is, template nodes)
- * @param id A {@link CedarId} that identifies this object.  Cedar Ids can be null.
+ *
+ * @param id    A {@link CedarId} that identifies this object.  Cedar Ids can be null.
  * @param nodes A list of contained Template Element and Template Field objects
  */
 public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
-                                   @Nonnull @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
+                                   @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                    @Nonnull @JsonUnwrapped CedarVersionInfo versionInfo,
-                                   @Nonnull @JsonUnwrapped CedarArtifactModificationInfo modificationInfo,
-                                   @Nonnull @JsonIgnore List<CedarTemplateNode> nodes) implements CedarTemplateNode, CedarSchemaArtifact {
+                                   @Nonnull @JsonUnwrapped ArtifactModificationInfo modificationInfo,
+                                   @Nonnull @JsonIgnore List<CedarTemplateNode> nodes) implements CedarTemplateNode, CedarSchemaArtifact, CedarArtifactContainer {
+
     @Override
     public <R, E extends Exception> R accept(CedarSchemaArtifactVisitor<R, E> visitor) throws E {
         return visitor.visit(this);
@@ -30,12 +32,12 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
 
     @Override
     public String getSchemaName() {
-        return cedarArtifactInfo.schemaName();
+        return artifactInfo.schemaName();
     }
 
     @Override
     public String getSchemaDescription() {
-        return cedarArtifactInfo.schemaDescription();
+        return artifactInfo.schemaDescription();
     }
 
     @Override
@@ -50,11 +52,12 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
 
     @Override
     public String toCompactString() {
-        return "Element(" + cedarArtifactInfo.schemaName() + ")";
+        return "Element(" + artifactInfo.schemaName() + ")";
     }
 
     @Override
-    public @Nonnull ArtifactSimpleTypeName getSimpleTypeName() {
+    public @Nonnull
+    ArtifactSimpleTypeName getSimpleTypeName() {
         return ArtifactSimpleTypeName.ELEMENT;
     }
 }

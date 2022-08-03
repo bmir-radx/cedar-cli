@@ -5,6 +5,7 @@ import org.metadatacenter.cedar.api.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 /**
  * Matthew Horridge
@@ -37,9 +38,21 @@ public class CedarArtifactWriter {
                     .writeValue(outputStream, wrappedElement);
         }
         else {
+            var wrappedElement = wrapTemplate((CedarTemplate) cedarArtifact,
+                                              jsonSchemaTitle, jsonSchemaDescription);
             jsonMapper.writerWithDefaultPrettyPrinter()
                       .writeValue(outputStream, cedarArtifact);
         }
+    }
+
+    private SerializableTemplate wrapTemplate(CedarTemplate template,
+                                              String jsonSchemaTitle,
+                                              String jsonSchemaDescription) {
+        var wrappedNodes = getWrappedNodes(template, jsonSchemaTitle, jsonSchemaDescription);
+        return new SerializableTemplate(new TemplateJsonSchemaMixin(jsonSchemaTitle, jsonSchemaDescription, wrappedNodes),
+                                        new TemplateJsonLdMixin(),
+                                        template,
+                                        TemplateUiMixin.fromTemplate(template));
     }
 
     private SerializableTemplateNode wrapNode(CedarTemplateNode node,
@@ -51,24 +64,32 @@ public class CedarArtifactWriter {
                                                   jsonSchemaDescription);
         }
         else if(node instanceof CedarTemplateElement) {
-            var wrappedFields = ((CedarTemplateElement) node).nodes()
-                    .stream()
-                    .map(n -> wrapNode(n, jsonSchemaTitle, jsonSchemaDescription))
-                    .toList();
-                    return new SerializableTemplateElement(
-                            new TemplateElementJsonSchemaMixin(jsonSchemaTitle,
+            var wrappedNodes = getWrappedNodes((CedarTemplateElement) node,
+                                                                                       jsonSchemaTitle,
+                                                                                       jsonSchemaDescription);
+            return new SerializableTemplateElement(
+                    new TemplateElementJsonSchemaMixin(jsonSchemaTitle,
                                                                jsonSchemaDescription,
                                                                false,
-                                                               wrappedFields
+                                                               wrappedNodes
                             ),
-                            ModelVersion.V1_6_0,
-                            (CedarTemplateElement) node,
-                            CedarElementUiMixin.fromTemplateElement((CedarTemplateElement) node)
+                    ModelVersion.V1_6_0,
+                    (CedarTemplateElement) node,
+                    ElementUiMixin.fromTemplateElement((CedarTemplateElement) node)
             );
         }
         else {
             throw new RuntimeException();
         }
+    }
+
+    private List<SerializableTemplateNode> getWrappedNodes(CedarArtifactContainer node,
+                                                           String jsonSchemaTitle,
+                                                           String jsonSchemaDescription) {
+        return node.nodes()
+                   .stream()
+                   .map(n -> wrapNode(n, jsonSchemaTitle, jsonSchemaDescription))
+                   .toList();
     }
 
 }

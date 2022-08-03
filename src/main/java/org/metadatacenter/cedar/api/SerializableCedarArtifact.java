@@ -12,7 +12,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 @JsonSubTypes({
         @JsonSubTypes.Type(SerializableTemplateField.class),
-        @JsonSubTypes.Type(SerializableTemplateElement.class)
+        @JsonSubTypes.Type(SerializableTemplateElement.class),
+        @JsonSubTypes.Type(SerializableTemplate.class)
 })
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 public interface SerializableCedarArtifact {

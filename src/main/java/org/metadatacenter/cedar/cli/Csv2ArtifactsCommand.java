@@ -47,7 +47,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             description = "Specifies the status of the artifacts that are generated.  Valid values are ${COMPLETION-CANDIDATES}",
             defaultValue = "DRAFT",
             showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
-    CedarArtifactStatus artifactStatus;
+    ArtifactStatus artifactStatus;
 
     @Option(names = "--artifact-version",
             required = true,

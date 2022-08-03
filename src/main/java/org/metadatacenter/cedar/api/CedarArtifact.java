@@ -20,7 +20,7 @@ public interface CedarArtifact {
 
     @JsonUnwrapped
     @Nonnull
-    CedarArtifactInfo cedarArtifactInfo();
+    ArtifactInfo artifactInfo();
 
     /**
      * Renders this CEDAR Artifact object in a compact form.

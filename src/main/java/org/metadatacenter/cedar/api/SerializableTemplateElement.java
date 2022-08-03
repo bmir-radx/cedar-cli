@@ -21,7 +21,7 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
                                           ModelVersion modelVersion,
                                           @JsonUnwrapped @JsonProperty(access = READ_ONLY)
                                           CedarTemplateElement templateElement,
-                                          @JsonProperty("_ui") CedarElementUiMixin ui) implements SerializableTemplateNode {
+                                          @JsonProperty("_ui") ElementUiMixin ui) implements SerializableTemplateNode {
 
     protected static final String TYPE = "https://schema.metadatacenter.org/core/TemplateElement";
 
@@ -42,6 +42,6 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
 
     @Override
     public String getSchemaName() {
-        return templateElement.cedarArtifactInfo().schemaName();
+        return templateElement.artifactInfo().schemaName();
     }
 }

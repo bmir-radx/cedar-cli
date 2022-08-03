@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -14,10 +15,10 @@ import java.util.List;
  * 2022-07-26
  */
 public record CedarTemplate(@JsonProperty("@id") CedarId id,
-                            @JsonUnwrapped CedarArtifactInfo cedarArtifactInfo,
+                            @JsonUnwrapped ArtifactInfo artifactInfo,
                             @JsonUnwrapped CedarVersionInfo versionInfo,
-                            @JsonUnwrapped CedarArtifactModificationInfo modificationInfo,
-                            List<CedarTemplateNode> nodes) implements CedarSchemaArtifact {
+                            @JsonUnwrapped ArtifactModificationInfo modificationInfo,
+                            List<CedarTemplateNode> nodes) implements CedarSchemaArtifact, CedarArtifactContainer {
 
     @Override
     public String toCompactString() {
@@ -34,6 +35,7 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         return visitor.visit(this);
     }
 
+    @JsonIgnore
     public List<CedarTemplateElement> getElements() {
         var elements = new ArrayList<CedarTemplateElement>();
         collectElements(nodes, elements);
@@ -51,7 +53,7 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         });
     }
 
-
+    @JsonIgnore
     public List<CedarTemplateField> getFields() {
         var fields = new ArrayList<CedarTemplateField>();
         collectFields(nodes, fields);

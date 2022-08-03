@@ -12,14 +12,14 @@ import javax.annotation.Nonnull;
  */
 @JsonTypeName("https://schema.metadatacenter.org/core/TemplateField")
 public record CedarStaticTemplateField(@JsonProperty("@id") CedarId id,
-                                       CedarArtifactInfo cedarArtifactInfo,
+                                       ArtifactInfo artifactInfo,
                                        CedarVersionInfo versionInfo,
                                        CedarStaticInputType staticInputType) implements CedarSchemaArtifact {
 
 
     @Override
     public String toCompactString() {
-        return "StaticTemplateField(" + cedarArtifactInfo.schemaName() + ")";
+        return "StaticTemplateField(" + artifactInfo.schemaName() + ")";
     }
 
     @Override

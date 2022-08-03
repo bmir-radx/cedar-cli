@@ -21,7 +21,7 @@ public record EnumerationValueConstraints(Required requiredValue,
                                           List<SpecificOntologyClassSelector> classes,
                                           List<OntologyBranchTermsSelector> branches,
                                           List<AllOntologyTermsSelector> ontologies,
-                                          List<LiteralValueConstraint> literals) implements CedarFieldValueConstraints {
+                                          List<LiteralValueConstraint> literals) implements FieldValueConstraints {
 
     @JsonCreator
     public static EnumerationValueConstraints fromJson(@JsonProperty("requiredValue") boolean requiredValue,

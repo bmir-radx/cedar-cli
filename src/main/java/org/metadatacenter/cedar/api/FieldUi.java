@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * 2022-07-31
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
-public interface CedarFieldUi {
+public interface FieldUi {
 
     CedarInputType inputType();
 

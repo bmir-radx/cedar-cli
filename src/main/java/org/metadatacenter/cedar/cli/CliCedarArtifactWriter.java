@@ -26,7 +26,7 @@ public class CliCedarArtifactWriter {
                                    Path outputDirectory,
                                    String jsonSchemaTitle,
                                    String jsonSchemaDescription) throws IOException {
-        var fileName = cedarArtifact.cedarArtifactInfo().schemaIdentifier() + ".json";
+        var fileName = cedarArtifact.artifactInfo().schemaIdentifier() + ".json";
         var outputFile = outputDirectory.resolve(fileName);
         var outputStream = Files.newOutputStream(outputFile);
         cedarArtifactWriter.writeCedarArtifact(cedarArtifact,

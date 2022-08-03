@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-31
  */
-public record StaticFieldUi(CedarInputType inputType, boolean valueRecommendationEnabled) implements CedarFieldUi {
+public record StaticFieldUi(CedarInputType inputType, boolean valueRecommendationEnabled) implements FieldUi {
 
     @JsonProperty("_content")
     public String content() {

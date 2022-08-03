@@ -59,16 +59,16 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               @JsonProperty("skos:prefLabel") String skosPrefLabel,
                                               @JsonProperty("skos:altLabel") List<String> skosAltLabel,
                                               @JsonProperty("pav:version") String version,
-                                              @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
+                                              @JsonProperty("bibo:Status") ArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
-                                              @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                                              @JsonProperty("_ui") CedarFieldUi ui,@JsonProperty("pav:createdOn") Instant pavCreatedOn,
+                                              @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
+                                              @JsonProperty("_ui") FieldUi ui, @JsonProperty("pav:createdOn") Instant pavCreatedOn,
                                               @JsonProperty("pav:createdBy") String pavCreatedBy,
                                               @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
                                               @JsonProperty("oslc:modifiedBy") String oslcModifiedBy
                                               ) {
         return new CedarTemplateField(identifier,
-                                      new CedarArtifactInfo(
+                                      new ArtifactInfo(
                                               schemaIdentifier,
                                               schemaName,
                                               schemaDescription,
@@ -83,14 +83,14 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                       ),
                                       valueConstraints,
                                       ui,
-                                      new CedarArtifactModificationInfo(pavCreatedOn,
-                                                                        pavCreatedBy,
-                                                                        pavLastUpdatedOn,
-                                                                        oslcModifiedBy));
+                                      new ArtifactModificationInfo(pavCreatedOn,
+                                                                   pavCreatedBy,
+                                                                   pavLastUpdatedOn,
+                                                                   oslcModifiedBy));
     }
 
     @Override
     public String getSchemaName() {
-        return templateField.cedarArtifactInfo().schemaName();
+        return templateField.artifactInfo().schemaName();
     }
 }

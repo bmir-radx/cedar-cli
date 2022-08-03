@@ -8,15 +8,15 @@ import org.metadatacenter.cedar.csv.Cardinality;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-26
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = CedarStringValueConstraints.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = StringValueConstraints.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonSubTypes({
-        @JsonSubTypes.Type(CedarStringValueConstraints.class),
-        @JsonSubTypes.Type(CedarNumericValueConstraints.class),
-        @JsonSubTypes.Type(CedarTemporalValueConstraints.class),
+        @JsonSubTypes.Type(StringValueConstraints.class),
+        @JsonSubTypes.Type(NumericValueConstraints.class),
+        @JsonSubTypes.Type(TemporalValueConstraints.class),
         @JsonSubTypes.Type(EnumerationValueConstraints.class)
 })
-public interface CedarFieldValueConstraints {
+public interface FieldValueConstraints {
 
     @JsonIgnore()
     Required requiredValue();
@@ -34,8 +34,8 @@ public interface CedarFieldValueConstraints {
         return cardinality() == Cardinality.MULTIPLE;
     }
 
-    static CedarFieldValueConstraints empty() {
-        return new CedarStringValueConstraints(null, null, Required.OPTIONAL, Cardinality.SINGLE);
+    static FieldValueConstraints empty() {
+        return new StringValueConstraints(null, null, Required.OPTIONAL, Cardinality.SINGLE);
     }
 
     @JsonIgnore

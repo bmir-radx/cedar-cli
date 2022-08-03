@@ -13,15 +13,15 @@ import java.util.Objects;
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record CedarVersionInfo(@JsonProperty("pav:version") String pavVersion,
-                               @JsonProperty("bibo:status") CedarArtifactStatus biboStatus,
+                               @JsonProperty("bibo:status") ArtifactStatus biboStatus,
                                @JsonProperty("pav:previousVersion") String pavPreviousVersion) {
 
     @JsonCreator
     public CedarVersionInfo(@JsonProperty("pav:version") String pavVersion,
-                            @JsonProperty("bibo:status") CedarArtifactStatus biboStatus,
+                            @JsonProperty("bibo:status") ArtifactStatus biboStatus,
                             @JsonProperty("pav:previousVersion") String pavPreviousVersion) {
         this.pavVersion = Objects.requireNonNullElse(pavVersion, "");
-        this.biboStatus = Objects.requireNonNullElse(biboStatus, CedarArtifactStatus.DRAFT);
+        this.biboStatus = Objects.requireNonNullElse(biboStatus, ArtifactStatus.DRAFT);
         this.pavPreviousVersion = Objects.requireNonNull(pavPreviousVersion);
     }
 
@@ -30,6 +30,6 @@ public record CedarVersionInfo(@JsonProperty("pav:version") String pavVersion,
      * a status of draft and no previous version specified.
      */
     public static CedarVersionInfo initialDraft() {
-        return new CedarVersionInfo("0.0.1", CedarArtifactStatus.DRAFT, "");
+        return new CedarVersionInfo("0.0.1", ArtifactStatus.DRAFT, "");
     }
 }

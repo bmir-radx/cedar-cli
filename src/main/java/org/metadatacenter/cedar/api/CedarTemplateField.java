@@ -15,11 +15,11 @@ import java.util.function.Consumer;
 @JsonIgnoreProperties({"$schema", "@context", "type", "properties", "required"})
 @JsonPropertyOrder({"@id", "jsonLdInfo", "jsonSchemaObject", "schema:schemaVersion", "identifier", "cedarArtifactInfo", "_valueConstraints"})
 public record CedarTemplateField(@JsonProperty("@id") CedarId id,
-                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarArtifactInfo cedarArtifactInfo,
+                                 @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) ArtifactInfo artifactInfo,
                                  @JsonUnwrapped @JsonProperty(access = JsonProperty.Access.READ_ONLY) CedarVersionInfo versionInfo,
-                                 @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                                 @JsonProperty("_ui") CedarFieldUi ui,
-                                 @JsonUnwrapped CedarArtifactModificationInfo modificationInfo) implements CedarTemplateNode, CedarSchemaArtifact {
+                                 @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
+                                 @JsonProperty("_ui") FieldUi ui,
+                                 @JsonUnwrapped ArtifactModificationInfo modificationInfo) implements CedarTemplateNode, CedarSchemaArtifact {
 
     @JsonCreator
     public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,
@@ -30,16 +30,16 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                               @JsonProperty("skos:prefLabel") String skosPrefLabel,
                                               @JsonProperty("skos:altLabel") List<String> skosAltLabel,
                                               @JsonProperty("pav:version") String version,
-                                              @JsonProperty("bibo:Status") CedarArtifactStatus biboStatus,
+                                              @JsonProperty("bibo:Status") ArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
-                                              @JsonProperty("_valueConstraints") CedarFieldValueConstraints valueConstraints,
-                                              @JsonProperty("_ui") CedarFieldUi ui,
+                                              @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
+                                              @JsonProperty("_ui") FieldUi ui,
                                               @JsonProperty("pav:createdOn") Instant pavCreatedOn,
                                               @JsonProperty("pav:createdBy") String pavCreatedBy,
                                               @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
                                               @JsonProperty("oslc:modifiedBy") String oslcModifiedBy) {
         return new CedarTemplateField(identifier,
-                                      new CedarArtifactInfo(
+                                      new ArtifactInfo(
                                               schemaIdentifier,
                                               schemaName,
                                               schemaDescription,
@@ -54,10 +54,10 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                       ),
                                        valueConstraints,
                                       ui,
-                                      new CedarArtifactModificationInfo(pavCreatedOn,
-                                                                        pavCreatedBy,
-                                                                        pavLastUpdatedOn,
-                                                                        oslcModifiedBy));
+                                      new ArtifactModificationInfo(pavCreatedOn,
+                                                                   pavCreatedBy,
+                                                                   pavLastUpdatedOn,
+                                                                   oslcModifiedBy));
     }
 
     @Override
@@ -67,12 +67,12 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
 
     @Override
     public String getSchemaName() {
-        return cedarArtifactInfo.schemaName();
+        return artifactInfo.schemaName();
     }
 
     @Override
     public String getSchemaDescription() {
-        return cedarArtifactInfo.schemaDescription();
+        return artifactInfo.schemaDescription();
     }
 
     @Override
@@ -87,7 +87,7 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
 
     @Override
     public String toCompactString() {
-        return "Field(" + cedarArtifactInfo.schemaName() + ")";
+        return "Field(" + artifactInfo.schemaName() + ")";
     }
 
     @Override

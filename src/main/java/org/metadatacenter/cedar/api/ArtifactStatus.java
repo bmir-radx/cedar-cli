@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-26
  */
-public enum CedarArtifactStatus {
+public enum ArtifactStatus {
 
     @JsonProperty("bibo:draft")
     DRAFT,

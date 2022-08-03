@@ -1,7 +1,6 @@
 package org.metadatacenter.cedar.csv;
 
-import org.metadatacenter.cedar.api.CedarArtifactStatus;
-import org.metadatacenter.cedar.api.ModelVersion;
+import org.metadatacenter.cedar.api.ArtifactStatus;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CedarCsvParserFactory {
 
-    public CedarCsvParser createParser(CedarArtifactStatus artifactStatus,
+    public CedarCsvParser createParser(ArtifactStatus artifactStatus,
                                        String version,
                                        String previousVersion) {
         return new CedarCsvParser(artifactStatus,

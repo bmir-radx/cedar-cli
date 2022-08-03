@@ -9,5 +9,5 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record BasicFieldUi(CedarInputType inputType,
-                           boolean valueRecommendationEnabled) implements CedarFieldUi {
+                           boolean valueRecommendationEnabled) implements FieldUi {
 }
