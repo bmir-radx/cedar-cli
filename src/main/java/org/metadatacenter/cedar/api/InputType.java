@@ -10,7 +10,7 @@ import java.util.Optional;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-20
  */
-public enum CedarInputType {
+public enum InputType {
 
     CHECKBOX("checkbox", null, null, false),
 
@@ -42,8 +42,8 @@ public enum CedarInputType {
 
     private final boolean isStatic;
 
-    CedarInputType(String name, TemplateFieldJsonSchemaMixin.CedarFieldValueType fixedValueType, JsonSchemaFormat jsonSchemaFormat,
-                   boolean isStatic) {
+    InputType(String name, TemplateFieldJsonSchemaMixin.CedarFieldValueType fixedValueType, JsonSchemaFormat jsonSchemaFormat,
+              boolean isStatic) {
         this.name = name;
         this.fixedValueType = fixedValueType;
         this.jsonSchemaFormat = jsonSchemaFormat;

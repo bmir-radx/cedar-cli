@@ -8,6 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * 2022-07-29
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public record BasicFieldUi(CedarInputType inputType,
+public record BasicFieldUi(InputType inputType,
                            boolean valueRecommendationEnabled) implements FieldUi {
 }

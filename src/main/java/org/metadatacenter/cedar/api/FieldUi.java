@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
 public interface FieldUi {
 
-    CedarInputType inputType();
+    InputType inputType();
 
     boolean valueRecommendationEnabled();
 }

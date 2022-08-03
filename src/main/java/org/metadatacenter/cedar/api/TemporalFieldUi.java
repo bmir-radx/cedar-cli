@@ -24,7 +24,7 @@ public record TemporalFieldUi(TemporalGranularity temporalGranularity,
 
     @Override
     @JsonProperty("inputType")
-    public CedarInputType inputType() {
-        return CedarInputType.TEMPORAL;
+    public InputType inputType() {
+        return InputType.TEMPORAL;
     }
 }

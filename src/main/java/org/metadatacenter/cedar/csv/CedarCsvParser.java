@@ -149,7 +149,7 @@ public class CedarCsvParser {
                                           ModificationInfo.empty(),
                                           FieldValueConstraints.empty(),
                                           new BasicFieldUi(
-                                                  CedarInputType.SECTION_BREAK,
+                                                  InputType.SECTION_BREAK,
                                                   false
                                           ));
         }
@@ -178,10 +178,10 @@ public class CedarCsvParser {
                     .orElse(TemporalFieldUi.getDefault());
         }
         else if(row.isSection()) {
-            return new StaticFieldUi(CedarInputType.SECTION_BREAK, false);
+            return new StaticFieldUi(InputType.SECTION_BREAK, false);
         }
         else {
-            return new BasicFieldUi(row.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(CedarInputType.TEXTFIELD),
+            return new BasicFieldUi(row.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(InputType.TEXTFIELD),
                              false);
         }
     }
