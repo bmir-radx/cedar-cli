@@ -17,7 +17,7 @@ public class ArtifactToSerializableArtifactVisitor implements CedarSchemaArtifac
 
     @Override
     public SerializableTemplate visit(CedarTemplate template) throws RuntimeException {
-        return null;
+        return SerializableTemplate.wrap(template, jsonSchemaDescription);
     }
 
     @Override

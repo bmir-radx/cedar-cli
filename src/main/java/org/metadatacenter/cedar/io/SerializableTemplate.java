@@ -1,11 +1,13 @@
 package org.metadatacenter.cedar.io;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import org.metadatacenter.cedar.api.CedarTemplate;
+import org.metadatacenter.cedar.api.*;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,7 +16,11 @@ import java.util.Map;
  * 2022-08-03
  */
 public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSchemaMixin,
-                                   @JsonUnwrapped CedarTemplate template,
+                                   @JsonProperty("@id") CedarId id,
+                                   @JsonUnwrapped ArtifactInfo artifactInfo,
+                                   @JsonUnwrapped VersionInfo versionInfo,
+                                   @JsonUnwrapped ModificationInfo modificationInfo,
+                                   @JsonIgnore List<SerializableEmbeddedArtifact> nodes,
                                    @JsonProperty("_ui") TemplateUiMixin ui) implements SerializableCedarArtifact {
 
     static final String TYPE = "https://schema.metadatacenter.org/core/Template";
@@ -36,11 +42,36 @@ public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSc
 
     @Override
     public String getSchemaName() {
-        return template.artifactInfo().schemaName();
+        return artifactInfo().schemaName();
     }
 
     @Override
     public ModelVersion modelVersion() {
         return ModelVersion.V1_6_0;
+    }
+
+    public static SerializableTemplate wrap(CedarTemplate template, String jsonSchemaDescription) {
+        var propertyDescriptors = PropertyDescriptor.getPropertyDescriptors(template);
+        var children = template.nodes()
+                              .stream().map(n -> {
+                    var serializableArtifact = n.artifact().accept(new ArtifactToSerializableArtifactVisitor(jsonSchemaDescription));
+                    return new SerializableEmbeddedArtifact((SerializableEmbeddableArtifact) serializableArtifact,
+                                                            n.multiplicity(),
+                                                            n.visibility());
+                }).toList();
+        return new SerializableTemplate(new TemplateJsonSchemaMixin(template.toCompactString(),
+                                                                    jsonSchemaDescription,
+                                                                    children),
+                                        template.id(),
+                                        template.artifactInfo(),
+                                        template.versionInfo(),
+                                        template.modificationInfo(),
+                                        children,
+                                        new TemplateUiMixin(
+                                                new UiPropertyOrderMixin(propertyDescriptors),
+                                                new UiPropertyLabelsMixin(propertyDescriptors),
+                                                new UiPropertyDescriptionsMixin(propertyDescriptors),
+                                                new UiPagesMixin(List.of())
+                                        ));
     }
 }

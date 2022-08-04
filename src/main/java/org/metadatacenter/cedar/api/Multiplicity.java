@@ -8,7 +8,7 @@ import javax.annotation.Nullable;
 import java.util.Objects;
 import java.util.Optional;
 
-@JsonInclude(JsonInclude.Include.NON_NULL)
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public record Multiplicity(@Nullable @JsonProperty("minItems") Integer min,
                            @Nullable @JsonProperty("maxItems") Integer max) {
 
@@ -22,13 +22,16 @@ public record Multiplicity(@Nullable @JsonProperty("minItems") Integer min,
         this.max = max;
     }
 
-    @JsonIgnore
     public Integer getMin() {
         return Optional.ofNullable(min).orElse(0);
     }
 
-    @JsonIgnore
     public Optional<Integer> getMax() {
         return Optional.ofNullable(max);
+    }
+
+    @JsonIgnore
+    public boolean isMaxOne() {
+        return getMax().orElse(Integer.MAX_VALUE).equals(1);
     }
 }

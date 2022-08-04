@@ -12,6 +12,7 @@ import picocli.CommandLine.Option;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -47,7 +48,11 @@ public class ValidateArtifactCommand implements CedarCliCommand {
         var serialization = Files.readString(artifact, StandardCharsets.UTF_8);
         var result = request.send(serialization, artifactType, apiKey.getApiKey());
         System.err.println("Valid: " + result.validates());
-        result.errors().forEach(ValidationError::printToStdError);
+        var errors = result.errors();
+        if(!errors.isEmpty()) {
+            System.err.printf("\033[31;1mNumber of errors: %d\033[30m\n\n", errors.size());
+        }
+        errors.forEach(ValidationError::printToStdError);
         return 0;
     }
 }
