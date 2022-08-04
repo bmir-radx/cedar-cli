@@ -14,17 +14,27 @@ import javax.annotation.Nullable;
 public record TemporalFieldUi(TemporalGranularity temporalGranularity,
                               boolean timeZoneEnabled,
                               @Nullable InputTimeFormat inputTimeFormat,
-                              boolean valueRecommendationEnabled) implements FieldUi {
+                              boolean valueRecommendationEnabled,
+                              Visibility visibility) implements FieldUi {
 
     private static final boolean TIME_ZONE_ENABLED = true;
 
     public static TemporalFieldUi getDefault() {
-        return new TemporalFieldUi(TemporalGranularity.DECIMAL_SECOND, TIME_ZONE_ENABLED, InputTimeFormat.TWENTY_FOUR_HOUR, false);
+        return new TemporalFieldUi(TemporalGranularity.DECIMAL_SECOND, TIME_ZONE_ENABLED, InputTimeFormat.TWENTY_FOUR_HOUR, false, Visibility.VISIBLE);
     }
 
     @Override
     @JsonProperty("inputType")
     public InputType inputType() {
         return InputType.TEMPORAL;
+    }
+
+    @Override
+    public FieldUi withVisibility(Visibility visibility) {
+        return new TemporalFieldUi(temporalGranularity(),
+                                   timeZoneEnabled(),
+                                   inputTimeFormat(),
+                                   valueRecommendationEnabled(),
+                                   visibility);
     }
 }

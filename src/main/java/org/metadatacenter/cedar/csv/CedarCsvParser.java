@@ -150,7 +150,8 @@ public class CedarCsvParser {
                                           FieldValueConstraints.empty(),
                                           new BasicFieldUi(
                                                   InputType.SECTION_BREAK,
-                                                  false
+                                                  false,
+                                                  Visibility.VISIBLE
                                           ));
         }
         else {
@@ -178,11 +179,11 @@ public class CedarCsvParser {
                     .orElse(TemporalFieldUi.getDefault());
         }
         else if(row.isSection()) {
-            return new StaticFieldUi(InputType.SECTION_BREAK, false);
+            return new StaticFieldUi(InputType.SECTION_BREAK, false, Visibility.VISIBLE);
         }
         else {
             return new BasicFieldUi(row.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(InputType.TEXTFIELD),
-                             false);
+                             false, Visibility.VISIBLE);
         }
     }
 
