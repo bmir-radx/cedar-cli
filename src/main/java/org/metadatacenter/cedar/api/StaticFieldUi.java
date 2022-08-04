@@ -13,9 +13,4 @@ public record StaticFieldUi(InputType inputType, boolean valueRecommendationEnab
     public String content() {
         return null;
     }
-
-    @Override
-    public FieldUi withVisibility(Visibility visibility) {
-        return new StaticFieldUi(inputType, valueRecommendationEnabled, visibility);
-    }
 }

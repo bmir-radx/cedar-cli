@@ -159,8 +159,7 @@ public class CedarCsvParser {
                                           FieldValueConstraints.empty(),
                                           new BasicFieldUi(
                                                   InputType.SECTION_BREAK,
-                                                  false,
-                                                  Visibility.VISIBLE
+                                                  false
                                           ));
         }
         else {
@@ -182,7 +181,6 @@ public class CedarCsvParser {
                                                          List.of()),
                                         VersionInfo.initialDraft(),
                                         ModificationInfo.empty(),
-                                        Multiplicity.ZERO_TO_ONE,
                                         embeddedArtifacts);
     }
 
@@ -192,7 +190,6 @@ public class CedarCsvParser {
             return row.getInputType()
                     .flatMap(CedarCsvInputType::getCedarTemporalType)
                     .map(CedarTemporalType::getDefaultTemporalFieldUi)
-                    .map(fieldUi -> fieldUi.withVisibility(visibility))
                     .orElse(TemporalFieldUi.getDefault());
         }
         else if(row.isSection()) {
@@ -200,7 +197,7 @@ public class CedarCsvParser {
         }
         else {
             return new BasicFieldUi(row.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(InputType.TEXTFIELD),
-                             false, visibility);
+                             false);
         }
     }
 

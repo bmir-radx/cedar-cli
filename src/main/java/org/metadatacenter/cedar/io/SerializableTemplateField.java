@@ -15,11 +15,14 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-30
  */
-@JsonTypeName(SerializableTemplateField.TYPE)
 public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateFieldJsonSchemaMixin jsonSchemaMixin,
                                         @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
-                                        @JsonUnwrapped @JsonProperty(access = READ_ONLY) CedarTemplateField templateField,
-                                        @JsonIgnore JsonSchemaFormat jsonSchemaFormat) implements SerializableTemplateNode {
+                                        @JsonProperty("@id") CedarId id,
+                                        @JsonUnwrapped @JsonProperty(access = READ_ONLY) ArtifactInfo artifactInfo,
+                                        @JsonUnwrapped @JsonProperty(access = READ_ONLY) VersionInfo versionInfo,
+                                        @JsonUnwrapped ModificationInfo modificationInfo,
+                                        @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
+                                        @JsonProperty("_ui") FieldUi ui) implements SerializableEmbeddableArtifact {
 
     static final String TYPE = "https://schema.metadatacenter.org/core/TemplateField";
 
@@ -38,8 +41,12 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                                               templateField.valueConstraints().isMultipleChoice());
         return new SerializableTemplateField(jsonSchemaInfo,
                                              ModelVersion.V1_6_0,
-                                             templateField,
-                                             format);
+                                             templateField.id(),
+                                             templateField.artifactInfo(),
+                                             templateField.versionInfo(),
+                                             templateField.modificationInfo(),
+                                             templateField.valueConstraints(),
+                                             templateField.ui());
     }
 
     @JsonProperty("@type")
@@ -93,6 +100,6 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
 
     @Override
     public String getSchemaName() {
-        return templateField.artifactInfo().schemaName();
+        return artifactInfo().schemaName();
     }
 }

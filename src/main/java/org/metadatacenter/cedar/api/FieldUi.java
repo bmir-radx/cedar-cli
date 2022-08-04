@@ -1,7 +1,6 @@
 package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
@@ -15,14 +14,4 @@ public interface FieldUi {
     InputType inputType();
 
     boolean valueRecommendationEnabled();
-
-    @JsonIgnore
-    Visibility visibility();
-
-    @JsonProperty("hidden")
-    default boolean isHidden() {
-        return visibility().equals(Visibility.HIDDEN);
-    }
-
-    FieldUi withVisibility(Visibility visibility);
 }

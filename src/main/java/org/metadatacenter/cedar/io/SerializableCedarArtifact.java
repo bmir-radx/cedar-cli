@@ -10,12 +10,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-31
  */
-@JsonSubTypes({
-        @JsonSubTypes.Type(SerializableTemplateField.class),
-        @JsonSubTypes.Type(SerializableTemplateElement.class),
-        @JsonSubTypes.Type(SerializableTemplate.class)
-})
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "@type")
 public interface SerializableCedarArtifact {
 
     @JsonIgnore

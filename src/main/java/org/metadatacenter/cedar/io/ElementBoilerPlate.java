@@ -32,7 +32,8 @@ public class ElementBoilerPlate {
                                                                                        {
                                                                                          "@context": {
                                                                                            "type": "object",
-                                                                                           "properties": {},
+                                                                                           "properties": {
+                                                                                           },
                                                                                            "additionalProperties": false
                                                                                          },
                                                                                          "@id": {
@@ -57,7 +58,7 @@ public class ElementBoilerPlate {
                                                                                            ]
                                                                                          }
                                                                                        }
-                                                                                       """);
+                                                                                                                                                                              """);
 
     /**
      * The boilerplate value for the JSON-Schema "required" JSON-Property for Elements.  The JSON-Array

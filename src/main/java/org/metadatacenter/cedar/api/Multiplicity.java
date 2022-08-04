@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,10 +22,12 @@ public record Multiplicity(@Nullable @JsonProperty("minItems") Integer min,
         this.max = max;
     }
 
+    @JsonIgnore
     public Integer getMin() {
         return Optional.ofNullable(min).orElse(0);
     }
 
+    @JsonIgnore
     public Optional<Integer> getMax() {
         return Optional.ofNullable(max);
     }

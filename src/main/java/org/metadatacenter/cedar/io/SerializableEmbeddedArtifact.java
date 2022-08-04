@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import org.metadatacenter.cedar.api.EmbeddedCedarArtifact;
 import org.metadatacenter.cedar.api.Multiplicity;
+import org.metadatacenter.cedar.api.Visibility;
 
 /**
  * Matthew Horridge
@@ -14,7 +15,12 @@ import org.metadatacenter.cedar.api.Multiplicity;
  * have extra information specified for them such as multiplicity`
  */
 public record SerializableEmbeddedArtifact(@JsonUnwrapped
-                                           EmbeddedCedarArtifact artifact,
-                                           @JsonUnwrapped SerializableTemplateElement templateElement) {
+                                           SerializableEmbeddableArtifact artifact,
+                                           @JsonUnwrapped Multiplicity multiplicity,
+                                           @JsonUnwrapped
+                                           Visibility visibility) {
 
+    public String getSchemaName() {
+        return artifact.getSchemaName();
+    }
 }

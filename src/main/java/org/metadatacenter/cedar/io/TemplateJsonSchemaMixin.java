@@ -14,11 +14,11 @@ import java.util.*;
  */
 public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
                                       @JsonProperty("description") String description,
-                                      @JsonIgnore List<SerializableTemplateNode> nodes) implements JsonSchema {
+                                      @JsonIgnore List<SerializableEmbeddedArtifact> nodes) implements JsonSchema {
 
     public TemplateJsonSchemaMixin(@JsonProperty("title") String title,
                                    @JsonProperty("description") String description,
-                                   List<SerializableTemplateNode> nodes) {
+                                   List<SerializableEmbeddedArtifact> nodes) {
         this.title = Objects.requireNonNull(title);
         this.description = Objects.requireNonNull(description);
         this.nodes = Objects.requireNonNull(nodes);
@@ -88,7 +88,7 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
         union.add("pav:createdBy");
         union.add("pav:lastUpdatedOn");
         nodes.stream()
-              .map(SerializableCedarArtifact::getSchemaName)
+              .map(SerializableEmbeddedArtifact::getSchemaName)
               .forEach(union::add);
         return union;
     }

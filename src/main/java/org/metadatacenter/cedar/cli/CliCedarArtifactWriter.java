@@ -24,13 +24,11 @@ public class CliCedarArtifactWriter {
 
     public void writeCedarArtifact(CedarArtifact cedarArtifact,
                                    Path outputDirectory,
-                                   String jsonSchemaTitle,
                                    String jsonSchemaDescription) throws IOException {
         var fileName = cedarArtifact.artifactInfo().schemaIdentifier() + ".json";
         var outputFile = outputDirectory.resolve(fileName);
         var outputStream = Files.newOutputStream(outputFile);
         cedarArtifactWriter.writeCedarArtifact(cedarArtifact,
-                                               jsonSchemaTitle,
                                                jsonSchemaDescription, outputStream);
     }
 }

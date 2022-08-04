@@ -42,7 +42,6 @@ public class TemplateFieldCedarImporter {
 
         var outputStream = new ByteArrayOutputStream();
         artifactWriter.writeCedarArtifact(artifact,
-                                          jsonSchemaTitle,
                                           jsonSchemaDescription, outputStream);
         var publisher = HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray());
         String artifactTypePathElement = getArtifactTypePathElement(artifact);

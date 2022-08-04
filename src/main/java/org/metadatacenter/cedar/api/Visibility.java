@@ -1,6 +1,8 @@
 package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonValue;
 
 /**
  * Matthew Horridge
@@ -10,7 +12,18 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 public enum Visibility {
 
     @JsonEnumDefaultValue
-    VISIBLE,
+    VISIBLE(false),
 
-    HIDDEN
+    HIDDEN(true);
+
+    private final boolean hidden;
+
+    Visibility(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @JsonProperty("hidden")
+    public boolean isHidden() {
+        return hidden;
+    }
 }

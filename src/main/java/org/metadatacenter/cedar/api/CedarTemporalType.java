@@ -12,20 +12,17 @@ public enum CedarTemporalType {
     DATE_TIME("xsd:dateTime", new TemporalFieldUi(TemporalGranularity.DECIMAL_SECOND,
                                                   true,
                                                   InputTimeFormat.TWENTY_FOUR_HOUR,
-                                                  true,
-                                                  Visibility.VISIBLE)),
+                                                  true)),
 
     DATE("xsd:date", new TemporalFieldUi(TemporalGranularity.DAY,
                                          false,
                                          null,
-                                         true,
-                                         Visibility.VISIBLE)),
+                                         true)),
 
     TIME("xsd:time", new TemporalFieldUi(TemporalGranularity.DECIMAL_SECOND,
                                          true,
                                          InputTimeFormat.TWENTY_FOUR_HOUR,
-                                         true,
-                                         Visibility.VISIBLE));
+                                         true));
 
     public CedarTemporalType getDefaultType() {
         return CedarTemporalType.DATE_TIME;

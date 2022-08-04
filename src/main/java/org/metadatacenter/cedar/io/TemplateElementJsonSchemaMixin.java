@@ -16,7 +16,7 @@ import java.util.*;
 public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title,
                                              @JsonProperty("description") String description,
                                              @JsonProperty("multiValued") boolean multiValued,
-                                             @JsonIgnore List<SerializableTemplateNode> nodes) implements JsonSchema {
+                                             @JsonIgnore List<SerializableEmbeddedArtifact> nodes) implements JsonSchema {
 
     private static final Map<String, Object> propertiesForIris;
 
@@ -38,8 +38,7 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
     @Override
     public Map<String, Object> properties() {
         var value = new HashMap<>(ElementBoilerPlate.json_schema__properties);
-
-        var contextProperties = new LinkedHashMap<String, Object>();
+        var contextProperties = new LinkedHashMap<>();
         nodes.forEach(f -> {
             var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();
             contextProperties.put(f.getSchemaName(), Map.of("enum", List.of(propertyIri)));
@@ -61,7 +60,7 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
         union.add("pav:createdBy");
         union.add("pav:lastUpdatedOn");
         nodes.stream()
-                .map(SerializableCedarArtifact::getSchemaName)
+                .map(SerializableEmbeddedArtifact::getSchemaName)
                 .forEach(union::add);
         return union;
     }

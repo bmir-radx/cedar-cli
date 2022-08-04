@@ -23,7 +23,6 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
                                    @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                    @Nonnull @JsonUnwrapped VersionInfo versionInfo,
                                    @Nonnull @JsonUnwrapped ModificationInfo modificationInfo,
-                                   @Nonnull @JsonUnwrapped Multiplicity multiplicity,
                                    @Nonnull @JsonIgnore List<EmbeddedCedarArtifact> nodes) implements EmbeddableCedarArtifact, CedarSchemaArtifact, CedarArtifactContainer {
 
     @Override

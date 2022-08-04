@@ -13,7 +13,6 @@ import java.util.Map;
  * Stanford Center for Biomedical Informatics Research
  * 2022-08-03
  */
-@JsonTypeName(SerializableTemplate.TYPE)
 public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSchemaMixin,
                                    @JsonUnwrapped CedarTemplate template,
                                    @JsonProperty("_ui") TemplateUiMixin ui) implements SerializableCedarArtifact {
