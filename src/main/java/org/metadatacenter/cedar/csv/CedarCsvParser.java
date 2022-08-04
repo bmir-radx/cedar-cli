@@ -78,7 +78,7 @@ public class CedarCsvParser {
                 // Basically a special field of the root (I think!)
                 // We therefore reset the current parent as the root
                 currentParentNode = rootNode;
-                currentParentNode.addChild(rowNode);
+//                currentParentNode.addChild(rowNode);
             }
             else if(row.isElement()) {
                 var elementDepth = row.getElementLevel();

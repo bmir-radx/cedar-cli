@@ -37,7 +37,7 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
     @Override
     public Map<String, Object> properties() {
         var union = new HashMap<>(propertiesForIris);
-        var contextProperties = new HashMap<String, Object>();
+        var contextProperties = new HashMap<String, Object>(propertiesForIris);
         var requiredList = new ArrayList<String>();
         fields.forEach(f -> {
             var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();

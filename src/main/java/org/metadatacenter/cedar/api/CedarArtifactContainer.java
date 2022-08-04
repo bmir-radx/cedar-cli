@@ -1,5 +1,7 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.annotation.Nonnull;
 import java.util.List;
 
@@ -17,5 +19,6 @@ public interface CedarArtifactContainer {
      * Gets the artifact nodes contained by this container.
      */
     @Nonnull
+    @JsonIgnore
     List<CedarTemplateNode> nodes();
 }

@@ -22,7 +22,7 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
 
     @Override
     public String toCompactString() {
-        return null;
+        return "Template(" + artifactInfo.schemaName() + ")";
     }
 
     @Override

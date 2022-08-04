@@ -15,7 +15,6 @@ import java.util.Map;
  */
 @JsonTypeName(SerializableTemplate.TYPE)
 public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSchemaMixin,
-                                   @JsonUnwrapped TemplateJsonLdMixin jsonLdMixin,
                                    @JsonUnwrapped CedarTemplate template,
                                    @JsonProperty("_ui") TemplateUiMixin ui) implements SerializableCedarArtifact {
 

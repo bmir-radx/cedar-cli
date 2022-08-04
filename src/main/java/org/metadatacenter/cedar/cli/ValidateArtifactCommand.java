@@ -3,6 +3,7 @@ package org.metadatacenter.cedar.cli;
 import org.metadatacenter.cedar.api.ArtifactSimpleTypeName;
 import org.metadatacenter.cedar.webapi.ValidateArtifactRequest;
 import org.metadatacenter.cedar.webapi.ValidateArtifactResponse;
+import org.metadatacenter.cedar.webapi.ValidationError;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -11,6 +12,7 @@ import picocli.CommandLine.Option;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Matthew Horridge
@@ -45,7 +47,7 @@ public class ValidateArtifactCommand implements CedarCliCommand {
         var serialization = Files.readString(artifact, StandardCharsets.UTF_8);
         var result = request.send(serialization, artifactType, apiKey.getApiKey());
         System.err.println("Valid: " + result.validates());
-        result.errors().stream().map(ValidateArtifactResponse.ValidationError::message).forEach(m -> System.err.printf("Error: %s\n", m));
+        result.errors().forEach(ValidationError::printToStdError);
         return 0;
     }
 }

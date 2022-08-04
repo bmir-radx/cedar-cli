@@ -38,10 +38,10 @@ public class CedarArtifactWriter {
                     .writeValue(outputStream, wrappedElement);
         }
         else {
-            var wrappedElement = wrapTemplate((CedarTemplate) cedarArtifact,
+            var wrappedTemplate = wrapTemplate((CedarTemplate) cedarArtifact,
                                               jsonSchemaTitle, jsonSchemaDescription);
             jsonMapper.writerWithDefaultPrettyPrinter()
-                      .writeValue(outputStream, cedarArtifact);
+                      .writeValue(outputStream, wrappedTemplate);
         }
     }
 
@@ -50,7 +50,6 @@ public class CedarArtifactWriter {
                                               String jsonSchemaDescription) {
         var wrappedNodes = getWrappedNodes(template, jsonSchemaTitle, jsonSchemaDescription);
         return new SerializableTemplate(new TemplateJsonSchemaMixin(jsonSchemaTitle, jsonSchemaDescription, wrappedNodes),
-                                        new TemplateJsonLdMixin(),
                                         template,
                                         TemplateUiMixin.fromTemplate(template));
     }

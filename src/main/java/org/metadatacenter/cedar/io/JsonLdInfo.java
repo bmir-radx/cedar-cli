@@ -1,6 +1,8 @@
 package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import java.io.IOException;
@@ -14,9 +16,11 @@ import java.util.Map;
  */
 public record JsonLdInfo() {
 
-    private static final Map<String, Object> fieldContextBoilerPlate = parseContextBoilerPlate("/json-ld-field-context.json");
+    private static final Map<String, Object> fieldContextBoilerPlate = parseContextBoilerPlate(
+            "/json-ld-field-context.json");
 
-    private static final Map<String, Object> elementContextBoilerPlate = parseContextBoilerPlate("/json-ld-element-context.json");
+    private static final Map<String, Object> elementContextBoilerPlate = parseContextBoilerPlate(
+            "/template-element-jsonld-context.json");
 
     @JsonCreator
     public static JsonLdInfo get() {
@@ -36,8 +40,7 @@ public record JsonLdInfo() {
     private static Map<String, Object> parseContextBoilerPlate(String path) {
         try {
             var contextInputStream = JsonLdInfo.class.getResourceAsStream(path);
-            var mapper = JsonMapper.builder()
-                    .build();
+            var mapper = JsonMapper.builder().build();
             return (Map<String, Object>) mapper.reader().readValue(contextInputStream, Map.class);
         } catch (IOException e) {
             throw new UncheckedIOException(e);

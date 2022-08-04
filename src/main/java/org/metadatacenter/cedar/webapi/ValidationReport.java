@@ -8,10 +8,13 @@ import java.util.List;
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
- * 2022-08-02
+ * 2022-08-03
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record ValidateArtifactResponse(@JsonProperty("validates") boolean validates,
-                                       @JsonProperty("errors") List<ValidationError> errors) {
+public record ValidationReport(@JsonProperty("validates") boolean validates,
+                              @JsonProperty("errors") List<ValidationError> errors) {
 
+    public void printToStdError() {
+        errors.forEach(ValidationError::printToStdError);
+    }
 }

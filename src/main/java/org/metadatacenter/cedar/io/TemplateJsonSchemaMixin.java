@@ -16,16 +16,24 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
                                       @JsonProperty("description") String description,
                                       @JsonIgnore List<SerializableTemplateNode> nodes) implements JsonSchema {
 
-    private static final Map<String, Object> propertiesForIris;
-
-    static {
-        propertiesForIris = readMap();
+    public TemplateJsonSchemaMixin(@JsonProperty("title") String title,
+                                   @JsonProperty("description") String description,
+                                   List<SerializableTemplateNode> nodes) {
+        this.title = Objects.requireNonNull(title);
+        this.description = Objects.requireNonNull(description);
+        this.nodes = Objects.requireNonNull(nodes);
     }
 
-    private static Map<String, Object> readMap() {
+    private static final Map<String, Object> jsonschema_properties_boilerplate = readMap("/template-json-schema-properties.json");
+
+    private static final Map<String, Object> jsonSchema_Properties_Context_Value = readMap(
+            "/template-json-schema-properties-context-boilerplate.json");
+
+
+    private static Map<String, Object> readMap(String path) {
         try {
             var is = TemplateFieldJsonSchemaMixin.class.getResourceAsStream(
-                    "/template-element-iris-json-schema.json");
+                    path);
             return (Map<String, Object>) new ObjectMapper().readValue(is, Map.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,14 +48,23 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
 
     @Override
     public Map<String, Object> properties() {
-        var union = new HashMap<>(propertiesForIris);
-        var contextProperties = new HashMap<String, Object>();
+
+        var union = new HashMap<>(jsonschema_properties_boilerplate);
+        var contextProperties = new HashMap<>(jsonSchema_Properties_Context_Value);
         var requiredList = new ArrayList<String>();
         nodes.forEach(f -> {
             var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();
             contextProperties.put(f.getSchemaName(), Map.of("enum", List.of(propertyIri)));
             requiredList.add(f.getSchemaName());
         });
+        requiredList.add("oslc:modifiedBy");
+        requiredList.add("pav:createdBy");
+        requiredList.add("pav:createdOn");
+        requiredList.add("pav:derivedFrom");
+        requiredList.add("pav:lastUpdatedOn");
+        requiredList.add("schema:description");
+        requiredList.add("schema:isBasedOn");
+        requiredList.add("schema:name");
         var contextPropertyValue = Map.of(
                 "type", "object",
                 "properties", contextProperties,
