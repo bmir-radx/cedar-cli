@@ -1,8 +1,10 @@
 package org.metadatacenter.cedar.io;
 
+import java.util.List;
 import java.util.Map;
 
-import static org.metadatacenter.cedar.io.BoilerPlate.fromJson;
+import static org.metadatacenter.cedar.io.BoilerPlate.fromJsonArray;
+import static org.metadatacenter.cedar.io.BoilerPlate.fromJsonObject;
 
 /**
  * Matthew Horridge
@@ -26,15 +28,12 @@ public class ElementBoilerPlate {
      * ]
      * }}
      */
-    public static final Map<String, Object> json_schema__properties = fromJson("""
+    public static final Map<String, Object> json_schema__properties = fromJsonObject("""
                                                                                        {
                                                                                          "@context": {
                                                                                            "type": "object",
                                                                                            "properties": {},
-                                                                                           "additionalProperties": false,
-                                                                                           "required": [
-                                                                                             "Last Name"
-                                                                                           ]
+                                                                                           "additionalProperties": false
                                                                                          },
                                                                                          "@id": {
                                                                                            "type": "string",
@@ -68,14 +67,14 @@ public class ElementBoilerPlate {
      *  [ "@context", "@id", "First Name"]
      * }
      */
-    public static final Map<String, Object> json_schema__required = fromJson("""
+    public static final List<String> json_schema__required = fromJsonArray("""
                                                                                     [
                                                                                       "@context",
                                                                                       "@id"
                                                                                     ]
                                                                                     """);
 
-    public static final Map<String, Object> jsonld_context = fromJson("""
+    public static final Map<String, Object> jsonld_context = fromJsonObject("""
                                                                               {
                                                                                     "xsd": "http://www.w3.org/2001/XMLSchema#",
                                                                                     "pav": "http://purl.org/pav/",

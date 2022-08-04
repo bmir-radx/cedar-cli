@@ -2,6 +2,7 @@ package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.metadatacenter.cedar.api.EmbeddedCedarArtifact;
 import org.metadatacenter.cedar.api.Multiplicity;
 
 /**
@@ -12,8 +13,8 @@ import org.metadatacenter.cedar.api.Multiplicity;
  * Serialization structure for template fields that are embedded in elements or templates.  Embedded template fields
  * have extra information specified for them such as multiplicity`
  */
-public record SerializableEmbeddedTemplateField(@JsonUnwrapped Multiplicity multiplicity,
-                                                @JsonProperty("hidden") boolean hidden,
-                                                @JsonUnwrapped SerializableTemplateElement templateElement) {
+public record SerializableEmbeddedArtifact(@JsonUnwrapped
+                                           EmbeddedCedarArtifact artifact,
+                                           @JsonUnwrapped SerializableTemplateElement templateElement) {
 
 }

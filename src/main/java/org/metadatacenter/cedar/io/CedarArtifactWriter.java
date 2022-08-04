@@ -54,7 +54,7 @@ public class CedarArtifactWriter {
                                         TemplateUiMixin.fromTemplate(template));
     }
 
-    private SerializableTemplateNode wrapNode(CedarTemplateNode node,
+    private SerializableTemplateNode wrapNode(CedarArtifact node,
                                               String jsonSchemaTitle,
                                               String jsonSchemaDescription) {
         if(node instanceof CedarTemplateField) {
@@ -87,7 +87,7 @@ public class CedarArtifactWriter {
                                                            String jsonSchemaDescription) {
         return node.nodes()
                    .stream()
-                   .map(n -> wrapNode(n, jsonSchemaTitle, jsonSchemaDescription))
+                   .map(n -> wrapNode(n.artifact(), jsonSchemaTitle, jsonSchemaDescription))
                    .toList();
     }
 

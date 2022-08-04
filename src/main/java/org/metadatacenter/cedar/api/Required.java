@@ -9,12 +9,22 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
  */
 public enum Required {
 
-    REQUIRED,
+    REQUIRED(1),
 
     @JsonEnumDefaultValue
-    OPTIONAL;
+    OPTIONAL(0);
+
+    private final int lowerBound;
+
+    Required(int lowerBound) {
+        this.lowerBound = lowerBound;
+    }
 
     public static Required getDefault() {
         return OPTIONAL;
+    }
+
+    public Integer getMultiplicityLowerBound() {
+        return lowerBound;
     }
 }

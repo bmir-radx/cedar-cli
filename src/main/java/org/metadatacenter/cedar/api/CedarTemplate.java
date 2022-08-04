@@ -18,7 +18,7 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
                             @JsonUnwrapped ArtifactInfo artifactInfo,
                             @JsonUnwrapped VersionInfo versionInfo,
                             @JsonUnwrapped ModificationInfo modificationInfo,
-                            List<CedarTemplateNode> nodes) implements CedarSchemaArtifact, CedarArtifactContainer {
+                            List<EmbeddedCedarArtifact> nodes) implements CedarSchemaArtifact, CedarArtifactContainer {
 
     @Override
     public String toCompactString() {
@@ -42,12 +42,12 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         return elements;
     }
 
-    private void collectElements(List<CedarTemplateNode> nodes, List<CedarTemplateElement> elements) {
+    private void collectElements(List<EmbeddedCedarArtifact> nodes, List<CedarTemplateElement> elements) {
         nodes.forEach(n -> collectElements(n, elements));
     }
 
-    private void collectElements(CedarTemplateNode node, List<CedarTemplateElement> elements) {
-        node.ifTemplateElement(element -> {
+    private void collectElements(EmbeddedCedarArtifact node, List<CedarTemplateElement> elements) {
+        node.artifact().ifTemplateElement(element -> {
             elements.add(element);
             collectElements(element.nodes(), elements);
         });
@@ -60,14 +60,14 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         return fields;
     }
 
-    private void collectFields(Collection<CedarTemplateNode> nodes, List<CedarTemplateField> fields) {
+    private void collectFields(Collection<EmbeddedCedarArtifact> nodes, List<CedarTemplateField> fields) {
         nodes.forEach(n -> collectFields(n, fields));
     }
 
-    private void collectFields(CedarTemplateNode node, List<CedarTemplateField> fields) {
-        node.ifTemplateElement(element -> {
+    private void collectFields(EmbeddedCedarArtifact node, List<CedarTemplateField> fields) {
+        node.artifact().ifTemplateElement(element -> {
             collectFields(element.nodes(), fields);
         });
-        node.ifTemplateField(fields::add);
+        node.artifact().ifTemplateField(fields::add);
     }
 }

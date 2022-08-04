@@ -23,7 +23,8 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
                                    @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                    @Nonnull @JsonUnwrapped VersionInfo versionInfo,
                                    @Nonnull @JsonUnwrapped ModificationInfo modificationInfo,
-                                   @Nonnull @JsonIgnore List<CedarTemplateNode> nodes) implements CedarTemplateNode, CedarSchemaArtifact, CedarArtifactContainer {
+                                   @Nonnull @JsonUnwrapped Multiplicity multiplicity,
+                                   @Nonnull @JsonIgnore List<EmbeddedCedarArtifact> nodes) implements EmbeddableCedarArtifact, CedarSchemaArtifact, CedarArtifactContainer {
 
     @Override
     public <R, E extends Exception> R accept(CedarSchemaArtifactVisitor<R, E> visitor) throws E {

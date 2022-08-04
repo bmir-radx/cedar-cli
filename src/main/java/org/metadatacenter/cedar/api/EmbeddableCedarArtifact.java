@@ -9,9 +9,10 @@ import java.util.function.Consumer;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-27
  *
- * Provides a common base interface for CEDAR Template Fields and Template Elements
+ * Provides a common base interface for CEDAR artifacts that can be embedded in other CEDAR artifacts – in other words
+ * Template Fields and Template Elements.
  */
-public interface CedarTemplateNode {
+public interface EmbeddableCedarArtifact extends CedarSchemaArtifact {
 
     /**
      * Gets the schema:name value for the underlying template field or element
@@ -28,5 +29,4 @@ public interface CedarTemplateNode {
     void ifTemplateElement(Consumer<CedarTemplateElement> elementConsumer);
 
     void ifTemplateField(Consumer<CedarTemplateField> fieldConsumer);
-
 }

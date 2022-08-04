@@ -2,7 +2,7 @@ package org.metadatacenter.cedar.io;
 
 import java.util.Map;
 
-import static org.metadatacenter.cedar.io.BoilerPlate.fromJson;
+import static org.metadatacenter.cedar.io.BoilerPlate.fromJsonObject;
 
 /**
  * Matthew Horridge
@@ -11,7 +11,7 @@ import static org.metadatacenter.cedar.io.BoilerPlate.fromJson;
  */
 public class TemplateBoilerPlate {
 
-    public static final Map<String, Object> jsonld_context = fromJson("""
+    public static final Map<String, Object> jsonld_context = fromJsonObject("""
                                                                               {
                                                                                 "xsd": "http://www.w3.org/2001/XMLSchema#",
                                                                                 "pav": "http://purl.org/pav/",
@@ -42,7 +42,7 @@ public class TemplateBoilerPlate {
     /**
      * The JSON Schema for the boilerplate template JSON-LD context
      */
-    public static final Map<String, Object> jsonld_context_jsonschema = fromJson("""
+    public static final Map<String, Object> jsonld_context_jsonschema = fromJsonObject("""
                                                                                          {
                                                                                            "type": "object",
                                                                                            "properties": {

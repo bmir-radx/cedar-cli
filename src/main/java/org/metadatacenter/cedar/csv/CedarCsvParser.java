@@ -113,7 +113,10 @@ public class CedarCsvParser {
     }
 
     private CedarTemplate translateToTemplate(Node rootNode) {
-        var childNodes = rootNode.childNodes.stream().map(this::translateToCedarNode)
+        var childNodes = rootNode.childNodes.stream().map(node -> {
+            var artifact = translateToEmbeddableArtifact(node);
+                                     return getEmbeddedCedarArtifact(node, artifact);
+                                 })
                 .toList();
         return new CedarTemplate(null,
                                  new ArtifactInfo("Generated Template",
@@ -126,12 +129,18 @@ public class CedarCsvParser {
                                  childNodes);
     }
 
-    private CedarTemplateNode translateToCedarNode(Node node) {
-        var childNodes = node.childNodes.stream().
-                map(this::translateToCedarNode)
-                .toList();
+    private static EmbeddedCedarArtifact getEmbeddedCedarArtifact(Node node, EmbeddableCedarArtifact artifact) {
+        var minItems = node.row.getRequired().getMultiplicityLowerBound();
+        var maxItems = node.row.getCardinality().getMultiplicityUpperBound()
+                               .orElse(null);
+        var multiplicity = new Multiplicity(minItems, maxItems);
+        var visibility = node.row.visibility();
+        return new EmbeddedCedarArtifact(artifact, multiplicity, visibility);
+    }
+
+    private EmbeddableCedarArtifact translateToEmbeddableArtifact(Node node) {
         if(node.isElement()) {
-            return translateToElement(node, childNodes);
+            return translateToElement(node);
         }
         else if(node.isField()) {
             // NO child nodes
@@ -159,7 +168,11 @@ public class CedarCsvParser {
         }
     }
 
-    private CedarTemplateElement translateToElement(Node node, List<CedarTemplateNode> childNodes) {
+    private CedarTemplateElement translateToElement(Node node) {
+        var embeddedArtifacts = node.childNodes.stream().map(childNode -> {
+            var artifact = translateToEmbeddableArtifact(childNode);
+            return getEmbeddedCedarArtifact(childNode, artifact);
+        }).toList();
         return new CedarTemplateElement(null,
                                         new ArtifactInfo(node.row.getStrippedElementName().toLowerCase().replace(" ", "_"),
                                                          node.row.getStrippedElementName(),
@@ -168,7 +181,9 @@ public class CedarCsvParser {
                                                          node.row.getStrippedElementName(),
                                                          List.of()),
                                         VersionInfo.initialDraft(),
-                                        ModificationInfo.empty(), childNodes);
+                                        ModificationInfo.empty(),
+                                        Multiplicity.ZERO_TO_ONE,
+                                        embeddedArtifacts);
     }
 
     private static FieldUi getFieldUi(CedarCsvRow row) {

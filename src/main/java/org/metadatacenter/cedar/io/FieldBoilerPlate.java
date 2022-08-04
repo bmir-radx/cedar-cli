@@ -2,7 +2,7 @@ package org.metadatacenter.cedar.io;
 
 import java.util.Map;
 
-import static org.metadatacenter.cedar.io.BoilerPlate.fromJson;
+import static org.metadatacenter.cedar.io.BoilerPlate.fromJsonObject;
 
 /**
  * Matthew Horridge
@@ -14,7 +14,7 @@ public class FieldBoilerPlate {
     /**
      * The JSON-Schema "properties" property value for instances of a field where the field has a literal value.
      */
-    public static final Map<String, Object> jsonschema_properties_instanceLiteral = fromJson("""
+    public static final Map<String, Object> jsonschema_properties_instanceLiteral = fromJsonObject("""
                                                                                                      {
                                                                                                            "@type": {
                                                                                                              "oneOf": [
@@ -51,7 +51,7 @@ public class FieldBoilerPlate {
     /**
      * The JSON-Schema "properties" property value for instances of a field where the field has a URI value.
      */
-    public static final Map<String, Object> jsonschema_properties__instanceUri = fromJson("""
+    public static final Map<String, Object> jsonschema_properties__instanceUri = fromJsonObject("""
                                                                                                   {
                                                                                                       "@type": {
                                                                                                         "oneOf": [
@@ -87,7 +87,7 @@ public class FieldBoilerPlate {
      * The JSON-Schema "required" property value.  This is the same, regarless
      * of the type of instance data for the field.
      */
-    public static final Map<String, Object> jsonld_required = fromJson("""
+    public static final Map<String, Object> jsonld_required = fromJsonObject("""
                                                                                [
                                                                                  "@value"
                                                                                ]
@@ -96,7 +96,7 @@ public class FieldBoilerPlate {
     /**
      * The field's own JSON-LD "@context" property value.
      */
-    public static final Map<String, Object> jsonld_context = fromJson("""
+    public static final Map<String, Object> jsonld_context = fromJsonObject("""
                                                                               {
                                                                                     "xsd": "http://www.w3.org/2001/XMLSchema#",
                                                                                     "pav": "http://purl.org/pav/",

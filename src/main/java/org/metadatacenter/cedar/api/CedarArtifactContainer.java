@@ -20,5 +20,5 @@ public interface CedarArtifactContainer {
      */
     @Nonnull
     @JsonIgnore
-    List<CedarTemplateNode> nodes();
+    List<EmbeddedCedarArtifact> nodes();
 }
