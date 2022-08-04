@@ -172,18 +172,20 @@ public class CedarCsvParser {
     }
 
     private static FieldUi getFieldUi(CedarCsvRow row) {
+        var visibility = row.visibility();
         if(row.getInputType().flatMap(CedarCsvInputType::getCedarTemporalType).isPresent()) {
             return row.getInputType()
                     .flatMap(CedarCsvInputType::getCedarTemporalType)
                     .map(CedarTemporalType::getDefaultTemporalFieldUi)
+                    .map(fieldUi -> fieldUi.withVisibility(visibility))
                     .orElse(TemporalFieldUi.getDefault());
         }
         else if(row.isSection()) {
-            return new StaticFieldUi(InputType.SECTION_BREAK, false, Visibility.VISIBLE);
+            return new StaticFieldUi(InputType.SECTION_BREAK, false, visibility);
         }
         else {
             return new BasicFieldUi(row.getInputType().map(CedarCsvInputType::getCedarInputType).orElse(InputType.TEXTFIELD),
-                             false, Visibility.VISIBLE);
+                             false, visibility);
         }
     }
 

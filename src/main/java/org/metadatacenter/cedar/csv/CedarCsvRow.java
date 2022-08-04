@@ -3,7 +3,9 @@ package org.metadatacenter.cedar.csv;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.Required;
+import org.metadatacenter.cedar.api.Visibility;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -16,10 +18,31 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Element") String element,
                           @JsonProperty("Cardinality") String cardinality,
                           @JsonProperty("Required") Optionality optionality,
+                          @JsonProperty("Visibility") Visibility visibility,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
                           @JsonProperty("Type") CedarCsvInputType inputType,
                           @JsonProperty("Lookup") String lookup) {
+
+    public CedarCsvRow(@JsonProperty("Section") String section,
+                       @JsonProperty("Element") String element,
+                       @JsonProperty("Cardinality") String cardinality,
+                       @JsonProperty("Required") Optionality optionality,
+                       @JsonProperty("Visibility") Visibility visibility,
+                       @JsonProperty("Field Title") String fieldTitle,
+                       @JsonProperty("Description") String description,
+                       @JsonProperty("Type") CedarCsvInputType inputType,
+                       @JsonProperty("Lookup") String lookup) {
+        this.section = section;
+        this.element = element;
+        this.cardinality = cardinality;
+        this.optionality = optionality;
+        this.visibility = Objects.requireNonNull(visibility);
+        this.fieldTitle = fieldTitle;
+        this.description = description;
+        this.inputType = inputType;
+        this.lookup = lookup;
+    }
 
     public boolean isSection() {
         return !section.isBlank();

@@ -1,5 +1,7 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -7,6 +9,7 @@ package org.metadatacenter.cedar.api;
  */
 public enum Visibility {
 
+    @JsonEnumDefaultValue
     VISIBLE,
 
     HIDDEN

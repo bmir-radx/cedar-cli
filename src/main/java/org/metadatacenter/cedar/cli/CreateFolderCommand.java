@@ -18,7 +18,7 @@ public class CreateFolderCommand implements CedarCliCommand {
     @Mixin
     CedarApiKeyMixin apiKey;
 
-    @Option(names = "--parent-folder-id", required = true)
+    @Option(names = "--parent-folder-id")
     String parentFolderId;
 
     @Option(names = "--folder-name", required = true)
@@ -32,10 +32,11 @@ public class CreateFolderCommand implements CedarCliCommand {
 
     @Override
     public Integer call() throws Exception {
+        var resolvedId = parentFolderId != null ? CedarId.resolveFolderId(parentFolderId) : null;
         var createdFolderId = createFolderRequest.send(
                 apiKey.getApiKey(),
                 folderName,
-                CedarId.resolveFolderId(parentFolderId)
+                resolvedId
         );
         System.err.println("Created folder with an Id of " + createdFolderId.id().value());
         return 0;
