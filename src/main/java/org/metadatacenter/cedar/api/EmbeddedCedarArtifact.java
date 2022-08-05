@@ -1,5 +1,7 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 /**
@@ -9,12 +11,14 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
  */
 public record EmbeddedCedarArtifact(@JsonUnwrapped EmbeddableCedarArtifact artifact,
                                     @JsonUnwrapped Multiplicity multiplicity,
-                                    @JsonUnwrapped Visibility visibility) {
+                                    @JsonIgnore Visibility visibility) {
 
+    @JsonIgnore
     public String getSchemaName() {
         return artifact.getSchemaName();
     }
 
+    @JsonIgnore
     public String getSchemaDescription() {
         return artifact.getSchemaDescription();
     }

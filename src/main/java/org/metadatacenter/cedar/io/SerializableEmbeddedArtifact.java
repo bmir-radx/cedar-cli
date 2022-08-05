@@ -25,7 +25,7 @@ import java.util.List;
 public record SerializableEmbeddedArtifact(@JsonIgnore
                                            SerializableEmbeddableArtifact artifact,
                                            @JsonIgnore Multiplicity multiplicity,
-                                           @JsonUnwrapped Visibility visibility) {
+                                           @JsonIgnore Visibility visibility) {
 
     @JsonIgnore
     public String getSchemaName() {
