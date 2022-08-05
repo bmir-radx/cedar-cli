@@ -45,7 +45,7 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
     public Map<String, Object> properties() {
 
         var union = new HashMap<String, Object>();
-        var contextProperties = new HashMap<>(TemplateBoilerPlate.jsonld_context_jsonschema);
+        var contextProperties = new HashMap<>(TemplateBoilerPlate.jsonld_context_jsonschema_properties);
         var requiredList = new ArrayList<String>();
         nodes.forEach(f -> {
             var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();
@@ -67,13 +67,16 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
                 "required", requiredList
         );
         union.put("@context", contextPropertyValue);
+        union.putAll(TemplateBoilerPlate.jsonschema_core_properties);
         nodes.forEach(field -> union.put(field.getSchemaName(), field));
+
+
         return union;
     }
 
     @Override
     public List<String> required() {
-        var union = new ArrayList<String>();
+        var union = new LinkedHashSet<String>();
         union.add("@context");
         union.add("@id");
         union.add("schema:isBasedOn");
@@ -82,9 +85,10 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
         union.add("pav:createdOn");
         union.add("pav:createdBy");
         union.add("pav:lastUpdatedOn");
+        union.add("oslc:modifiedBy");
         nodes.stream()
               .map(SerializableEmbeddedArtifact::getSchemaName)
               .forEach(union::add);
-        return union;
+        return union.stream().toList();
     }
 }

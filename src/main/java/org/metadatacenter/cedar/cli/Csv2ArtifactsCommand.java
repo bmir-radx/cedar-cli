@@ -121,17 +121,11 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
                                                                 version, previousVersion);
         var template = cedarCsvParser.parse(inputStream);
-//
-//        template = new CedarTemplate(template.id(),
-//                                     template.artifactInfo(),
-//                                     template.versionInfo(),
-//                                     template.modificationInfo(),
-//                                     template.nodes().stream().toList());
 
-//        writeCedarArtifact(template);
-//        if (shouldPushToCedar()) {
-//            writeCedarArtifact(template);
-//        }
+        writeCedarArtifact(template);
+        if (shouldPushToCedar()) {
+            writeCedarArtifact(template);
+        }
 
         if (generateElements) {
             var elements = template.getElements();

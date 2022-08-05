@@ -129,7 +129,8 @@ public class CedarCsvParser {
                                  childNodes);
     }
 
-    private static EmbeddedCedarArtifact getEmbeddedCedarArtifact(Node node, EmbeddableCedarArtifact artifact) {
+    private static EmbeddedCedarArtifact getEmbeddedCedarArtifact(Node node,
+                                                                  EmbeddableCedarArtifact artifact) {
         var minItems = node.row.getRequired().getMultiplicityLowerBound();
         var maxItems = node.row.getCardinality().getMultiplicityUpperBound()
                                .orElse(null);

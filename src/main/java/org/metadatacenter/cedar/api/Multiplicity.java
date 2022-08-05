@@ -32,6 +32,6 @@ public record Multiplicity(@Nullable @JsonProperty("minItems") Integer min,
 
     @JsonIgnore
     public boolean isMaxOne() {
-        return getMax().orElse(Integer.MAX_VALUE).equals(1);
+        return getMax().map(max -> max == 1).orElse(false);
     }
 }
