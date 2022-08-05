@@ -24,11 +24,6 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
         this.nodes = Objects.requireNonNull(nodes);
     }
 
-    private static final Map<String, Object> jsonschema_properties_boilerplate = readMap("/template-json-schema-properties.json");
-
-    private static final Map<String, Object> jsonSchema_Properties_Context_Value = readMap(
-            "/template-json-schema-properties-context-boilerplate.json");
-
 
     private static Map<String, Object> readMap(String path) {
         try {
@@ -49,8 +44,8 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
     @Override
     public Map<String, Object> properties() {
 
-        var union = new HashMap<>(jsonschema_properties_boilerplate);
-        var contextProperties = new HashMap<>(jsonSchema_Properties_Context_Value);
+        var union = new HashMap<String, Object>();
+        var contextProperties = new HashMap<>(TemplateBoilerPlate.jsonld_context_jsonschema);
         var requiredList = new ArrayList<String>();
         nodes.forEach(f -> {
             var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();

@@ -3,6 +3,7 @@ package org.metadatacenter.cedar;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.metadatacenter.cedar.csv.NumericBoundParser;
 import org.metadatacenter.cedar.io.CedarArtifactWriter;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
@@ -67,6 +68,7 @@ public class CedarImporterConfiguration {
 
     @Bean
     TemplateFieldCedarImporter cedarImporter(CedarArtifactWriter artifactWriter, ObjectMapper objectMapper) {
+        objectMapper.registerModule(new JavaTimeModule());
         return new TemplateFieldCedarImporter(artifactWriter, objectMapper);
     }
 

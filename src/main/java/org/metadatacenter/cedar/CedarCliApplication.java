@@ -1,5 +1,7 @@
 package org.metadatacenter.cedar;
 
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.metadatacenter.cedar.cli.CedarCli;
 import org.metadatacenter.cedar.ont.KnowledgeArtifactGenerator;
 import org.metadatacenter.cedar.ont.VocabularyWriter;
@@ -80,5 +82,10 @@ public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator
 		return new DataDictionaryRowProcessor(knowledgeArtifactGenerator,
 											  vocabularyWriter,
 											  templateFieldWriter, outputDirectory);
+	}
+
+	@Bean
+	Module javaDateTimeModule() {
+		return new JavaTimeModule();
 	}
 }

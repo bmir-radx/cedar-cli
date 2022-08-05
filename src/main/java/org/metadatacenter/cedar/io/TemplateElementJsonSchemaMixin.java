@@ -53,12 +53,6 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
         var union = new ArrayList<String>();
         union.add("@context");
         union.add("@id");
-        union.add("schema:isBasedOn");
-        union.add("schema:name");
-        union.add("schema:description");
-        union.add("pav:createdOn");
-        union.add("pav:createdBy");
-        union.add("pav:lastUpdatedOn");
         nodes.stream()
                 .map(SerializableEmbeddedArtifact::getSchemaName)
                 .forEach(union::add);

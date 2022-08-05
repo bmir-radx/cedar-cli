@@ -2,10 +2,12 @@ package org.metadatacenter.cedar.cli;
 
 import org.metadatacenter.cedar.api.ArtifactStatus;
 import org.metadatacenter.cedar.api.CedarArtifact;
-import org.metadatacenter.cedar.api.CedarTemplate;
+import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.VersionInfo;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
+import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
+import org.metadatacenter.cedar.webapi.CreateFolderRequest;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -17,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -68,7 +71,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     @ArgGroup(exclusive = false,
             heading = "CEDAR Connection Details")
-    public PushToCedarOptions pushToCedar;
+    public PostToCedarOptions pushToCedar;
 
     private final TemplateFieldCedarImporter importer;
 
@@ -76,13 +79,16 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     private final CliCedarArtifactWriter writer;
 
+    private final CreateFolderRequest createFolderRequest;
+
 
     public Csv2ArtifactsCommand(TemplateFieldCedarImporter importer,
                                 CedarCsvParserFactory cedarCsvParserFactory,
-                                CliCedarArtifactWriter writer) {
+                                CliCedarArtifactWriter writer, CreateFolderRequest createFolderRequest) {
         this.importer = importer;
         this.cedarCsvParserFactory = cedarCsvParserFactory;
         this.writer = writer;
+        this.createFolderRequest = createFolderRequest;
     }
 
     @Override
@@ -122,9 +128,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 //                                     template.modificationInfo(),
 //                                     template.nodes().stream().toList());
 
-        writeCedarArtifact(template);
+//        writeCedarArtifact(template);
 //        if (shouldPushToCedar()) {
-//            pushArtifactToCedar(template);
+//            writeCedarArtifact(template);
 //        }
 
         if (generateElements) {
@@ -146,9 +152,12 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         if(shouldPushToCedar()) {
             artifacts.forEach(artifact -> {
                 try {
-                    pushArtifactToCedar(artifact);
+                    var posted = postArtifactToCedar(artifact);
                     counter.incrementAndGet();
-                    System.err.printf("Posted %d %s of %d to CEDAR\n", counter.get(), artifact.getSimpleTypeName().getName(), artifacts.size());
+                    posted.ifPresent(r -> {
+                        System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.getSimpleTypeName().getName(), counter.get(), artifacts.size());
+                        System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
+                    });
                 } catch (IOException | InterruptedException e) {
                     System.err.println(e.getMessage());
                 }
@@ -156,14 +165,27 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         }
     }
 
-    private void pushArtifactToCedar(CedarArtifact artifact) throws IOException, InterruptedException {
-        importer.postToCedar(artifact, pushToCedar.getCedarFolderId(),
-                             pushToCedar.getCedarApiKey(),
-                             artifact.toCompactString(), jsonSchemaDescription);
+    private Optional<PostedArtifactResponse> postArtifactToCedar(CedarArtifact artifact) throws IOException, InterruptedException {
+        var cedarFolderId = getFolderId();
+        return importer.postToCedar(artifact, cedarFolderId,
+                                    pushToCedar.getCedarApiKey(),
+                                    artifact.toCompactString(), jsonSchemaDescription);
+    }
+
+    private CedarId getFolderId() {
+        var cedarFolderId = pushToCedar.getCedarFolderId();
+        if(cedarFolderId.isEmpty()) {
+            var newFolderName = pushToCedar.getNewFolderName().orElseThrow();
+            var response = createFolderRequest.send(pushToCedar.getCedarApiKey(), newFolderName, null);
+            return response.id();
+        }
+        else {
+            return cedarFolderId.get();
+        }
     }
 
     private boolean shouldPushToCedar() {
-        return pushToCedar != null && pushToCedar.pushToCedar;
+        return pushToCedar != null && pushToCedar.postToCedar;
     }
 
     private void writeCedarArtifact(CedarArtifact f) {

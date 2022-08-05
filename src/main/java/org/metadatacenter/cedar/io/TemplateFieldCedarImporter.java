@@ -3,7 +3,6 @@ package org.metadatacenter.cedar.io;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.webapi.FailedValidationErrorResponse;
-import org.metadatacenter.cedar.webapi.ValidateArtifactResponse;
 import org.metadatacenter.cedar.webapi.ValidationError;
 import org.springframework.http.HttpStatus;
 
@@ -13,7 +12,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Optional;
 
 /**
  * Matthew Horridge
@@ -34,11 +33,11 @@ public class TemplateFieldCedarImporter {
 
 
 
-    public void postToCedar(CedarArtifact artifact,
-                            CedarId parentFolderId,
-                            CedarApiKey cedarApiKey,
-                            String jsonSchemaTitle,
-                            String jsonSchemaDescription) throws IOException, InterruptedException {
+    public Optional<PostedArtifactResponse> postToCedar(CedarArtifact artifact,
+                                                        CedarId parentFolderId,
+                                                        CedarApiKey cedarApiKey,
+                                                        String jsonSchemaTitle,
+                                                        String jsonSchemaDescription) throws IOException, InterruptedException {
 
         var outputStream = new ByteArrayOutputStream();
         artifactWriter.writeCedarArtifact(artifact,
@@ -68,6 +67,11 @@ public class TemplateFieldCedarImporter {
                 System.err.printf("Posted %s to CEDAR Server but received an error response of %s (%s)\n", artifact.toCompactString(), response.statusCode(),
                                   HttpStatus.valueOf(response.statusCode()).getReasonPhrase());
             }
+            return Optional.empty();
+        }
+        else {
+            var value = objectMapper.readValue(response.body(), PostedArtifactResponse.class);
+            return Optional.of(value);
         }
 
     }
