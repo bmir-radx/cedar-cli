@@ -2,6 +2,7 @@ package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -13,6 +14,7 @@ import java.util.*;
  * Stanford Center for Biomedical Informatics Research
  * 2022-08-02
  */
+@JsonPropertyOrder({"$schema", "type", "title", "description", "properties"})
 public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title,
                                              @JsonProperty("description") String description,
                                              @JsonProperty("multiValued") boolean multiValued,

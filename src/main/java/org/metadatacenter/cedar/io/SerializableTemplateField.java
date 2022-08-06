@@ -15,6 +15,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-30
  */
+@JsonPropertyOrder({"@type", "@id", "artifactInfo", "versionInfo", "_valueConstraints", "_ui", "modificationInfo", "jsonSchemaMixin"})
 public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateFieldJsonSchemaMixin jsonSchemaMixin,
                                         @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                         @JsonProperty("@id") CedarId id,
@@ -101,5 +102,10 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
     @Override
     public String getSchemaName() {
         return artifactInfo().schemaName();
+    }
+
+    @Override
+    public String getSchemaIdentifier() {
+        return artifactInfo.schemaIdentifier();
     }
 }

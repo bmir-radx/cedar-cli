@@ -71,8 +71,9 @@ public record TemplateFieldJsonSchemaMixin(@JsonProperty("title") String title,
     }
 
     @Override
-    @JsonProperty("required")
+//    @JsonProperty("required")
+    @JsonIgnore
     public List<String> required() {
-        return List.of(cedarFieldValueType.getJsonProperty());
+        return List.of();//List.of(cedarFieldValueType.getJsonProperty());
     }
 }

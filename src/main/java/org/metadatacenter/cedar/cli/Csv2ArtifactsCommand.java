@@ -122,10 +122,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                                                                 version, previousVersion);
         var template = cedarCsvParser.parse(inputStream);
 
-        writeCedarArtifact(template);
-        if (shouldPushToCedar()) {
-            writeCedarArtifact(template);
-        }
+        writeArtifacts(List.of(template));
 
         if (generateElements) {
             var elements = template.getElements();
@@ -186,7 +183,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         try {
             writer.writeCedarArtifact(f, outputDirectory, jsonSchemaDescription);
         } catch (IOException e) {
-            System.err.println("Could not write field " + e.getMessage());
+            System.err.println("Could not write " + f.getSimpleTypeName().getName() + ": " + e.getMessage());
         }
     }
 }

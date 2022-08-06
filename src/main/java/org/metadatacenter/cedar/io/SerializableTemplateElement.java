@@ -1,9 +1,6 @@
 package org.metadatacenter.cedar.io;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.*;
 import org.metadatacenter.cedar.api.*;
 
 import javax.annotation.Nonnull;
@@ -19,7 +16,8 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * Stanford Center for Biomedical Informatics Research
  * 2022-08-02
  */
-public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateElementJsonSchemaMixin jsonSchemaInfo,
+@JsonPropertyOrder({"@type", "jsonSchemaMixin", "schema:schemaVersion", "@id", "_valueConstraints", "_ui", "@context"})
+public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateElementJsonSchemaMixin jsonSchemaMixin,
                                           @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                           @Nullable @JsonProperty("@id") CedarId id,
                                           @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
@@ -77,5 +75,10 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
                                                        new UiPropertyLabelsMixin(propertyDescriptors),
                                                        new UiPropertyDescriptionsMixin(propertyDescriptors)
                                                ));
+    }
+
+    @Override
+    public String getSchemaIdentifier() {
+        return artifactInfo.schemaIdentifier();
     }
 }

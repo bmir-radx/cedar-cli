@@ -71,6 +71,11 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
         public Integer getMaxItems() {
             return multiplicity.getMax().orElse(null);
         }
+
+        @JsonProperty("schema:identifier")
+        public String getSchemaIdentifier() {
+            return artifact.getSchemaIdentifier();
+        }
     }
 
     public static record SingleItemProxy(@JsonIgnore SerializableEmbeddableArtifact artifact) implements Proxy {
