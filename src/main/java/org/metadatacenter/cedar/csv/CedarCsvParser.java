@@ -173,8 +173,8 @@ public class CedarCsvParser {
             var artifact = translateToEmbeddableArtifact(childNode);
             return getEmbeddedCedarArtifact(childNode, artifact);
         }).toList();
-        return new CedarTemplateElement(null,
-                                        new ArtifactInfo(node.row.getStrippedElementName().toLowerCase().replace(" ", "_"),
+        return new CedarTemplateElement(new CedarId("http://example.org/" + UUID.randomUUID()),
+                                        new ArtifactInfo(node.row.getStrippedElementName().trim().toLowerCase().replace(" ", "_"),
                                                          node.row.getStrippedElementName(),
                                                          node.row.description(),
                                                          null,
