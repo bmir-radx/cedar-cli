@@ -145,10 +145,11 @@ public class CedarCsvParser {
         }
         else if(node.isField()) {
             // NO child nodes
-            return translateToField(node.row);
+            return translateToField(node);
         }
         else if(node.isSection()) {
             return new CedarTemplateField(null,
+                                          node.row.getPropertyIri().orElse(null),
                                           new ArtifactInfo(node.row.section(),
                                                            node.row.section(),
                                                            "",
@@ -174,6 +175,7 @@ public class CedarCsvParser {
             return getEmbeddedCedarArtifact(childNode, artifact);
         }).toList();
         return new CedarTemplateElement(new CedarId("http://example.org/" + UUID.randomUUID()),
+                                        node.row.getPropertyIri().orElse(null),
                                         new ArtifactInfo(node.row.getStrippedElementName().trim().toLowerCase().replace(" ", "_"),
                                                          node.row.getStrippedElementName(),
                                                          node.row.description(),
@@ -202,9 +204,10 @@ public class CedarCsvParser {
         }
     }
 
-    private CedarTemplateField translateToField(CedarCsvRow fieldRow) {
-
-        return new CedarTemplateField(null,
+    private CedarTemplateField translateToField(Node node) {
+        var fieldRow = node.row;
+        return new CedarTemplateField(new CedarId("http://example.org/" + UUID.randomUUID()),
+                                      fieldRow.getPropertyIri().orElse(null),
                                       new ArtifactInfo(getFieldIdentifier(fieldRow),
                                                        fieldRow.fieldTitle(),
                                                        fieldRow.description(),

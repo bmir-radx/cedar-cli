@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.metadatacenter.cedar.api.Iri;
 
 import java.io.IOException;
 import java.util.*;
@@ -42,7 +43,7 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
         var value = new HashMap<>(ElementBoilerPlate.json_schema__properties);
         var contextProperties = new LinkedHashMap<>();
         nodes.forEach(f -> {
-            var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();
+            var propertyIri = f.getPropertyIri().orElse(new Iri("https://schema.metadatacenter.org/properties/" + UUID.randomUUID()));
             contextProperties.put(f.getSchemaName(), Map.of("enum", List.of(propertyIri)));
         });
         ((Map<String, Object>) value.get("@context")).put("properties", contextProperties);

@@ -7,6 +7,7 @@ import org.metadatacenter.cedar.api.constraints.FieldValueConstraints;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
@@ -19,6 +20,7 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateFieldJsonSchemaMixin jsonSchemaMixin,
                                         @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                         @JsonProperty("@id") CedarId id,
+                                        @JsonIgnore Iri propertyIri,
                                         @JsonUnwrapped @JsonProperty(access = READ_ONLY) ArtifactInfo artifactInfo,
                                         @JsonUnwrapped @JsonProperty(access = READ_ONLY) VersionInfo versionInfo,
                                         @JsonUnwrapped ModificationInfo modificationInfo,
@@ -43,6 +45,7 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
         return new SerializableTemplateField(jsonSchemaInfo,
                                              ModelVersion.V1_6_0,
                                              templateField.id(),
+                                             templateField.propertyIri(),
                                              templateField.artifactInfo(),
                                              templateField.versionInfo(),
                                              templateField.modificationInfo(),
@@ -58,6 +61,11 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
     @JsonProperty("@context")
     public Map<String, Object> getContext() {
         return JsonLdInfo.get().getFieldContextBoilerPlate();
+    }
+
+    @Override
+    public Optional<Iri> getPropertyIri() {
+        return Optional.ofNullable(propertyIri);
     }
 
     @JsonCreator
@@ -78,6 +86,7 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               @JsonProperty("oslc:modifiedBy") String oslcModifiedBy
                                               ) {
         return new CedarTemplateField(identifier,
+                                      null,
                                       new ArtifactInfo(
                                               schemaIdentifier,
                                               schemaName,

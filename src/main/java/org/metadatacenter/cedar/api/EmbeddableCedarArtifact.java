@@ -2,6 +2,8 @@ package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.annotation.Nullable;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -25,6 +27,15 @@ public interface EmbeddableCedarArtifact extends CedarSchemaArtifact {
      */
     @JsonIgnore
     String getSchemaDescription();
+
+    @JsonIgnore
+    default Optional<Iri> getPropertyIri() {
+        return Optional.ofNullable(propertyIri());
+    }
+
+    @Nullable
+    @JsonIgnore
+    Iri propertyIri();
 
     void ifTemplateElement(Consumer<CedarTemplateElement> elementConsumer);
 

@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -20,6 +21,7 @@ import java.util.function.Consumer;
  * @param nodes A list of contained Template Element and Template Field objects
  */
 public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
+                                   @Nullable Iri propertyIri,
                                    @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                    @Nonnull @JsonUnwrapped VersionInfo versionInfo,
                                    @Nonnull @JsonUnwrapped ModificationInfo modificationInfo,

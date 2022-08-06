@@ -2,6 +2,7 @@ package org.metadatacenter.cedar.csv;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.api.Visibility;
 
@@ -21,6 +22,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Visibility") Visibility visibility,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
+                          @JsonProperty("Property") String propertyIri,
                           @JsonProperty("Type") CedarCsvInputType inputType,
                           @JsonProperty("Lookup") String lookup) {
 
@@ -31,6 +33,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Visibility") Visibility visibility,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Description") String description,
+                       @JsonProperty("Property") String propertyIri,
                        @JsonProperty("Type") CedarCsvInputType inputType,
                        @JsonProperty("Lookup") String lookup) {
         this.section = section;
@@ -39,6 +42,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.optionality = optionality;
         this.visibility = Objects.requireNonNull(visibility);
         this.fieldTitle = fieldTitle;
+        this.propertyIri = propertyIri;
         this.description = description;
         this.inputType = inputType;
         this.lookup = lookup;
@@ -95,6 +99,13 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         return Optional.ofNullable(optionality)
                        .map(Optionality::toCedarRequired)
                        .orElse(Required.OPTIONAL);
+    }
+
+    public Optional<Iri> getPropertyIri() {
+        if(propertyIri.isBlank()) {
+            return Optional.empty();
+        }
+        return Optional.of(propertyIri).map(Iri::new);
     }
 
     public Optional<LookupSpec> getLookupSpec() {

@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.metadatacenter.cedar.api.EmbeddedCedarArtifact;
+import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Multiplicity;
 import org.metadatacenter.cedar.api.Visibility;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Matthew Horridge
@@ -30,6 +32,11 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
     @JsonIgnore
     public String getSchemaName() {
         return artifact.getSchemaName();
+    }
+
+    @JsonIgnore
+    public Optional<Iri> getPropertyIri() {
+        return artifact.getPropertyIri();
     }
 
     @JsonUnwrapped

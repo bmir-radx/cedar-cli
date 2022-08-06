@@ -1,6 +1,10 @@
 package org.metadatacenter.cedar.io;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import org.metadatacenter.cedar.api.Iri;
+
+import java.util.Optional;
 
 /**
  * Matthew Horridge
@@ -11,4 +15,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public interface SerializableEmbeddableArtifact extends SerializableCedarArtifact {
 
     String getSchemaIdentifier();
+
+    @JsonIgnore
+    Optional<Iri> getPropertyIri();
 }
