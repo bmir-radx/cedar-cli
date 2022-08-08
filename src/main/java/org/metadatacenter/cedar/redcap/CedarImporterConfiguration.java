@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar;
+package org.metadatacenter.cedar.redcap;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;

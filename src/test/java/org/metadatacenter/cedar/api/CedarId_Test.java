@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.databind.JsonSerializer;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

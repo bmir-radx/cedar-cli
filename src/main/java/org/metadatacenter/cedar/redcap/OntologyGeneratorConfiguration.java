@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar;
+package org.metadatacenter.cedar.redcap;
 
 import org.metadatacenter.cedar.ont.*;
 import org.metadatacenter.cedar.redcap.DataDictionaryRow;
