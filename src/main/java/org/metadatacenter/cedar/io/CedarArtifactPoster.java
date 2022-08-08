@@ -19,14 +19,14 @@ import java.util.Optional;
  * Stanford Center for Biomedical Informatics Research
  * 2022-06-17
  */
-public class TemplateFieldCedarImporter {
+public class CedarArtifactPoster {
 
     private final CedarArtifactWriter artifactWriter;
 
     private final ObjectMapper objectMapper;
 
-    public TemplateFieldCedarImporter(CedarArtifactWriter artifactWriter,
-                                      ObjectMapper objectMapper) {
+    public CedarArtifactPoster(CedarArtifactWriter artifactWriter,
+                               ObjectMapper objectMapper) {
         this.artifactWriter = artifactWriter;
         this.objectMapper = objectMapper;
     }

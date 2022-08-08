@@ -6,7 +6,7 @@ import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.VersionInfo;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
-import org.metadatacenter.cedar.io.TemplateFieldCedarImporter;
+import org.metadatacenter.cedar.io.CedarArtifactPoster;
 import org.metadatacenter.cedar.webapi.CreateFolderRequest;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
@@ -73,7 +73,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             heading = "CEDAR Connection Details")
     public PostToCedarOptions pushToCedar;
 
-    private final TemplateFieldCedarImporter importer;
+    private final CedarArtifactPoster importer;
 
     private final CedarCsvParserFactory cedarCsvParserFactory;
 
@@ -82,7 +82,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     private final CreateFolderRequest createFolderRequest;
 
 
-    public Csv2ArtifactsCommand(TemplateFieldCedarImporter importer,
+    public Csv2ArtifactsCommand(CedarArtifactPoster importer,
                                 CedarCsvParserFactory cedarCsvParserFactory,
                                 CliCedarArtifactWriter writer, CreateFolderRequest createFolderRequest) {
         this.importer = importer;
