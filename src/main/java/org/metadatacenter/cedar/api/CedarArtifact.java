@@ -18,6 +18,9 @@ public interface CedarArtifact {
     @Nullable
     CedarId id();
 
+    @Nonnull
+    CedarArtifact withId(CedarId id);
+
     @JsonUnwrapped
     @Nonnull
     ArtifactInfo artifactInfo();

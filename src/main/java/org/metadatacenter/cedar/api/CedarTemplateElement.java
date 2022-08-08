@@ -32,6 +32,12 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
         return visitor.visit(this);
     }
 
+    @Nonnull
+    @Override
+    public CedarTemplateElement withId(CedarId id) {
+        return new CedarTemplateElement(id, propertyIri, artifactInfo, versionInfo, modificationInfo, nodes);
+    }
+
     @Override
     public String getSchemaName() {
         return artifactInfo.schemaName();

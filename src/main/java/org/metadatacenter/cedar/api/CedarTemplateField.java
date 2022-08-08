@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import org.metadatacenter.cedar.api.constraints.FieldValueConstraints;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
 import java.util.function.Consumer;
@@ -24,6 +25,12 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                  @JsonUnwrapped ModificationInfo modificationInfo,
                                  @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
                                  @JsonProperty("_ui") FieldUi ui) implements EmbeddableCedarArtifact, CedarSchemaArtifact {
+
+    @Nonnull
+    @Override
+    public CedarTemplateField withId(@Nullable CedarId id) {
+        return new CedarTemplateField(id, propertyIri, artifactInfo, versionInfo, modificationInfo, valueConstraints, ui);
+    }
 
     @JsonCreator
     public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,

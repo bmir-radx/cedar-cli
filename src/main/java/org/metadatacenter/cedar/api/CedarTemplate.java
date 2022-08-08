@@ -20,6 +20,12 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
                             @JsonUnwrapped ModificationInfo modificationInfo,
                             List<EmbeddedCedarArtifact> nodes) implements CedarSchemaArtifact, CedarArtifactContainer {
 
+    @Nonnull
+    @Override
+    public CedarTemplate withId(CedarId id) {
+        return new CedarTemplate(id, artifactInfo, versionInfo, modificationInfo, nodes);
+    }
+
     @Override
     public String toCompactString() {
         return "Template(" + artifactInfo.schemaName() + ")";
