@@ -2,9 +2,12 @@ package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.webapi.CedarWebClientFactory;
 import org.metadatacenter.cedar.webapi.FailedValidationErrorResponse;
 import org.metadatacenter.cedar.webapi.ValidationError;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -12,6 +15,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -25,10 +30,14 @@ public class CedarArtifactPoster {
 
     private final ObjectMapper objectMapper;
 
+    private final CedarWebClientFactory factory;
+
     public CedarArtifactPoster(CedarArtifactWriter artifactWriter,
-                               ObjectMapper objectMapper) {
+                               ObjectMapper objectMapper,
+                               CedarWebClientFactory factory) {
         this.artifactWriter = artifactWriter;
         this.objectMapper = objectMapper;
+        this.factory = factory;
     }
 
 
@@ -37,57 +46,54 @@ public class CedarArtifactPoster {
                                                         CedarId parentFolderId,
                                                         CedarApiKey cedarApiKey,
                                                         String jsonSchemaTitle,
-                                                        String jsonSchemaDescription) throws IOException, InterruptedException {
+                                                        String jsonSchemaDescription) throws IOException {
 
         var outputStream = new ByteArrayOutputStream();
         artifactWriter.writeCedarArtifact(artifact,
                                           jsonSchemaDescription, outputStream);
-        var publisher = HttpRequest.BodyPublishers.ofByteArray(outputStream.toByteArray());
-        String artifactTypePathElement = getArtifactTypePathElement(artifact);
-        var postUri = URI.create("https://resource.metadatacenter.org/" + artifactTypePathElement + "?folder_id=" + parentFolderId.value());
-
-        var request = HttpRequest.newBuilder()
-                                 .header("Authorization", "apiKey " + cedarApiKey.key())
-                                 .header("Content-Type", "application/json")
-                                 .uri(postUri)
-                                 .POST(publisher)
-                                 .build();
-
-        var client = HttpClient.newBuilder().build();
-        var response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        if(response.statusCode() != 201) {
-            if(response.statusCode() == 400) {
-                System.err.println("-------------------------------------------------------------------------");
-                System.err.printf("\033[31;1mError when posting %s to CEDAR:\033[30;0m\n", artifact.toCompactString());
-                System.err.println("-------------------------------------------------------------------------");
-                var validation = objectMapper.readValue(response.body(), FailedValidationErrorResponse.class);
-                validation.getErrors().forEach(ValidationError::printToStdError);
-            }
-            else {
-                System.err.printf("Posted %s to CEDAR Server but received an error response of %s (%s)\n", artifact.toCompactString(), response.statusCode(),
-                                  HttpStatus.valueOf(response.statusCode()).getReasonPhrase());
+        String artifactTypePathElement = getArtifactTypePathElement(artifact) + "?folder_id=" + parentFolderId.value();
+        try {
+            var postedArtifactResponse = factory.createWebClient(HttpMethod.POST,
+                                    artifactTypePathElement,
+                                    cedarApiKey)
+                    .bodyValue(outputStream.toString(StandardCharsets.UTF_8))
+                    .retrieve()
+                    .bodyToMono(PostedArtifactResponse.class)
+                    .block();
+            return Optional.ofNullable(postedArtifactResponse);
+        } catch (WebClientResponseException.BadRequest e) {
+            System.err.println("-------------------------------------------------------------------------");
+            System.err.printf("\033[31;1mError when posting %s to CEDAR:\033[30;0m\n", artifact.toCompactString());
+            System.err.println("-------------------------------------------------------------------------");
+            System.err.println(e.getResponseBodyAsString());
+            var validation = objectMapper.readValue(e.getResponseBodyAsString(), FailedValidationErrorResponse.class);
+            var errors = validation.getErrors();
+            errors.forEach(ValidationError::printToStdError);
+            if(errors.isEmpty()) {
+                System.err.println(validation.message());
             }
             return Optional.empty();
+        } catch (WebClientResponseException e) {
+            System.err.printf("Posted %s to CEDAR Server but received an error response of %s (%s)\n",
+                              artifact.toCompactString(),
+                              e.getStatusCode().value(),
+                              e.getStatusCode().getReasonPhrase());
+            return Optional.empty();
         }
-        else {
-            var value = objectMapper.readValue(response.body(), PostedArtifactResponse.class);
-            return Optional.of(value);
-        }
-
     }
 
     private String getArtifactTypePathElement(CedarArtifact artifact) {
         if(artifact instanceof CedarTemplateField) {
-            return "template-fields";
+            return "/template-fields";
         }
         else if(artifact instanceof CedarTemplateElement) {
-            return "template-elements";
+            return "/template-elements";
         }
         else if(artifact instanceof CedarTemplate) {
-            return "templates";
+            return "/templates";
         }
         else {
-            return "instances";
+            return "/instances";
         }
     }
 
