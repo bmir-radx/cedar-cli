@@ -14,4 +14,7 @@ public interface FieldUi {
     InputType inputType();
 
     boolean valueRecommendationEnabled();
+
+    @JsonIgnore
+    FieldUi withHiddenTrue();
 }

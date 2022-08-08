@@ -42,10 +42,10 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
     @JsonUnwrapped
     public Proxy getSerializationProxy() {
         if(multiplicity.isMaxOne()) {
-            return new SingleItemProxy(artifact);
+            return new SingleItemProxy(artifact, visibility);
         }
         else {
-            return new MultipleItemsProxy(artifact, multiplicity);
+            return new MultipleItemsProxy(artifact, multiplicity, visibility);
         }
     }
 
@@ -57,7 +57,8 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public static record MultipleItemsProxy(@JsonIgnore SerializableEmbeddableArtifact artifact,
-                                            @JsonIgnore Multiplicity multiplicity) implements Proxy {
+                                            @JsonIgnore Multiplicity multiplicity,
+                                            @JsonIgnore Visibility visibility) implements Proxy {
 
         @JsonProperty("type")
         public String getJsonSchemaType() {
@@ -66,7 +67,12 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
         @JsonProperty("items")
         public SerializableEmbeddableArtifact getItems() {
-            return artifact;
+            if(visibility.isHidden()) {
+                return artifact.withUiHiddenTrue();
+            }
+            else {
+                return artifact;
+            }
         }
 
         @JsonProperty("minItems")
@@ -85,7 +91,7 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
         }
     }
 
-    public static record SingleItemProxy(@JsonIgnore SerializableEmbeddableArtifact artifact) implements Proxy {
+    public static record SingleItemProxy(@JsonIgnore SerializableEmbeddableArtifact artifact, Visibility visibility) implements Proxy {
 
         @JsonProperty("type")
         public String getJsonSchemaType() {
@@ -94,7 +100,12 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
         @JsonUnwrapped
         public SerializableEmbeddableArtifact getArtifact() {
-            return artifact;
+            if(visibility.isHidden()) {
+                return artifact.withUiHiddenTrue();
+            }
+            else {
+                return artifact;
+            }
         }
 
 

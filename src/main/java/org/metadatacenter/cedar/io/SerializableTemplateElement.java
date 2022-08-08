@@ -89,4 +89,9 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
     public Optional<Iri> getPropertyIri() {
         return Optional.ofNullable(propertyIri);
     }
+
+    @Override
+    public SerializableEmbeddableArtifact withUiHiddenTrue() {
+        return this;
+    }
 }

@@ -68,6 +68,11 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
         return Optional.ofNullable(propertyIri);
     }
 
+    @Override
+    public SerializableEmbeddableArtifact withUiHiddenTrue() {
+        return new SerializableTemplateField(jsonSchemaMixin, modelVersion, id, propertyIri, artifactInfo, versionInfo, modificationInfo, valueConstraints, ui.withHiddenTrue());
+    }
+
     @JsonCreator
     public static CedarTemplateField fromJson(@JsonProperty("@id") CedarId identifier,
                                               @JsonProperty("schema:identifier") String schemaIdentifier,

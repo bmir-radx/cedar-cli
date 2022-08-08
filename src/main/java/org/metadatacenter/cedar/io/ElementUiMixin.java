@@ -33,7 +33,10 @@ public record ElementUiMixin(@JsonUnwrapped UiPropertyOrderMixin propertyOrderMi
     public static ElementUiMixin fromTemplateElement(CedarTemplateElement node) {
         var descriptors = PropertyDescriptor.getPropertyDescriptors(node);
         return createElementUiMixin(descriptors);
+    }
 
+    public ElementUiMixin withHiddenTrue() {
+        return this;
     }
 
     private static ElementUiMixin createElementUiMixin(List<PropertyDescriptor> specs) {

@@ -18,4 +18,7 @@ public interface SerializableEmbeddableArtifact extends SerializableCedarArtifac
 
     @JsonIgnore
     Optional<Iri> getPropertyIri();
+
+    @JsonIgnore
+    SerializableEmbeddableArtifact withUiHiddenTrue();
 }

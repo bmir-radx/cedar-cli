@@ -9,5 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record BasicFieldUi(InputType inputType,
-                           boolean valueRecommendationEnabled) implements FieldUi {
+                           boolean valueRecommendationEnabled,
+                           boolean hidden) implements FieldUi {
+
+    @Override
+    public FieldUi withHiddenTrue() {
+        return new BasicFieldUi(inputType, valueRecommendationEnabled, true);
+    }
 }
