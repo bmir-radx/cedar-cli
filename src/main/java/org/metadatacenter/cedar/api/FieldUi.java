@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-31
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = BasicFieldUi.class)
 public interface FieldUi {
 
     InputType inputType();

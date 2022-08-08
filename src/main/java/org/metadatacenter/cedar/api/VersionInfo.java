@@ -22,7 +22,7 @@ public record VersionInfo(@JsonProperty("pav:version") String pavVersion,
                        @JsonProperty("pav:previousVersion") String pavPreviousVersion) {
         this.pavVersion = Objects.requireNonNullElse(pavVersion, "");
         this.biboStatus = Objects.requireNonNullElse(biboStatus, ArtifactStatus.DRAFT);
-        this.pavPreviousVersion = Objects.requireNonNull(pavPreviousVersion);
+        this.pavPreviousVersion = Objects.requireNonNullElse(pavPreviousVersion, "");
     }
 
     /**

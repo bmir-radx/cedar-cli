@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -60,7 +62,7 @@ public record TemplateFieldJsonSchemaMixin(@JsonProperty("title") String title,
     private static final TemplateFieldJsonSchemaMixin EMPTY = new TemplateFieldJsonSchemaMixin("", "", CedarFieldValueType.LITERAL, null, false);
 
     @Override
-    @JsonProperty("properties")
+    @JsonProperty(value = "properties", access = READ_ONLY)
     public Map<String, Object> properties() {
         if(cedarFieldValueType.equals(CedarFieldValueType.LITERAL)) {
             return propertiesForLiterals;
@@ -71,9 +73,8 @@ public record TemplateFieldJsonSchemaMixin(@JsonProperty("title") String title,
     }
 
     @Override
-//    @JsonProperty("required")
     @JsonIgnore
     public List<String> required() {
-        return List.of();//List.of(cedarFieldValueType.getJsonProperty());
+        return List.of();
     }
 }

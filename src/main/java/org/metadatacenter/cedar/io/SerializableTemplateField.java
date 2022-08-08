@@ -7,9 +7,9 @@ import org.metadatacenter.cedar.api.constraints.FieldValueConstraints;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 
 /**
  * Matthew Horridge
@@ -17,23 +17,69 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
  * 2022-07-30
  */
 @JsonPropertyOrder({"@type", "@id", "artifactInfo", "versionInfo", "_valueConstraints", "_ui", "modificationInfo", "jsonSchemaMixin"})
-public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateFieldJsonSchemaMixin jsonSchemaMixin,
-                                        @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
-                                        @JsonProperty("@id") CedarId id,
-                                        @JsonIgnore Iri propertyIri,
-                                        @JsonUnwrapped @JsonProperty(access = READ_ONLY) ArtifactInfo artifactInfo,
-                                        @JsonUnwrapped @JsonProperty(access = READ_ONLY) VersionInfo versionInfo,
-                                        @JsonUnwrapped ModificationInfo modificationInfo,
-                                        @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
-                                        @JsonProperty("_ui") FieldUi ui) implements SerializableEmbeddableArtifact {
+public final class SerializableTemplateField implements SerializableEmbeddableArtifact {
 
     static final String TYPE = "https://schema.metadatacenter.org/core/TemplateField";
+
+    @JsonUnwrapped
+    private TemplateFieldJsonSchemaMixin jsonSchemaMixin;
+
+    @JsonProperty("schema:schemaVersion")
+    private ModelVersion modelVersion;
+
+    @JsonProperty("@id")
+    private CedarId id;
+
+    @JsonIgnore
+    private Iri propertyIri;
+
+    @JsonUnwrapped
+    private ArtifactInfo artifactInfo;
+
+    @JsonUnwrapped
+    private VersionInfo versionInfo;
+
+    @JsonUnwrapped
+    private ModificationInfo modificationInfo;
+
+    @JsonProperty("_valueConstraints")
+    private FieldValueConstraints valueConstraints;
+
+    @JsonProperty("_ui")
+    private FieldUi ui;
+
+
+    public SerializableTemplateField() {
+    }
+
+    public SerializableTemplateField(TemplateFieldJsonSchemaMixin jsonSchemaMixin,
+                                     ModelVersion modelVersion,
+                                     CedarId id,
+                                     Iri propertyIri,
+                                     ArtifactInfo artifactInfo,
+                                     VersionInfo versionInfo,
+                                     ModificationInfo modificationInfo,
+                                     FieldValueConstraints valueConstraints,
+                                     FieldUi ui) {
+        this.jsonSchemaMixin = jsonSchemaMixin;
+        this.modelVersion = modelVersion;
+        this.id = id;
+        this.propertyIri = propertyIri;
+        this.artifactInfo = artifactInfo;
+        this.versionInfo = versionInfo;
+        this.modificationInfo = modificationInfo;
+        this.valueConstraints = valueConstraints;
+        this.ui = ui;
+    }
 
     public static SerializableTemplateField wrap(CedarTemplateField templateField,
                                                  String jsonSchemaTitle,
                                                  String jsonSchemaDescription) {
 
-        var jsonSchemaType = templateField.ui().inputType().getFixedValueType().orElse(templateField.valueConstraints().getJsonSchemaType());
+        var jsonSchemaType = templateField.ui()
+                                          .inputType()
+                                          .getFixedValueType()
+                                          .orElse(templateField.valueConstraints().getJsonSchemaType());
 
 
         var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
@@ -53,6 +99,52 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                              templateField.ui());
     }
 
+    public void setJsonSchemaMixin(TemplateFieldJsonSchemaMixin jsonSchemaMixin) {
+        this.jsonSchemaMixin = jsonSchemaMixin;
+    }
+
+    public void setModelVersion(ModelVersion modelVersion) {
+        this.modelVersion = modelVersion;
+    }
+
+    public void setId(CedarId id) {
+        this.id = id;
+    }
+
+    public void setPropertyIri(Iri propertyIri) {
+        this.propertyIri = propertyIri;
+    }
+
+    public void setArtifactInfo(ArtifactInfo artifactInfo) {
+        this.artifactInfo = artifactInfo;
+    }
+
+    public void setVersionInfo(VersionInfo versionInfo) {
+        this.versionInfo = versionInfo;
+    }
+
+    public void setModificationInfo(ModificationInfo modificationInfo) {
+        this.modificationInfo = modificationInfo;
+    }
+
+    public void setValueConstraints(FieldValueConstraints valueConstraints) {
+        this.valueConstraints = valueConstraints;
+    }
+
+    public void setUi(FieldUi ui) {
+        this.ui = ui;
+    }
+
+    public CedarTemplateField toTemplateField() {
+        return new CedarTemplateField(id,
+                                      propertyIri,
+                                      artifactInfo,
+                                      versionInfo,
+                                      modificationInfo,
+                                      valueConstraints,
+                                      ui);
+    }
+
     @JsonProperty("@type")
     public String getType() {
         return TYPE;
@@ -63,6 +155,7 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
         return JsonLdInfo.get().getFieldContextBoilerPlate();
     }
 
+    @JsonIgnore
     @Override
     public Optional<Iri> getPropertyIri() {
         return Optional.ofNullable(propertyIri);
@@ -70,7 +163,15 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
 
     @Override
     public SerializableEmbeddableArtifact withUiHiddenTrue() {
-        return new SerializableTemplateField(jsonSchemaMixin, modelVersion, id, propertyIri, artifactInfo, versionInfo, modificationInfo, valueConstraints, ui.withHiddenTrue());
+        return new SerializableTemplateField(jsonSchemaMixin,
+                                             modelVersion,
+                                             id,
+                                             propertyIri,
+                                             artifactInfo,
+                                             versionInfo,
+                                             modificationInfo,
+                                             valueConstraints,
+                                             ui.withHiddenTrue());
     }
 
     @JsonCreator
@@ -85,26 +186,20 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
                                               @JsonProperty("bibo:Status") ArtifactStatus biboStatus,
                                               @JsonProperty("pav:previousVersion") String previousVersion,
                                               @JsonProperty("_valueConstraints") FieldValueConstraints valueConstraints,
-                                              @JsonProperty("_ui") FieldUi ui, @JsonProperty("pav:createdOn") Instant pavCreatedOn,
+                                              @JsonProperty("_ui") FieldUi ui,
+                                              @JsonProperty("pav:createdOn") Instant pavCreatedOn,
                                               @JsonProperty("pav:createdBy") String pavCreatedBy,
                                               @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
-                                              @JsonProperty("oslc:modifiedBy") String oslcModifiedBy
-                                              ) {
+                                              @JsonProperty("oslc:modifiedBy") String oslcModifiedBy) {
         return new CedarTemplateField(identifier,
                                       null,
-                                      new ArtifactInfo(
-                                              schemaIdentifier,
-                                              schemaName,
-                                              schemaDescription,
-                                              pavDerivedFrom,
-                                              skosPrefLabel,
-                                              skosAltLabel
-                                      ),
-                                      new VersionInfo(
-                                              previousVersion,
-                                              biboStatus,
-                                              version
-                                      ),
+                                      new ArtifactInfo(schemaIdentifier,
+                                                       schemaName,
+                                                       schemaDescription,
+                                                       pavDerivedFrom,
+                                                       skosPrefLabel,
+                                                       skosAltLabel),
+                                      new VersionInfo(previousVersion, biboStatus, version),
                                       new ModificationInfo(pavCreatedOn,
                                                            pavCreatedBy,
                                                            pavLastUpdatedOn,
@@ -122,4 +217,88 @@ public record SerializableTemplateField(@JsonUnwrapped @JsonProperty(access = RE
     public String getSchemaIdentifier() {
         return artifactInfo.schemaIdentifier();
     }
+
+    @JsonUnwrapped
+    public TemplateFieldJsonSchemaMixin jsonSchemaMixin() {
+        return jsonSchemaMixin;
+    }
+
+    @JsonProperty("schema:schemaVersion")
+    public ModelVersion modelVersion() {
+        return modelVersion;
+    }
+
+    @JsonProperty("@id")
+    public CedarId id() {
+        return id;
+    }
+
+    @JsonIgnore
+    public Iri propertyIri() {
+        return propertyIri;
+    }
+
+    @JsonUnwrapped
+    public ArtifactInfo artifactInfo() {
+        return artifactInfo;
+    }
+
+    @JsonUnwrapped
+    public VersionInfo versionInfo() {
+        return versionInfo;
+    }
+
+    @JsonUnwrapped
+    public ModificationInfo modificationInfo() {
+        return modificationInfo;
+    }
+
+    @JsonProperty("_valueConstraints")
+    public FieldValueConstraints valueConstraints() {
+        return valueConstraints;
+    }
+
+    @JsonProperty("_ui")
+    public FieldUi ui() {
+        return ui;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null || obj.getClass() != this.getClass())
+            return false;
+        var that = (SerializableTemplateField) obj;
+        return Objects.equals(this.jsonSchemaMixin, that.jsonSchemaMixin) && Objects.equals(this.modelVersion,
+                                                                                            that.modelVersion) && Objects.equals(
+                this.id,
+                that.id) && Objects.equals(this.propertyIri, that.propertyIri) && Objects.equals(this.artifactInfo,
+                                                                                                 that.artifactInfo) && Objects.equals(
+                this.versionInfo,
+                that.versionInfo) && Objects.equals(this.modificationInfo,
+                                                    that.modificationInfo) && Objects.equals(this.valueConstraints,
+                                                                                             that.valueConstraints) && Objects.equals(
+                this.ui,
+                that.ui);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(jsonSchemaMixin,
+                            modelVersion,
+                            id,
+                            propertyIri,
+                            artifactInfo,
+                            versionInfo,
+                            modificationInfo,
+                            valueConstraints,
+                            ui);
+    }
+
+    @Override
+    public String toString() {
+        return "SerializableTemplateField[" + "jsonSchemaMixin=" + jsonSchemaMixin + ", " + "modelVersion=" + modelVersion + ", " + "id=" + id + ", " + "propertyIri=" + propertyIri + ", " + "artifactInfo=" + artifactInfo + ", " + "versionInfo=" + versionInfo + ", " + "modificationInfo=" + modificationInfo + ", " + "valueConstraints=" + valueConstraints + ", " + "ui=" + ui + ']';
+    }
+
 }
