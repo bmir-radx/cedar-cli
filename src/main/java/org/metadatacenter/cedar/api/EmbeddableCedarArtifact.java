@@ -2,7 +2,9 @@ package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -36,6 +38,15 @@ public interface EmbeddableCedarArtifact extends CedarSchemaArtifact {
     @Nullable
     @JsonIgnore
     Iri propertyIri();
+
+
+    @Nonnull
+    @Override
+    EmbeddableCedarArtifact withId(CedarId id);
+
+    @Nonnull
+    @Override
+    EmbeddableCedarArtifact replaceIds(Map<CedarId, CedarId> idReplacementMap);
 
     void ifTemplateElement(Consumer<CedarTemplateElement> elementConsumer);
 

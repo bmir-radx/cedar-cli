@@ -3,6 +3,7 @@ package org.metadatacenter.cedar.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 /**
@@ -48,6 +49,10 @@ public record CedarId(String value) {
 
     public static CedarId resolveFolderId(String id) {
         return resolve(FOLDER_ID_PREFIX, id);
+    }
+
+    public static CedarId generateUrn() {
+        return new CedarId("urn:uuid:" + UUID.randomUUID());
     }
 
     public String getEscapedId() {

@@ -7,6 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
@@ -30,6 +31,19 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
     @Override
     public CedarTemplateField withId(@Nullable CedarId id) {
         return new CedarTemplateField(id, propertyIri, artifactInfo, versionInfo, modificationInfo, valueConstraints, ui);
+    }
+
+    @Nonnull
+    @Override
+    public CedarTemplateField replaceIds(Map<CedarId, CedarId> idReplacementMap) {
+        if(id == null) {
+            return this;
+        }
+        var replacementId = idReplacementMap.get(id());
+        if(replacementId == null) {
+            return this;
+        }
+        return this.withId(replacementId);
     }
 
     @JsonCreator

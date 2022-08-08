@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Matthew Horridge
@@ -20,6 +22,17 @@ public interface CedarArtifact {
 
     @Nonnull
     CedarArtifact withId(CedarId id);
+
+    @Nonnull
+    CedarArtifact replaceIds(Map<CedarId, CedarId> idReplacementMap);
+
+    default CedarId getReplacementId(Map<CedarId, CedarId> idReplacementMap) {
+        if(id() == null) {
+            return null;
+        }
+        var repl = idReplacementMap.get(id());
+        return Objects.requireNonNullElseGet(repl, this::id);
+    }
 
     @JsonUnwrapped
     @Nonnull

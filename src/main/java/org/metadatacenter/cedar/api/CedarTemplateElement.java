@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -36,6 +38,16 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
     @Override
     public CedarTemplateElement withId(CedarId id) {
         return new CedarTemplateElement(id, propertyIri, artifactInfo, versionInfo, modificationInfo, nodes);
+    }
+
+    @Nonnull
+    @Override
+    public CedarTemplateElement replaceIds(Map<CedarId, CedarId> idReplacementMap) {
+        var replacedChildNodes = nodes.stream()
+                .map(n -> n.replaceIds(idReplacementMap))
+                .toList();
+        var replacementId = getReplacementId(idReplacementMap);
+        return new CedarTemplateElement(replacementId, propertyIri, artifactInfo, versionInfo, modificationInfo, replacedChildNodes);
     }
 
     @Override

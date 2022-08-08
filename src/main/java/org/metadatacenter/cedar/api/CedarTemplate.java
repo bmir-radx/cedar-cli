@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Matthew Horridge
@@ -41,6 +42,21 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         return visitor.visit(this);
     }
 
+    @Nonnull
+    @Override
+    public CedarTemplate replaceIds(Map<CedarId, CedarId> idReplacementMap) {
+        var replacedChildNodes = nodes.stream()
+                                      .map(n -> n.replaceIds(idReplacementMap))
+                                      .toList();
+        var replacementId = getReplacementId(idReplacementMap);
+        return new CedarTemplate(replacementId, artifactInfo, versionInfo, modificationInfo, replacedChildNodes);
+    }
+
+
+
+    /**
+     * Gets all nested elements and this element in a depth first traversal order.
+     */
     @JsonIgnore
     public List<CedarTemplateElement> getElements() {
         var elements = new ArrayList<CedarTemplateElement>();
@@ -54,8 +70,8 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
 
     private void collectElements(EmbeddedCedarArtifact node, List<CedarTemplateElement> elements) {
         node.artifact().ifTemplateElement(element -> {
-            elements.add(element);
             collectElements(element.nodes(), elements);
+            elements.add(element);
         });
     }
 

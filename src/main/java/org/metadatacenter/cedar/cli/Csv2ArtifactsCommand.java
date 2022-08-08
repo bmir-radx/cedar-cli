@@ -18,7 +18,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -81,6 +83,8 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     private final CreateFolderRequest createFolderRequest;
 
+    private final Map<CedarId, CedarId> artifact2GeneratedIdMap = new HashMap<>();
+
 
     public Csv2ArtifactsCommand(CedarArtifactPoster importer,
                                 CedarCsvParserFactory cedarCsvParserFactory,
@@ -115,25 +119,26 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                 System.err.println("Output directory is not empty.  To overwrite existing files use the --overwrite option.");
                 return 1;
             }
-
         }
         var inputStream = Files.newInputStream(inputCsvFile);
         var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
                                                                 version, previousVersion);
         var template = cedarCsvParser.parse(inputStream);
 
-        writeArtifacts(List.of(template));
+        // Write artifacts in a depth first manner
+
+        if (generateFields) {
+            var fields = template.getFields();
+            writeArtifacts(fields);
+        }
 
         if (generateElements) {
             var elements = template.getElements();
             writeArtifacts(elements);
         }
 
+        writeArtifacts(List.of(template));
 
-        if (generateFields) {
-            var fields = template.getFields();
-            writeArtifacts(fields);
-        }
         return 0;
     }
 
@@ -143,11 +148,17 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         if(shouldPushToCedar()) {
             artifacts.forEach(artifact -> {
                 try {
-                    var posted = postArtifactToCedar(artifact);
+                    var initialId = artifact.id();
+                    var artifactWithReplacedIds = artifact.replaceIds(artifact2GeneratedIdMap);
+                    var artifactWithNullId = artifactWithReplacedIds.withId(null);
+                    var posted = postArtifactToCedar(artifactWithNullId);
                     counter.incrementAndGet();
                     posted.ifPresent(r -> {
                         System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.getSimpleTypeName().getName(), counter.get(), artifacts.size());
                         System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
+                        if (initialId != null) {
+                            artifact2GeneratedIdMap.put(initialId, r.cedarId());
+                        }
                     });
                 } catch (IOException | InterruptedException e) {
                     System.err.println(e.getMessage());
@@ -158,6 +169,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     private Optional<PostedArtifactResponse> postArtifactToCedar(CedarArtifact artifact) throws IOException, InterruptedException {
         var cedarFolderId = getFolderId();
+        // The ID must be null.  This is because CEDAR mints it
         return importer.postToCedar(artifact, cedarFolderId,
                                     pushToCedar.getCedarApiKey(),
                                     artifact.toCompactString(), jsonSchemaDescription);

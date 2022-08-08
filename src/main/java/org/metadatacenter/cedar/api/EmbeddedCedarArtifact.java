@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import java.util.Map;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -21,5 +23,9 @@ public record EmbeddedCedarArtifact(@JsonUnwrapped EmbeddableCedarArtifact artif
     @JsonIgnore
     public String getSchemaDescription() {
         return artifact.getSchemaDescription();
+    }
+
+    public EmbeddedCedarArtifact replaceIds(Map<CedarId, CedarId> idReplacementMap) {
+        return new EmbeddedCedarArtifact(artifact.replaceIds(idReplacementMap), multiplicity, visibility);
     }
 }
