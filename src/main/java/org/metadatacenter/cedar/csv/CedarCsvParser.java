@@ -134,6 +134,12 @@ public class CedarCsvParser {
         var minItems = node.row.getRequired().getMultiplicityLowerBound();
         var maxItems = node.row.getCardinality().getMultiplicityUpperBound()
                                .orElse(null);
+        // Workaround hack for bug in CEDAR Workbench UI
+        if(node.row.getCardinality().equals(Cardinality.MULTIPLE)) {
+            if(minItems == 0) {
+                minItems = 1;
+            }
+        }
         var multiplicity = new Multiplicity(minItems, maxItems);
         var visibility = node.row.visibility();
         return new EmbeddedCedarArtifact(artifact, multiplicity, visibility, node.row.getPropertyIri().orElse(null));
