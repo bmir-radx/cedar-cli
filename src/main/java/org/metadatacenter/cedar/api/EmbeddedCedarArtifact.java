@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -13,7 +14,8 @@ import java.util.Map;
  */
 public record EmbeddedCedarArtifact(@JsonUnwrapped EmbeddableCedarArtifact artifact,
                                     @JsonUnwrapped Multiplicity multiplicity,
-                                    @JsonIgnore Visibility visibility) {
+                                    @JsonIgnore Visibility visibility,
+                                    @JsonIgnore @Nullable Iri propertyIri) {
 
     @JsonIgnore
     public String getSchemaName() {
@@ -26,6 +28,6 @@ public record EmbeddedCedarArtifact(@JsonUnwrapped EmbeddableCedarArtifact artif
     }
 
     public EmbeddedCedarArtifact replaceIds(Map<CedarId, CedarId> idReplacementMap) {
-        return new EmbeddedCedarArtifact(artifact.replaceIds(idReplacementMap), multiplicity, visibility);
+        return new EmbeddedCedarArtifact(artifact.replaceIds(idReplacementMap), multiplicity, visibility, propertyIri);
     }
 }

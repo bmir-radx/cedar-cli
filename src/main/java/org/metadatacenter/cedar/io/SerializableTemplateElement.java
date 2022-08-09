@@ -21,7 +21,6 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = READ_ONLY) TemplateElementJsonSchemaMixin jsonSchemaMixin,
                                           @JsonProperty("schema:schemaVersion") ModelVersion modelVersion,
                                           @Nullable @JsonProperty("@id") CedarId id,
-                                          @JsonIgnore Iri propertyIri,
                                           @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                           @Nonnull @JsonUnwrapped VersionInfo versionInfo,
                                           @Nonnull @JsonUnwrapped ModificationInfo modificationInfo,
@@ -59,7 +58,8 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
                     var serializableArtifact = n.artifact().accept(new ArtifactToSerializableArtifactVisitor(jsonSchemaDescription));
                     return new SerializableEmbeddedArtifact((SerializableEmbeddableArtifact) serializableArtifact,
                                                             n.multiplicity(),
-                                                            n.visibility());
+                                                            n.visibility(),
+                                                            n.propertyIri());
                 }).toList();
 
         return new SerializableTemplateElement(new TemplateElementJsonSchemaMixin(element.toCompactString(),
@@ -68,7 +68,6 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
                                                                                   children),
                                                ModelVersion.V1_6_0,
                                                element.id(),
-                                               element.propertyIri(),
                                                element.artifactInfo(),
                                                element.versionInfo(),
                                                element.modificationInfo(),
@@ -83,11 +82,6 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
     @Override
     public String getSchemaIdentifier() {
         return artifactInfo.schemaIdentifier();
-    }
-
-    @Override
-    public Optional<Iri> getPropertyIri() {
-        return Optional.ofNullable(propertyIri);
     }
 
     @Override

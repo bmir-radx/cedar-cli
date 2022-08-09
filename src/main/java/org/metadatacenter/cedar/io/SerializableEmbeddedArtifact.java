@@ -11,6 +11,7 @@ import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Multiplicity;
 import org.metadatacenter.cedar.api.Visibility;
 
+import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,16 +28,12 @@ import java.util.Optional;
 public record SerializableEmbeddedArtifact(@JsonIgnore
                                            SerializableEmbeddableArtifact artifact,
                                            @JsonIgnore Multiplicity multiplicity,
-                                           @JsonIgnore Visibility visibility) {
+                                           @JsonIgnore Visibility visibility,
+                                           @JsonIgnore @Nullable Iri propertyIri) {
 
     @JsonIgnore
     public String getSchemaName() {
         return artifact.getSchemaName();
-    }
-
-    @JsonIgnore
-    public Optional<Iri> getPropertyIri() {
-        return artifact.getPropertyIri();
     }
 
     @JsonUnwrapped
@@ -49,6 +46,9 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
         }
     }
 
+    public Optional<Iri> getPropertyIri() {
+        return Optional.ofNullable(propertyIri);
+    }
 
 
     public interface Proxy {

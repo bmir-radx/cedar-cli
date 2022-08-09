@@ -133,7 +133,6 @@ public class SerializableTemplateFieldTests {
     void setUp() {
         field = new CedarTemplateField(
                 new CedarId("http://example.org/A"),
-                new Iri("http://example.org/prop"),
                 new ArtifactInfo("The identifier",
                                  "The schema name",
                                  "The schema description",

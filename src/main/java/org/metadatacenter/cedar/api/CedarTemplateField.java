@@ -20,7 +20,6 @@ import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 @JsonIgnoreProperties({"$schema", "@context", "type", "properties", "required"})
 @JsonPropertyOrder({"@id", "jsonLdInfo", "jsonSchemaObject", "schema:schemaVersion", "identifier", "cedarArtifactInfo", "_valueConstraints"})
 public record CedarTemplateField(@JsonProperty("@id") CedarId id,
-                                 @JsonIgnore Iri propertyIri,
                                  @JsonUnwrapped @JsonProperty(access = READ_ONLY) ArtifactInfo artifactInfo,
                                  @JsonUnwrapped @JsonProperty(access = READ_ONLY) VersionInfo versionInfo,
                                  @JsonUnwrapped ModificationInfo modificationInfo,
@@ -30,7 +29,7 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
     @Nonnull
     @Override
     public CedarTemplateField withId(@Nullable CedarId id) {
-        return new CedarTemplateField(id, propertyIri, artifactInfo, versionInfo, modificationInfo, valueConstraints, ui);
+        return new CedarTemplateField(id, artifactInfo, versionInfo, modificationInfo, valueConstraints, ui);
     }
 
     @Nonnull
@@ -64,7 +63,6 @@ public record CedarTemplateField(@JsonProperty("@id") CedarId id,
                                               @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
                                               @JsonProperty("oslc:modifiedBy") String oslcModifiedBy) {
         return new CedarTemplateField(identifier,
-                                      null, // TODO: Form the context
                                       new ArtifactInfo(
                                               schemaIdentifier,
                                               schemaName,

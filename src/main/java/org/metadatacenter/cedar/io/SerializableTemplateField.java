@@ -30,9 +30,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
     @JsonProperty("@id")
     private CedarId id;
 
-    @JsonIgnore
-    private Iri propertyIri;
-
     @JsonUnwrapped
     private ArtifactInfo artifactInfo;
 
@@ -55,7 +52,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
     public SerializableTemplateField(TemplateFieldJsonSchemaMixin jsonSchemaMixin,
                                      ModelVersion modelVersion,
                                      CedarId id,
-                                     Iri propertyIri,
                                      ArtifactInfo artifactInfo,
                                      VersionInfo versionInfo,
                                      ModificationInfo modificationInfo,
@@ -64,7 +60,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         this.jsonSchemaMixin = jsonSchemaMixin;
         this.modelVersion = modelVersion;
         this.id = id;
-        this.propertyIri = propertyIri;
         this.artifactInfo = artifactInfo;
         this.versionInfo = versionInfo;
         this.modificationInfo = modificationInfo;
@@ -91,7 +86,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return new SerializableTemplateField(jsonSchemaInfo,
                                              ModelVersion.V1_6_0,
                                              templateField.id(),
-                                             templateField.propertyIri(),
                                              templateField.artifactInfo(),
                                              templateField.versionInfo(),
                                              templateField.modificationInfo(),
@@ -109,10 +103,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
 
     public void setId(CedarId id) {
         this.id = id;
-    }
-
-    public void setPropertyIri(Iri propertyIri) {
-        this.propertyIri = propertyIri;
     }
 
     public void setArtifactInfo(ArtifactInfo artifactInfo) {
@@ -137,7 +127,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
 
     public CedarTemplateField toTemplateField() {
         return new CedarTemplateField(id,
-                                      propertyIri,
                                       artifactInfo,
                                       versionInfo,
                                       modificationInfo,
@@ -155,18 +144,11 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return JsonLdInfo.get().getFieldContextBoilerPlate();
     }
 
-    @JsonIgnore
-    @Override
-    public Optional<Iri> getPropertyIri() {
-        return Optional.ofNullable(propertyIri);
-    }
-
     @Override
     public SerializableEmbeddableArtifact withUiHiddenTrue() {
         return new SerializableTemplateField(jsonSchemaMixin,
                                              modelVersion,
                                              id,
-                                             propertyIri,
                                              artifactInfo,
                                              versionInfo,
                                              modificationInfo,
@@ -192,7 +174,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
                                               @JsonProperty("pav:lastUpdatedOn") Instant pavLastUpdatedOn,
                                               @JsonProperty("oslc:modifiedBy") String oslcModifiedBy) {
         return new CedarTemplateField(identifier,
-                                      null,
                                       new ArtifactInfo(schemaIdentifier,
                                                        schemaName,
                                                        schemaDescription,
@@ -233,11 +214,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return id;
     }
 
-    @JsonIgnore
-    public Iri propertyIri() {
-        return propertyIri;
-    }
-
     @JsonUnwrapped
     public ArtifactInfo artifactInfo() {
         return artifactInfo;
@@ -273,7 +249,7 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return Objects.equals(this.jsonSchemaMixin, that.jsonSchemaMixin) && Objects.equals(this.modelVersion,
                                                                                             that.modelVersion) && Objects.equals(
                 this.id,
-                that.id) && Objects.equals(this.propertyIri, that.propertyIri) && Objects.equals(this.artifactInfo,
+                that.id) && Objects.equals(this.artifactInfo,
                                                                                                  that.artifactInfo) && Objects.equals(
                 this.versionInfo,
                 that.versionInfo) && Objects.equals(this.modificationInfo,
@@ -288,7 +264,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return Objects.hash(jsonSchemaMixin,
                             modelVersion,
                             id,
-                            propertyIri,
                             artifactInfo,
                             versionInfo,
                             modificationInfo,
@@ -298,7 +273,7 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
 
     @Override
     public String toString() {
-        return "SerializableTemplateField[" + "jsonSchemaMixin=" + jsonSchemaMixin + ", " + "modelVersion=" + modelVersion + ", " + "id=" + id + ", " + "propertyIri=" + propertyIri + ", " + "artifactInfo=" + artifactInfo + ", " + "versionInfo=" + versionInfo + ", " + "modificationInfo=" + modificationInfo + ", " + "valueConstraints=" + valueConstraints + ", " + "ui=" + ui + ']';
+        return "SerializableTemplateField[" + "jsonSchemaMixin=" + jsonSchemaMixin + ", " + "modelVersion=" + modelVersion + ", " + "id=" + id + ", " + "artifactInfo=" + artifactInfo + ", " + "versionInfo=" + versionInfo + ", " + "modificationInfo=" + modificationInfo + ", " + "valueConstraints=" + valueConstraints + ", " + "ui=" + ui + ']';
     }
 
 }

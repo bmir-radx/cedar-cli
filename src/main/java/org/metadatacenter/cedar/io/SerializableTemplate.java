@@ -57,7 +57,8 @@ public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSc
                     var serializableArtifact = n.artifact().accept(new ArtifactToSerializableArtifactVisitor(jsonSchemaDescription));
                     return new SerializableEmbeddedArtifact((SerializableEmbeddableArtifact) serializableArtifact,
                                                             n.multiplicity(),
-                                                            n.visibility());
+                                                            n.visibility(),
+                                                            n.propertyIri());
                 }).toList();
         return new SerializableTemplate(new TemplateJsonSchemaMixin(template.toCompactString(),
                                                                     jsonSchemaDescription,

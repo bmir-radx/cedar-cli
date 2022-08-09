@@ -136,7 +136,7 @@ public class CedarCsvParser {
                                .orElse(null);
         var multiplicity = new Multiplicity(minItems, maxItems);
         var visibility = node.row.visibility();
-        return new EmbeddedCedarArtifact(artifact, multiplicity, visibility);
+        return new EmbeddedCedarArtifact(artifact, multiplicity, visibility, node.row.getPropertyIri().orElse(null));
     }
 
     private EmbeddableCedarArtifact translateToEmbeddableArtifact(Node node) {
@@ -149,7 +149,6 @@ public class CedarCsvParser {
         }
         else if(node.isSection()) {
             return new CedarTemplateField(CedarId.generateUrn(),
-                                          node.row.getPropertyIri().orElse(null),
                                           new ArtifactInfo(node.row.section(),
                                                            node.row.section(),
                                                            "",
@@ -208,7 +207,6 @@ public class CedarCsvParser {
     private CedarTemplateField translateToField(Node node) {
         var fieldRow = node.row;
         return new CedarTemplateField(CedarId.generateUrn(),
-                                      fieldRow.getPropertyIri().orElse(null),
                                       new ArtifactInfo(getFieldIdentifier(fieldRow),
                                                        fieldRow.fieldTitle(),
                                                        fieldRow.description(),
