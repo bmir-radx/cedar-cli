@@ -250,7 +250,7 @@ public class CedarCsvParser {
 
     private static StringValueConstraints getCedarStringConstraints(CedarCsvRow fieldRow) {
         return new StringValueConstraints(null, null,
-                                          fieldRow.getDefaultValue().orElse(null),
+                                          fieldRow.getDefaultValue().value(),
                                           fieldRow.getRequired(),
                                           fieldRow.getCardinality());
     }
@@ -278,13 +278,17 @@ public class CedarCsvParser {
 
     private static EnumerationValueConstraints getOntologyTermsConstaints(CedarCsvRow row) {
         var lookupSpec = row.getLookupSpec();
+        var defaultValueSpec = new DefaultValueSpec(row.defaultValue());
+
         if(lookupSpec.isPresent()) {
             var ontologyTermSelectors = getOntologyTermsSelectors(lookupSpec.get());
-            return EnumerationValueConstraints.of(ontologyTermSelectors, row.getRequired(), row.getCardinality());
+            return EnumerationValueConstraints.of(ontologyTermSelectors, defaultValueSpec.getDefaultValue().orElse(null),
+                                                  row.getRequired(), row.getCardinality());
         }
         else {
             return new EnumerationValueConstraints(Required.OPTIONAL, Cardinality.SINGLE, Collections.emptyList(),
-                                                   Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+                                                   Collections.emptyList(), Collections.emptyList(), Collections.emptyList(),
+                                                   defaultValueSpec.getDefaultValue().orElse(null));
         }
     }
 

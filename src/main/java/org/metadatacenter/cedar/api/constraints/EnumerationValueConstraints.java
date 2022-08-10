@@ -6,6 +6,7 @@ import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,8 @@ public record EnumerationValueConstraints(Required requiredValue,
                                           List<SpecificOntologyClassSpecification> classes,
                                           List<OntologyBranchTermsSpecification> branches,
                                           List<AllOntologyTermsSpecification> ontologies,
-                                          List<LiteralValueConstraint> literals) implements FieldValueConstraints {
+                                          List<LiteralValueConstraint> literals,
+                                          @Nullable DefaultValue defaultValue) implements FieldValueConstraints {
 
     @JsonCreator
     public static EnumerationValueConstraints fromJson(@JsonProperty("requiredValue") boolean requiredValue,
@@ -31,18 +33,21 @@ public record EnumerationValueConstraints(Required requiredValue,
                                                        @JsonProperty("classes") List<SpecificOntologyClassSpecification> classes,
                                                        @JsonProperty("branches") List<OntologyBranchTermsSpecification> branches,
                                                        @JsonProperty("ontologies") List<AllOntologyTermsSpecification> ontologies,
-                                                       @JsonProperty("literals") List<LiteralValueConstraint> literals) {
+                                                       @JsonProperty("literals") List<LiteralValueConstraint> literals,
+                                                       @JsonProperty("defaultValue") DefaultValue defaultValue) {
         return new EnumerationValueConstraints(
                 requiredValue ? Required.REQUIRED : Required.OPTIONAL,
                 multipleChoice ? Cardinality.MULTIPLE : Cardinality.SINGLE,
                 classes,
                 branches,
                 ontologies,
-                literals
+                literals,
+                defaultValue
         );
     }
 
     public static EnumerationValueConstraints of(List<OntologyTermsSpecification> ontologyTermSelectors,
+                                                @Nullable DefaultValue defaultValue,
                                                 Required required,
                                                 Cardinality cardinality) {
         var ontologies = new ArrayList<AllOntologyTermsSpecification>();
@@ -66,11 +71,16 @@ public record EnumerationValueConstraints(Required requiredValue,
                 }
             });
         });
-        return new EnumerationValueConstraints(required, cardinality, classes, branches, ontologies, Collections.emptyList());
+        return new EnumerationValueConstraints(required, cardinality, classes, branches, ontologies, Collections.emptyList(), defaultValue);
     }
 
     @Override
     public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
         return TemplateFieldJsonSchemaMixin.CedarFieldValueType.IRI;
+    }
+
+    public static record DefaultValue(@JsonProperty("termUri") String termUri,
+                                      @JsonProperty("rdfs:label") String label) {
+
     }
 }

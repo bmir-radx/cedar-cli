@@ -8,6 +8,7 @@ import org.metadatacenter.cedar.api.Visibility;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 /**
  * Matthew Horridge
@@ -104,8 +105,8 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        .orElse(Required.OPTIONAL);
     }
 
-    public Optional<String> getDefaultValue() {
-        return Optional.ofNullable(defaultValue);
+    public DefaultValueSpec getDefaultValue() {
+        return new DefaultValueSpec(Optional.ofNullable(defaultValue).orElse(""));
     }
 
     public Optional<Iri> getPropertyIri() {
