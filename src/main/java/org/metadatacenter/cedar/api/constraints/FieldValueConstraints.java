@@ -37,7 +37,7 @@ public interface FieldValueConstraints {
     }
 
     static FieldValueConstraints empty() {
-        return new StringValueConstraints(null, null, Required.OPTIONAL, Cardinality.SINGLE);
+        return new StringValueConstraints(null, null, null, Required.OPTIONAL, Cardinality.SINGLE);
     }
 
     @JsonIgnore

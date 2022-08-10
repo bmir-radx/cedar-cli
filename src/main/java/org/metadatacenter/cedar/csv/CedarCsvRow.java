@@ -22,6 +22,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Visibility") Visibility visibility,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
+                          @JsonProperty("Default Value") String defaultValue,
                           @JsonProperty("Property") String propertyIri,
                           @JsonProperty("Type") CedarCsvInputType inputType,
                           @JsonProperty("Lookup") String lookup) {
@@ -33,6 +34,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Visibility") Visibility visibility,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Description") String description,
+                       @JsonProperty("Default Value") String defaultValue,
                        @JsonProperty("Property") String propertyIri,
                        @JsonProperty("Type") CedarCsvInputType inputType,
                        @JsonProperty("Lookup") String lookup) {
@@ -44,6 +46,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.fieldTitle = fieldTitle;
         this.propertyIri = propertyIri;
         this.description = description;
+        this.defaultValue = defaultValue;
         this.inputType = inputType;
         this.lookup = lookup;
     }
@@ -99,6 +102,10 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         return Optional.ofNullable(optionality)
                        .map(Optionality::toCedarRequired)
                        .orElse(Required.OPTIONAL);
+    }
+
+    public Optional<String> getDefaultValue() {
+        return Optional.ofNullable(defaultValue);
     }
 
     public Optional<Iri> getPropertyIri() {

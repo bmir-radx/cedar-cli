@@ -47,7 +47,8 @@ public class SerializableTemplateFieldTests {
                 "minLength": 3,
                 "maxLength": 4,
                 "requiredValue": false,
-                "multipleChoice": false
+                "multipleChoice": false,
+                "defaultValue": "the default value"
               },
               "_ui": {
                 "inputType": "textfield"
@@ -140,7 +141,7 @@ public class SerializableTemplateFieldTests {
                                  "The pref label", List.of("The alt label")),
                 VersionInfo.initialDraft(),
                 ModificationInfo.empty(),
-                new StringValueConstraints(3, 4, Required.OPTIONAL, Cardinality.SINGLE),
+                new StringValueConstraints(3, 4, "the default value", Required.OPTIONAL, Cardinality.SINGLE),
                 new BasicFieldUi(InputType.TEXTFIELD,
                                  false,
                                  false)

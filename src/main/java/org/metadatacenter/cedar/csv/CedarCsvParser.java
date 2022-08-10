@@ -250,6 +250,7 @@ public class CedarCsvParser {
 
     private static StringValueConstraints getCedarStringConstraints(CedarCsvRow fieldRow) {
         return new StringValueConstraints(null, null,
+                                          fieldRow.getDefaultValue().orElse(null),
                                           fieldRow.getRequired(),
                                           fieldRow.getCardinality());
     }

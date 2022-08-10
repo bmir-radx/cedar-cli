@@ -7,6 +7,7 @@ import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -17,15 +18,18 @@ import java.util.Optional;
 //@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public record StringValueConstraints(Integer minLength,
                                      Integer maxLength,
+                                     @Nullable String defaultValue,
                                      Required requiredValue,
                                      Cardinality cardinality) implements FieldValueConstraints {
 
     @JsonCreator
     public static StringValueConstraints fromJson(@JsonProperty("minLength") Integer minLength,
                                                   @JsonProperty("maxLength") Integer maxLength,
+                                                  @JsonProperty("defaultValue") String defaultValue,
                                                   @JsonProperty("requiredValue") boolean requiredValue,
                                                   @JsonProperty("multipleChoice") boolean multipleChoice) {
         return new StringValueConstraints(minLength, maxLength,
+                                          defaultValue,
                                           requiredValue ? Required.REQUIRED : Required.OPTIONAL,
                                           multipleChoice ? Cardinality.MULTIPLE : Cardinality.SINGLE);
     }
