@@ -35,11 +35,6 @@ public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSc
         return JsonLdInfo.get().getElementContextBoilerPlate();
     }
 
-    @JsonProperty("_valueConstraints")
-    public Map<String, Object> getValueConstraints() {
-        return Collections.emptyMap();
-    }
-
     @Override
     public String getSchemaName() {
         return artifactInfo().schemaName();

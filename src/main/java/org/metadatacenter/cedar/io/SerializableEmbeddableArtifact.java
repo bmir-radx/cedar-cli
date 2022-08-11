@@ -14,8 +14,6 @@ import java.util.Optional;
 @JsonPropertyOrder({"@type", "@id", "artifactInfo", "versionInfo", "_valueConstraints", "_ui", "modificationInfo", "jsonSchemaMixin"})
 public interface SerializableEmbeddableArtifact extends SerializableCedarArtifact {
 
-    String getSchemaIdentifier();
-
     @JsonIgnore
     SerializableEmbeddableArtifact withUiHiddenTrue();
 }

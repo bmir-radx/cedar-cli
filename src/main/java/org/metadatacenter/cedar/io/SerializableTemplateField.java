@@ -222,11 +222,6 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return artifactInfo().schemaName();
     }
 
-    @Override
-    public String getSchemaIdentifier() {
-        return artifactInfo.schemaIdentifier();
-    }
-
     @JsonUnwrapped
     public TemplateFieldJsonSchemaMixin jsonSchemaMixin() {
         return jsonSchemaMixin;

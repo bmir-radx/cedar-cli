@@ -39,11 +39,6 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
         return JsonLdInfo.get().getElementContextBoilerPlate();
     }
 
-    @JsonProperty("_valueConstraints")
-    public Map<String, Object> getValueConstraints() {
-        return Collections.emptyMap();
-    }
-
     @Override
     public String getSchemaName() {
         return artifactInfo().schemaName();
@@ -82,11 +77,6 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
                                                        new UiPropertyLabelsMixin(propertyDescriptors),
                                                        new UiPropertyDescriptionsMixin(propertyDescriptors)
                                                ));
-    }
-
-    @Override
-    public String getSchemaIdentifier() {
-        return artifactInfo.schemaIdentifier();
     }
 
     @Override
