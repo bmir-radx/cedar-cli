@@ -50,6 +50,11 @@ public record SerializableTemplate(@JsonUnwrapped TemplateJsonSchemaMixin jsonSc
         return ModelVersion.V1_6_0;
     }
 
+    @Override
+    public JsonSchema getJsonSchema() {
+        return jsonSchemaMixin;
+    }
+
     public static SerializableTemplate wrap(CedarTemplate template, String jsonSchemaDescription) {
         var propertyDescriptors = PropertyDescriptor.getPropertyDescriptors(template);
         var children = template.nodes()

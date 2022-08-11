@@ -24,10 +24,14 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
         this.nodes = Objects.requireNonNull(nodes);
     }
 
+    @Override
+    public String type() {
+        return "object";
+    }
 
     private static Map<String, Object> readMap(String path) {
         try {
-            var is = TemplateFieldJsonSchemaMixin.class.getResourceAsStream(
+            var is = TemplateFieldObjectJsonSchemaMixin.class.getResourceAsStream(
                     path);
             return (Map<String, Object>) new ObjectMapper().readValue(is, Map.class);
         } catch (IOException e) {
@@ -90,5 +94,10 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
               .map(SerializableEmbeddedArtifact::getSchemaName)
               .forEach(union::add);
         return union.stream().toList();
+    }
+
+    @Override
+    public Optional<Object> getContainingObjectAdditionalPropertiesOverride() {
+        return Optional.empty();
     }
 }

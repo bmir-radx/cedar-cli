@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.NumberType;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
 
 /**
  * Matthew Horridge
@@ -38,7 +38,7 @@ public record NumericValueConstraints(NumberType numberType,
     }
 
     @Override
-    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
-        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL;
+    public TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL;
     }
 }

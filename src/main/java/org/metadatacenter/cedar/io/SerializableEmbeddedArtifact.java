@@ -46,6 +46,11 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
         }
     }
 
+    @JsonIgnore
+    JsonSchema getArtifactJsonSchema() {
+        return artifact.getJsonSchema();
+    }
+
     public Optional<Iri> getPropertyIri() {
         return Optional.ofNullable(propertyIri);
     }

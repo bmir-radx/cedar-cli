@@ -1,7 +1,7 @@
 package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
 
 import java.util.Optional;
 
@@ -22,27 +22,29 @@ public enum InputType {
 
     TEXTAREA("textarea", null, null, false),
 
-    NUMERIC("numeric", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
+    NUMERIC("numeric", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
 
     SECTION_BREAK("section-break", null, null, true),
 
-    PHONE_NUMBER("phone-number", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
+    PHONE_NUMBER("phone-number", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
 
-    EMAIL("email", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, JsonSchemaFormat.EMAIL, false),
+    EMAIL("email", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL, JsonSchemaFormat.EMAIL, false),
 
-    TEMPORAL("temporal", TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL, JsonSchemaFormat.DATE_TIME, false),
+    TEMPORAL("temporal", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL, JsonSchemaFormat.DATE_TIME, false),
 
-    LINK("link", TemplateFieldJsonSchemaMixin.CedarFieldValueType.IRI, JsonSchemaFormat.URI, false);
+    LINK("link", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.IRI, JsonSchemaFormat.URI, false),
+
+    ATTRIBUTE_VALUE("attribute-value", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL, null, true);
 
     private final String name;
 
-    private final TemplateFieldJsonSchemaMixin.CedarFieldValueType fixedValueType;
+    private final TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType fixedValueType;
 
     private final JsonSchemaFormat jsonSchemaFormat;
 
     private final boolean isStatic;
 
-    InputType(String name, TemplateFieldJsonSchemaMixin.CedarFieldValueType fixedValueType, JsonSchemaFormat jsonSchemaFormat,
+    InputType(String name, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType fixedValueType, JsonSchemaFormat jsonSchemaFormat,
               boolean isStatic) {
         this.name = name;
         this.fixedValueType = fixedValueType;
@@ -68,7 +70,7 @@ public enum InputType {
      * Gets the fixed JSON Schema value type for the input type, if it has one.  If the input type does
      * not have a fixed value type then the value constraints must be consulted for the input type.
      */
-    public Optional<TemplateFieldJsonSchemaMixin.CedarFieldValueType> getFixedValueType() {
+    public Optional<TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType> getFixedValueType() {
         return Optional.ofNullable(fixedValueType);
     }
 }

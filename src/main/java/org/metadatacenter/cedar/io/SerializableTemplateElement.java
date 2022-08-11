@@ -49,6 +49,11 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
         return artifactInfo().schemaName();
     }
 
+    @Override
+    public JsonSchema getJsonSchema() {
+        return jsonSchemaMixin;
+    }
+
     public static SerializableTemplateElement wrap(CedarTemplateElement element,
                                                    String jsonSchemaDescription) {
 

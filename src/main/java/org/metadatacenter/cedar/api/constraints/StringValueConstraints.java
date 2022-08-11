@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public record StringValueConstraints(Integer minLength,
     }
 
     @Override
-    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
-        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL;
+    public TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL;
     }
 }

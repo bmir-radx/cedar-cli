@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -75,8 +75,8 @@ public record EnumerationValueConstraints(Required requiredValue,
     }
 
     @Override
-    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
-        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.IRI;
+    public TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.IRI;
     }
 
     public static record DefaultValue(@JsonProperty("termUri") String termUri,

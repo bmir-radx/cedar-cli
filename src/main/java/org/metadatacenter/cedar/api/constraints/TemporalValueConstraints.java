@@ -8,7 +8,7 @@ import org.metadatacenter.cedar.api.InputTimeFormat;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.api.TemporalGranularity;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
 
 /**
  * Matthew Horridge
@@ -38,7 +38,7 @@ public record TemporalValueConstraints(CedarTemporalType temporalType,
     }
 
     @Override
-    public TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
-        return TemplateFieldJsonSchemaMixin.CedarFieldValueType.LITERAL;
+    public TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
+        return TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL;
     }
 }

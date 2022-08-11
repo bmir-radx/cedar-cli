@@ -2,13 +2,14 @@ package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.annotation.*;
 import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.api.constraints.EmptyValueConstraints;
 import org.metadatacenter.cedar.api.constraints.FieldValueConstraints;
 
+import javax.annotation.Nullable;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 
 /**
@@ -17,6 +18,7 @@ import java.util.Optional;
  * 2022-07-30
  */
 @JsonPropertyOrder({"@type", "@id", "artifactInfo", "versionInfo", "_valueConstraints", "_ui", "modificationInfo", "jsonSchemaMixin"})
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public final class SerializableTemplateField implements SerializableEmbeddableArtifact {
 
     static final String TYPE = "https://schema.metadatacenter.org/core/TemplateField";
@@ -55,7 +57,7 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
                                      ArtifactInfo artifactInfo,
                                      VersionInfo versionInfo,
                                      ModificationInfo modificationInfo,
-                                     FieldValueConstraints valueConstraints,
+                                     @Nullable FieldValueConstraints valueConstraints,
                                      FieldUi ui) {
         this.jsonSchemaMixin = jsonSchemaMixin;
         this.modelVersion = modelVersion;
@@ -71,18 +73,12 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
                                                  String jsonSchemaTitle,
                                                  String jsonSchemaDescription) {
 
-        var jsonSchemaType = templateField.ui()
-                                          .inputType()
-                                          .getFixedValueType()
-                                          .orElse(templateField.valueConstraints().getJsonSchemaType());
+
+        var jsonSchemaInfo = getJsonSchemaMixin(templateField,
+                                                                                          jsonSchemaTitle,
+                                                                                          jsonSchemaDescription);
 
 
-        var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
-        var jsonSchemaInfo = new TemplateFieldJsonSchemaMixin(jsonSchemaTitle,
-                                                              jsonSchemaDescription,
-                                                              jsonSchemaType,
-                                                              format,
-                                                              templateField.valueConstraints().isMultipleChoice());
         return new SerializableTemplateField(jsonSchemaInfo,
                                              ModelVersion.V1_6_0,
                                              templateField.id(),
@@ -93,7 +89,39 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
                                              templateField.ui());
     }
 
-    public void setJsonSchemaMixin(TemplateFieldJsonSchemaMixin jsonSchemaMixin) {
+    private static TemplateFieldJsonSchemaMixin getJsonSchemaMixin(CedarTemplateField templateField,
+                                                                                    String jsonSchemaTitle,
+                                                                                    String jsonSchemaDescription) {
+        if(templateField.ui().inputType().equals(InputType.ATTRIBUTE_VALUE)) {
+            return new AttributeValueTemplateFieldJsonSchemaMixin(jsonSchemaTitle, jsonSchemaDescription);
+        }
+        else {
+            return getTemplateFieldObjectJsonSchemaMixin(templateField,
+                                                         jsonSchemaTitle,
+                                                         jsonSchemaDescription);
+        }
+
+    }
+
+    private static TemplateFieldObjectJsonSchemaMixin getTemplateFieldObjectJsonSchemaMixin(CedarTemplateField templateField,
+                                                                                            String jsonSchemaTitle,
+                                                                                            String jsonSchemaDescription) {
+        var jsonSchemaType = templateField.ui()
+                                          .inputType()
+                                          .getFixedValueType()
+                                          .orElse(templateField.valueConstraints().getJsonSchemaType());
+
+
+        var format = templateField.ui().inputType().getJsonSchemaFormat().orElse(null);
+
+        var jsonSchemaInfo = new TemplateFieldObjectJsonSchemaMixin(jsonSchemaTitle, jsonSchemaDescription,
+                                                                    jsonSchemaType,
+                                                                    format,
+                                                                    templateField.valueConstraints().isMultipleChoice());
+        return jsonSchemaInfo;
+    }
+
+    public void setJsonSchemaMixin(TemplateFieldObjectJsonSchemaMixin jsonSchemaMixin) {
         this.jsonSchemaMixin = jsonSchemaMixin;
     }
 
@@ -209,6 +237,11 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
         return modelVersion;
     }
 
+    @Override
+    public JsonSchema getJsonSchema() {
+        return jsonSchemaMixin;
+    }
+
     @JsonProperty("@id")
     public CedarId id() {
         return id;
@@ -230,7 +263,11 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
     }
 
     @JsonProperty("_valueConstraints")
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
     public FieldValueConstraints valueConstraints() {
+        if(valueConstraints instanceof EmptyValueConstraints) {
+            return null;
+        }
         return valueConstraints;
     }
 

@@ -3,20 +3,21 @@ package org.metadatacenter.cedar.api.constraints;
 import com.fasterxml.jackson.annotation.*;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldJsonSchemaMixin;
+import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
 
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
  * 2022-07-26
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = StringValueConstraints.class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.DEDUCTION, defaultImpl = EmptyValueConstraints.class)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonSubTypes({
         @JsonSubTypes.Type(StringValueConstraints.class),
         @JsonSubTypes.Type(NumericValueConstraints.class),
         @JsonSubTypes.Type(TemporalValueConstraints.class),
-        @JsonSubTypes.Type(EnumerationValueConstraints.class)
+        @JsonSubTypes.Type(EnumerationValueConstraints.class),
+        @JsonSubTypes.Type(EmptyValueConstraints.class)
 })
 public interface FieldValueConstraints {
 
@@ -36,10 +37,10 @@ public interface FieldValueConstraints {
         return cardinality() == Cardinality.MULTIPLE;
     }
 
-    static FieldValueConstraints empty() {
+    static FieldValueConstraints blank() {
         return new StringValueConstraints(null, null, null, Required.OPTIONAL, Cardinality.SINGLE);
     }
 
     @JsonIgnore
-    TemplateFieldJsonSchemaMixin.CedarFieldValueType getJsonSchemaType();
+    TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType();
 }

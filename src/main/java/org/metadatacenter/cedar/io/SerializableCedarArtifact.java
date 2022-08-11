@@ -20,4 +20,7 @@ public interface SerializableCedarArtifact {
      */
     @JsonProperty("schema:schemaVersion")
     ModelVersion modelVersion();
+
+    @JsonIgnore
+    JsonSchema getJsonSchema();
 }

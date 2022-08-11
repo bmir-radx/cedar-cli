@@ -131,6 +131,10 @@ public class CedarCsvParser {
 
     private static EmbeddedCedarArtifact getEmbeddedCedarArtifact(Node node,
                                                                   EmbeddableCedarArtifact artifact) {
+        // Attribute values are ALWAYS MULTIPLE
+        if(node.row.getInputType().equals(Optional.of(CedarCsvInputType.ATTRIBUTE_VALUE))) {
+            return new EmbeddedCedarArtifact(artifact, Multiplicity.ZERO_OR_MORE, Visibility.VISIBLE, null);
+        }
         var minItems = node.row.getRequired().getMultiplicityLowerBound();
         var maxItems = node.row.getCardinality().getMultiplicityUpperBound()
                                .orElse(null);
@@ -163,7 +167,7 @@ public class CedarCsvParser {
                                                            List.of()),
                                           VersionInfo.initialDraft(),
                                           ModificationInfo.empty(),
-                                          FieldValueConstraints.empty(),
+                                          FieldValueConstraints.blank(),
                                           new BasicFieldUi(
                                                   InputType.SECTION_BREAK,
                                                   false,
@@ -210,7 +214,7 @@ public class CedarCsvParser {
         }
     }
 
-    private CedarTemplateField translateToField(Node node) {
+    private EmbeddableCedarArtifact translateToField(Node node) {
         var fieldRow = node.row;
         return new CedarTemplateField(CedarId.generateUrn(),
                                       new ArtifactInfo(getFieldIdentifier(fieldRow),
@@ -238,9 +242,12 @@ public class CedarCsvParser {
 
     private static FieldValueConstraints getValueConstraints(CedarCsvRow fieldRow) {
         var inputType = getInputType(fieldRow);
+        if(inputType.equals(CedarCsvInputType.ATTRIBUTE_VALUE)) {
+            return new EmptyValueConstraints();
+        }
         var constraintsType = inputType.getConstraintsType();
         return switch (constraintsType) {
-            case NONE -> FieldValueConstraints.empty();
+            case NONE -> FieldValueConstraints.blank();
             case NUMERIC -> getCedarNumericConstraints(fieldRow, inputType);
             case TEMPORAL -> getCedarTemporalConstraints(fieldRow, inputType);
             case ONTOLOGY_TERMS ->  getOntologyTermsConstaints(fieldRow);
