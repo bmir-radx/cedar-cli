@@ -12,7 +12,7 @@ public class FolderIdMixin {
 
     @CommandLine.Option(names = "--folder-id",
             required = true,
-            description = "The UUID of the CEDAR Folder ID")
+            description = "The UUID of the CEDAR Folder ID", defaultValue = "${CEDAR_USER_HOME_FOLDER_ID}")
     public String cedarFolderId;
 
     public CedarId getFolderId() {
