@@ -21,7 +21,7 @@ public class DeleteTemplateRequest {
 
     public void send(CedarId templateId, CedarApiKey apiKey) {
         factory.createWebClient(HttpMethod.DELETE,
-                                "/templates/" + apiKey.key(),
+                                "/templates/" + templateId.getEscapedId(),
                                 apiKey)
                 .retrieve()
                 .toBodilessEntity()
