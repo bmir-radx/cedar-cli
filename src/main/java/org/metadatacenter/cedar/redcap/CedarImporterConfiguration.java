@@ -2,6 +2,7 @@ package org.metadatacenter.cedar.redcap;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.metadatacenter.cedar.csv.NumericBoundParser;
@@ -75,10 +76,11 @@ public class CedarImporterConfiguration {
     @Bean
     @Named("outputMapper")
     JsonMapper jsonMapper() {
-        var om = JsonMapper.builder()
-                                   .configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true)
-                                   .build();
-        return om;
+        return JsonMapper.builder()
+                         .configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true)
+                         .addModule(new JavaTimeModule())
+                         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+                         .build();
     }
 
     @Bean
