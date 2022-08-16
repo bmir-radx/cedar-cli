@@ -100,5 +100,6 @@ public class SerializableTemplateElementTests {
         assertThat(content).extractingJsonPathStringValue("$.properties.['The field schema:name'].['@id']").isEqualTo(fieldId.value());
 
         assertThat(content).extractingJsonPathArrayValue("$.properties.['@context'].properties.['The field schema:name'].enum").contains(PROPERTY_IRI);
+        assertThat(content).extractingJsonPathStringValue("$.properties.['@context'].type").isEqualTo("object");
     }
 }
