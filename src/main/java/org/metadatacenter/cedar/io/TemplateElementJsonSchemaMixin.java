@@ -22,6 +22,8 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
 
     private static final Map<String, Object> propertiesForIris;
 
+    protected static final String FALLBACK_PROPERTY_IRI_PREFIX = "https://schema.metadatacenter.org/properties/";
+
     static {
         propertiesForIris = readMap();
     }
@@ -56,13 +58,31 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
     public Map<String, Object> properties() {
         var value = new HashMap<>(ElementBoilerPlate.json_schema__properties);
         var contextProperties = new LinkedHashMap<>();
-        nodes.forEach(f -> {
-            var propertyIri = f.getPropertyIri().orElse(new Iri("https://schema.metadatacenter.org/properties/" + UUID.randomUUID()));
-            contextProperties.put(f.getSchemaName(), Map.of("enum", List.of(propertyIri)));
+        nodes.forEach(embeddedArtifact -> {
+            var propertyIri = embeddedArtifact.getPropertyIri().orElse(generateFreshIri());
+            contextProperties.put(embeddedArtifact.getSchemaName(), new PropertyEntry(propertyIri));
         });
         ((Map<String, Object>) value.get("@context")).put("properties", contextProperties);
-        nodes.forEach(field -> value.put(field.getSchemaName(), field));
+        nodes.forEach(embeddedArtifact -> value.put(embeddedArtifact.getSchemaName(), embeddedArtifact));
         return value;
+    }
+
+    private static Iri generateFreshIri() {
+        return new Iri(FALLBACK_PROPERTY_IRI_PREFIX + UUID.randomUUID());
+    }
+
+    private static class PropertyEntry {
+
+        private final Iri propertyIri;
+
+        public PropertyEntry(Iri propertyIri) {
+            this.propertyIri = propertyIri;
+        }
+
+        @JsonProperty("enum")
+        public List<Iri> getEnum() {
+            return List.of(propertyIri);
+        }
     }
 
     @Override
@@ -80,4 +100,6 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
     public Optional<Object> getContainingObjectAdditionalPropertiesOverride() {
         return Optional.empty();
     }
+
+
 }
