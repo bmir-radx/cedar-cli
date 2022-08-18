@@ -8,6 +8,9 @@ import org.metadatacenter.cedar.api.Iri;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Matthew Horridge
@@ -19,25 +22,6 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
                                              @JsonProperty("description") String description,
                                              @JsonProperty("multiValued") boolean multiValued,
                                              @JsonIgnore List<SerializableEmbeddedArtifact> nodes) implements JsonSchema {
-
-    private static final Map<String, Object> propertiesForIris;
-
-    protected static final String FALLBACK_PROPERTY_IRI_PREFIX = "https://schema.metadatacenter.org/properties/";
-
-    static {
-        propertiesForIris = readMap();
-    }
-
-    private static Map<String, Object> readMap() {
-        try {
-            var is = TemplateFieldObjectJsonSchemaMixin.class.getResourceAsStream(
-                    "/template-element-iris-json-schema.json");
-            return (Map<String, Object>) new ObjectMapper().readValue(is, Map.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return Map.of();
-        }
-    }
 
     @Override
     public Object additionalProperties() {
@@ -55,36 +39,11 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
     }
 
     @Override
-    public Map<String, Object> properties() {
-        var value = new HashMap<>(ElementBoilerPlate.json_schema__properties);
-        var contextProperties = new LinkedHashMap<>();
-        nodes.forEach(embeddedArtifact -> {
-            var propertyIri = embeddedArtifact.getPropertyIri().orElse(generateFreshIri());
-            contextProperties.put(embeddedArtifact.getSchemaName(), new PropertyEntry(propertyIri));
-        });
-        ((Map<String, Object>) value.get("@context")).put("properties", contextProperties);
-        nodes.forEach(embeddedArtifact -> value.put(embeddedArtifact.getSchemaName(), embeddedArtifact));
-        return value;
+    public TemplateElementJsonSchemaPropertiesValue properties() {
+        return new TemplateElementJsonSchemaPropertiesValue(nodes);
     }
 
-    private static Iri generateFreshIri() {
-        return new Iri(FALLBACK_PROPERTY_IRI_PREFIX + UUID.randomUUID());
-    }
-
-    private static class PropertyEntry {
-
-        private final Iri propertyIri;
-
-        public PropertyEntry(Iri propertyIri) {
-            this.propertyIri = propertyIri;
-        }
-
-        @JsonProperty("enum")
-        public List<Iri> getEnum() {
-            return List.of(propertyIri);
-        }
-    }
-
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Override
     public List<String> required() {
         var union = new ArrayList<String>();

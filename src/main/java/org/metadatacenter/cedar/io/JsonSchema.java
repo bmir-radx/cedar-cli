@@ -38,7 +38,7 @@ public interface JsonSchema {
     }
 
     @JsonProperty("properties")
-    Map<String, Object> properties();
+    Object properties();
 
     @JsonProperty("required")
     List<String> required();
