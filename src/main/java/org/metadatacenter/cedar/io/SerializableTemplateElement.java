@@ -29,12 +29,12 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
 
     private static final String TYPE = "https://schema.metadatacenter.org/core/TemplateElement";
 
-    @JsonProperty("@type")
+    @JsonProperty(value = "@type", access = READ_ONLY)
     public String getType() {
         return TYPE;
     }
 
-    @JsonProperty("@context")
+    @JsonProperty(value = "@context", access = READ_ONLY)
     public Map<String, Object> context() {
         return JsonLdInfo.get().getElementContextBoilerPlate();
     }
