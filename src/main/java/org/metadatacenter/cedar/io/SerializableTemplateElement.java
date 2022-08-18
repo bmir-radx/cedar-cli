@@ -27,7 +27,7 @@ public record SerializableTemplateElement(@JsonUnwrapped @JsonProperty(access = 
                                           @Nonnull @JsonIgnore List<SerializableEmbeddedArtifact> nodes,
                                           @JsonProperty("_ui") ElementUiMixin ui) implements SerializableEmbeddableArtifact {
 
-    protected static final String TYPE = "https://schema.metadatacenter.org/core/TemplateElement";
+    private static final String TYPE = "https://schema.metadatacenter.org/core/TemplateElement";
 
     @JsonProperty("@type")
     public String getType() {
