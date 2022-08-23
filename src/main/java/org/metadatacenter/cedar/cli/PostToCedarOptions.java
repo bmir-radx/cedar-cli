@@ -36,7 +36,7 @@ public class PostToCedarOptions {
     public String cedarFolderId;
 
     public CedarId getCedarFolderId() {
-        return new CedarId(cedarFolderId);
+        return CedarId.resolveFolderId(cedarFolderId);
     }
 
     public CedarApiKey getCedarApiKey() {
