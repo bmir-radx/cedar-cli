@@ -61,6 +61,7 @@ public class CedarCsvParser {
               .toList();
         var rootNode = processRows(rows);
         rootNode.printBranch(System.out);
+        rootNode.validate();
         return translateToTemplate(rootNode);
     }
 
@@ -322,7 +323,7 @@ public class CedarCsvParser {
         return fieldRow.fieldTitle().toLowerCase().replace(' ', '_');
     }
 
-    private static class Node {
+    public static class Node {
 
         private final CedarCsvRow row;
 
@@ -379,6 +380,17 @@ public class CedarCsvParser {
             }
         }
 
+        public List<Node> getPath() {
+            if(parentNode == null) {
+                return List.of(this);
+            }
+            else {
+                var p = new ArrayList<Node>(parentNode.getPath());
+                p.add(this);
+                return p;
+            }
+        }
+
         public void printBranch(PrintStream out) {
             printNodes(0, out);
         }
@@ -401,6 +413,38 @@ public class CedarCsvParser {
 
         public boolean isSection() {
             return row != null && row.isSection();
+        }
+
+        public void validate() {
+            var nodeNames = new HashSet<String>();
+            validate(nodeNames, new HashSet<>());
+        }
+
+        private void validate(Set<String> fieldNames, Set<String> elementNames) {
+            if (row != null) {
+                if(!row.fieldTitle().isBlank() && !fieldNames.add(row.fieldTitle())) {
+                    throw new CedarCsvParseException("Duplicate field name: " + row.fieldTitle(), this);
+                }
+            }
+            fieldNames = new HashSet<>();
+            for(var child : childNodes) {
+                child.validate(fieldNames, elementNames);
+            }
+        }
+
+        public String getName() {
+            if(row == null) {
+                return "";
+            }
+            if(isSection()) {
+                return row.section();
+            }
+            else if(isElement()) {
+                return row.element();
+            }
+            else {
+                return row.fieldTitle();
+            }
         }
     }
 }

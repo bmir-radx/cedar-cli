@@ -1,6 +1,8 @@
 package org.metadatacenter.cedar.cli;
 
 import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.csv.CedarCsvParseException;
+import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Matthew Horridge
@@ -119,23 +122,30 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         var inputStream = Files.newInputStream(inputCsvFile);
         var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
                                                                 version, previousVersion);
-        var template = cedarCsvParser.parse(inputStream);
+        try {
+            var template = cedarCsvParser.parse(inputStream);
 
-        // Write artifacts in a depth first manner
+            // Write artifacts in a depth first manner
 
-        if (generateFields) {
-            var fields = template.getFields()
-                                 .stream().filter(f -> !f.ui().inputType().equals(InputType.ATTRIBUTE_VALUE))
-                                 .toList();
-            writeArtifacts(fields);
+            if (generateFields) {
+                var fields = template.getFields()
+                                     .stream().filter(f -> !f.ui().inputType().equals(InputType.ATTRIBUTE_VALUE))
+                                     .toList();
+                writeArtifacts(fields);
+            }
+
+            if (generateElements) {
+                var elements = template.getElements();
+                writeArtifacts(elements);
+            }
+
+            writeArtifacts(List.of(template));
+        } catch (CedarCsvParseException e) {
+            System.err.println("\033[31;1mERROR: " + e.getMessage() + "\033[0m");
+            System.err.println("   \033[31;1mAt: " + e.getNode().getPath().stream()
+                                                          .map(CedarCsvParser.Node::getName)
+                                                      .collect(Collectors.joining(" > "))+ "\033[0m");
         }
-
-        if (generateElements) {
-            var elements = template.getElements();
-            writeArtifacts(elements);
-        }
-
-        writeArtifacts(List.of(template));
 
         return 0;
     }
