@@ -1,9 +1,6 @@
 package org.metadatacenter.cedar.cli;
 
-import org.metadatacenter.cedar.api.ArtifactStatus;
-import org.metadatacenter.cedar.api.CedarArtifact;
-import org.metadatacenter.cedar.api.CedarId;
-import org.metadatacenter.cedar.api.VersionInfo;
+import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
@@ -127,7 +124,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         // Write artifacts in a depth first manner
 
         if (generateFields) {
-            var fields = template.getFields();
+            var fields = template.getFields()
+                                 .stream().filter(f -> !f.ui().inputType().equals(InputType.ATTRIBUTE_VALUE))
+                                 .toList();
             writeArtifacts(fields);
         }
 
