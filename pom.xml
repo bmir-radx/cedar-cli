@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>org.metadatacenter.cedar</groupId>
 	<artifactId>cedar-cli</artifactId>
-	<version>0.0.3</version>
+	<version>0.9.0</version>
 	<name>csv-pipeline</name>
 	<description>A command line interface for interacting with CEDAR</description>
 	<properties>
