@@ -1,9 +1,6 @@
 package org.metadatacenter.cedar.io;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.metadatacenter.cedar.api.EmbeddedCedarArtifact;
@@ -14,6 +11,7 @@ import org.metadatacenter.cedar.api.Visibility;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -25,11 +23,32 @@ import java.util.Optional;
  * have extra information specified for them such as multiplicity`
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-public record SerializableEmbeddedArtifact(@JsonIgnore
-                                           SerializableEmbeddableArtifact artifact,
-                                           @JsonIgnore Multiplicity multiplicity,
-                                           @JsonIgnore Visibility visibility,
-                                           @JsonIgnore @Nullable Iri propertyIri) {
+public final class SerializableEmbeddedArtifact {
+
+    @JsonIgnore
+    private final SerializableEmbeddableArtifact artifact;
+
+    @JsonIgnore
+    private final Multiplicity multiplicity;
+
+    @JsonIgnore
+    private final Visibility visibility;
+
+    @JsonIgnore
+    @Nullable
+    private final Iri propertyIri;
+
+    /**
+     */
+    public SerializableEmbeddedArtifact(SerializableEmbeddableArtifact artifact,
+                                        Multiplicity multiplicity,
+                                        Visibility visibility,
+                                        @Nullable Iri propertyIri) {
+        this.artifact = artifact;
+        this.multiplicity = multiplicity;
+        this.visibility = visibility;
+        this.propertyIri = propertyIri;
+    }
 
     @JsonIgnore
     public String getSchemaName() {
@@ -38,13 +57,15 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
     @JsonUnwrapped
     public Proxy getSerializationProxy() {
-        if(multiplicity.isMaxOne()) {
+        if (multiplicity.isMaxOne()) {
             return new SingleItemProxy(artifact, visibility);
         }
         else {
             return new MultipleItemsProxy(artifact, multiplicity, visibility);
         }
     }
+
+
 
     @JsonIgnore
     JsonSchema getArtifactJsonSchema() {
@@ -53,6 +74,51 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
     public Optional<Iri> getPropertyIri() {
         return Optional.ofNullable(propertyIri);
+    }
+
+    @JsonIgnore
+    public SerializableEmbeddableArtifact artifact() {
+        return artifact;
+    }
+
+    @JsonIgnore
+    public Multiplicity multiplicity() {
+        return multiplicity;
+    }
+
+    @JsonIgnore
+    public Visibility visibility() {
+        return visibility;
+    }
+
+    @JsonIgnore
+    @Nullable
+    public Iri propertyIri() {
+        return propertyIri;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this)
+            return true;
+        if (obj == null || obj.getClass() != this.getClass())
+            return false;
+        var that = (SerializableEmbeddedArtifact) obj;
+        return Objects.equals(this.artifact, that.artifact) && Objects.equals(this.multiplicity,
+                                                                              that.multiplicity) && Objects.equals(this.visibility,
+                                                                                                                   that.visibility) && Objects.equals(
+                this.propertyIri,
+                that.propertyIri);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(artifact, multiplicity, visibility, propertyIri);
+    }
+
+    @Override
+    public String toString() {
+        return "SerializableEmbeddedArtifact[" + "artifact=" + artifact + ", " + "multiplicity=" + multiplicity + ", " + "visibility=" + visibility + ", " + "propertyIri=" + propertyIri + ']';
     }
 
 
@@ -72,7 +138,7 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
         @JsonProperty("items")
         public SerializableEmbeddableArtifact getItems() {
-            if(visibility.isHidden()) {
+            if (visibility.isHidden()) {
                 return artifact.withUiHiddenTrue();
             }
             else {
@@ -91,7 +157,8 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
         }
     }
 
-    public static record SingleItemProxy(@JsonIgnore SerializableEmbeddableArtifact artifact, @JsonIgnore Visibility visibility) implements Proxy {
+    public static record SingleItemProxy(@JsonIgnore SerializableEmbeddableArtifact artifact,
+                                         @JsonIgnore Visibility visibility) implements Proxy {
 
         @JsonProperty("type")
         public String getJsonSchemaType() {
@@ -100,7 +167,7 @@ public record SerializableEmbeddedArtifact(@JsonIgnore
 
         @JsonUnwrapped
         public SerializableEmbeddableArtifact getArtifact() {
-            if(visibility.isHidden()) {
+            if (visibility.isHidden()) {
                 return artifact.withUiHiddenTrue();
             }
             else {

@@ -1,8 +1,6 @@
 package org.metadatacenter.cedar.io;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import org.metadatacenter.cedar.api.Iri;
 
 import java.util.*;
@@ -17,7 +15,10 @@ public class TemplateElementJsonSchemaPropertiesValue {
 
     protected static final String FALLBACK_PROPERTY_IRI_PREFIX = "https://schema.metadatacenter.org/properties/";
 
-    private final List<SerializableEmbeddedArtifact> embeddedArtifacts;
+    private List<SerializableEmbeddedArtifact> embeddedArtifacts;
+
+    public TemplateElementJsonSchemaPropertiesValue() {
+    }
 
     /**
      * Construct the JSON Schema Properties for a template element
@@ -27,23 +28,35 @@ public class TemplateElementJsonSchemaPropertiesValue {
         this.embeddedArtifacts = new ArrayList<>(embeddedArtifacts);
     }
 
-    @JsonProperty(value = "@id", access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty(value = "@id")
     public Map<String, Object> getId() {
-
-        return Map.of("type", "string", "format", "uri");
+        var m = new HashMap<String, Object>();
+        m.put("type", "string");
+        m.put("format", "uri");
+        return m;
     }
 
-    @JsonProperty(value = "@type", access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty("@id")
+    public void setId(Map<String, Object> id) {
+
+    }
+
+    @JsonProperty(value = "@type")
     public Map<String, Object> getType() {
-        return Map.of("oneOf",
-                      List.of(Map.of("type", "string",
-                                     "format", "uri"),
-                              Map.of("type", "array",
-                                     "minItems", 1,
-                                     "items", Map.of(
-                                             "type", "string",
-                                             "format", "uri"),
-                                     "uniqueItems", true)));
+        return new HashMap<>(Map.of("oneOf",
+                                    List.of(Map.of("type", "string",
+                                                   "format", "uri"),
+                                            Map.of("type", "array",
+                                                   "minItems", 1,
+                                                   "items", Map.of(
+                                                            "type", "string",
+                                                            "format", "uri"),
+                                                   "uniqueItems", true))));
+    }
+
+    @JsonProperty("@type")
+    public void setType(Map<String, Object> type) {
+
     }
 
     @JsonProperty(value = "@context")
@@ -55,6 +68,11 @@ public class TemplateElementJsonSchemaPropertiesValue {
         return new ContextProperties(contextProperties);
     }
 
+    @JsonProperty("@context")
+    public void setContext(ContextProperties context) {
+
+    }
+
     /**
      * Get the embedded element specific properties.  There property names are not fixed
      */
@@ -63,6 +81,21 @@ public class TemplateElementJsonSchemaPropertiesValue {
         var value = new HashMap<String, SerializableEmbeddedArtifact>();
         embeddedArtifacts.forEach(embeddedArtifact -> value.put(embeddedArtifact.getSchemaName(), embeddedArtifact));
         return value;
+    }
+
+    @JsonAnySetter
+    public void setEmbeddedFields(String property, SerializableEmbeddedArtifact value) {
+        System.out.println(property + " ---> " + value);
+        embeddedArtifacts =new ArrayList<>();//= new ArrayList<>(embeddedFields.values());
+    }
+
+
+
+
+
+    @JsonIgnore
+    public List<SerializableEmbeddedArtifact> getEmbeddedArtifacts() {
+        return embeddedArtifacts;
     }
 
 
@@ -100,6 +133,11 @@ public class TemplateElementJsonSchemaPropertiesValue {
 
         public PropertyEntry(Iri propertyIri) {
             this.propertyIri = propertyIri;
+        }
+
+        @JsonCreator
+        public static PropertyEntry fromJson(@JsonProperty("enum") List<Iri> propertyIri) {
+            return new PropertyEntry(propertyIri.get(0));
         }
 
         @JsonProperty("enum")

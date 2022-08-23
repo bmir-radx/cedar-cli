@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.io;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -23,6 +24,18 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
                                              @JsonProperty("multiValued") boolean multiValued,
                                              @JsonIgnore List<SerializableEmbeddedArtifact> nodes) implements JsonSchema {
 
+
+    @JsonCreator
+    public static TemplateElementJsonSchemaMixin fromJson(@JsonProperty("title") String title,
+                                                          @JsonProperty("description") String description,
+                                                          @JsonProperty("multiValued") boolean multiValued,
+                                                          @JsonProperty("properties") TemplateElementJsonSchemaPropertiesValue properties) {
+        return new TemplateElementJsonSchemaMixin(title,
+                                                  description,
+                                                  multiValued,
+                                                  properties.getEmbeddedArtifacts());
+    }
+
     @Override
     public Object additionalProperties() {
         return nodes.stream()
@@ -42,6 +55,8 @@ public record TemplateElementJsonSchemaMixin(@JsonProperty("title") String title
     public TemplateElementJsonSchemaPropertiesValue properties() {
         return new TemplateElementJsonSchemaPropertiesValue(nodes);
     }
+
+
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Override
