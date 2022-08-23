@@ -37,7 +37,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format.")
     Path inputCsvFile;
 
-    @Option(names = "--out", required = true, description = "A path to a directory where JSON-LD CEDAR representations of CEDAR artifacts will be written to.")
+    @Option(names = "--out", required = true, description = "A path to a local directory where JSON-LD CEDAR representations of CEDAR artifacts will be written to.")
     Path outputDirectory;
 
     @Option(names = "--overwrite", defaultValue = "false",
@@ -71,8 +71,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--artifact-previous-version", defaultValue = "", hidden = true)
     public String previousVersion;
 
-    @ArgGroup(exclusive = false,
-            heading = "CEDAR Connection Details")
+    @ArgGroup(exclusive = false)
     public PostToCedarOptions pushToCedar;
 
     private final CedarArtifactPoster importer;
@@ -176,15 +175,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     }
 
     private CedarId getFolderId() {
-        var cedarFolderId = pushToCedar.getCedarFolderId();
-        if(cedarFolderId.isEmpty()) {
-            var newFolderName = pushToCedar.getNewFolderName().orElseThrow();
-            var response = createFolderRequest.send(pushToCedar.getCedarApiKey(), newFolderName, null);
-            return response.id();
-        }
-        else {
-            return cedarFolderId.get();
-        }
+        return pushToCedar.getCedarFolderId();
     }
 
     private boolean shouldPushToCedar() {

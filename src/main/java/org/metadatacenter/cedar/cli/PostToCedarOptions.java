@@ -4,6 +4,7 @@ import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.io.CedarApiKey;
 import org.metadatacenter.cedar.io.JsonLdInfo;
 import picocli.CommandLine;
+import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Option;
 
 import java.util.Optional;
@@ -24,44 +25,21 @@ public class PostToCedarOptions {
 
     @Option(names = "--cedar-api-key",
             required = true,
-            prompt = "Enter your CEDAR API Key", description = "The API key for CEDAR.  This will be used for pushing artifacts to CEDAR.",
-    defaultValue = "${CEDAR_API_KEY}")
+            defaultValue = "${CEDAR_API_KEY}",
+            showDefaultValue = CommandLine.Help.Visibility.ALWAYS,
+            prompt = "Enter your CEDAR API Key", description = "The API key for CEDAR.  This will be used for access control to CEDAR.  For convenience, you may specify the API Key in an environment variable called CEDAR_API_KEY and then omit the --cedar-api-key option.  For example, in bash, export CEDAR_API_KEY=<YOUR_API_KEY>.")
     public String cedarApiKey;
 
-    @CommandLine.ArgGroup(heading = "Destination folder details")
-    public PostToCedarFolderOptionsGroup folderOptions;
+    @Option(names = "--folder-id",
+            required = true,
+            description = "The UUID of the CEDAR Folder ID in which to create the CEDAR artifacts")
+    public String cedarFolderId;
 
-    public Optional<CedarId> getCedarFolderId() {
-        return folderOptions.getFolderId();
+    public CedarId getCedarFolderId() {
+        return new CedarId(cedarFolderId);
     }
 
     public CedarApiKey getCedarApiKey() {
         return new CedarApiKey(cedarApiKey);
-    }
-
-    public Optional<String> getNewFolderName() {
-        return folderOptions.getFolderName();
-    }
-
-
-    public static class PostToCedarFolderOptionsGroup {
-
-        @Option(names = "--folder-id",
-                required = true,
-                description = "The UUID of the CEDAR Folder ID in which to create the CEDAR artifacts")
-        public String cedarFolderId;
-
-        @Option(names = "--new-folder-name", required = true,
-                description = "A name of a folder to create where the CEDAR artifacts will be created.")
-        public String folderName;
-
-        public Optional<CedarId> getFolderId() {
-            return Optional.ofNullable(cedarFolderId).map(CedarId::resolveFolderId);
-        }
-
-        public Optional<String> getFolderName() {
-            return Optional.ofNullable(folderName);
-        }
-
     }
 }
