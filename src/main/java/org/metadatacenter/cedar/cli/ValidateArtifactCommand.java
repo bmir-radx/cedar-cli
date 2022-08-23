@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 2022-08-02
  */
 @Component
-@Command(name = "validate-artifact")
+@Command(name = "validate-artifact", description = "Validates a local JSON-LD representation of a CEDAR artifact.")
 public class ValidateArtifactCommand implements CedarCliCommand {
 
     @CommandLine.Mixin

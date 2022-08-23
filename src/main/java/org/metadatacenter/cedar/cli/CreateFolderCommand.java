@@ -13,7 +13,7 @@ import static picocli.CommandLine.*;
  * 2022-08-01
  */
 @Component
-@Command(name = "create-folder")
+@Command(name = "create-folder", description = "Creates a new folder in CEDAR")
 public class CreateFolderCommand implements CedarCliCommand {
 
     @Mixin

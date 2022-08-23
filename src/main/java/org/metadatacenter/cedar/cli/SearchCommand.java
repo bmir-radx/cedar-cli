@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * 2022-08-12
  */
 @Component
-@CommandLine.Command(name = "search")
+@CommandLine.Command(name = "search", description = "Searches CEDAR for artifacts and resources")
 public class SearchCommand implements CedarCliCommand {
 
     @Option(names = "--query", required = true, description = "The search query.")

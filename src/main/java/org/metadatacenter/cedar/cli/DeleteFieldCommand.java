@@ -12,7 +12,7 @@ import picocli.CommandLine.Mixin;
  * 2022-08-02
  */
 @Component
-@Command(name = "delete-field")
+@Command(name = "delete-field", description = "Delete a template field from CEDAR")
 public class DeleteFieldCommand implements CedarCliCommand {
 
     private final DeleteFieldRequest request;

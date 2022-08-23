@@ -15,7 +15,7 @@ import picocli.CommandLine.Mixin;
  * 2022-08-01
  */
 @Component
-@CommandLine.Command(name = "delete-folder")
+@CommandLine.Command(name = "delete-folder", description = "Delete a folder and its contents from CEDAR")
 public class DeleteFolderCommand implements CedarCliCommand {
 
     @Mixin

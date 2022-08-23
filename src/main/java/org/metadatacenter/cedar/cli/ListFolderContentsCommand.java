@@ -15,7 +15,7 @@ import static picocli.CommandLine.Mixin;
  * 2022-08-01
  */
 @Component
-@Command(name = "list-contents", description = "Gets the contents of a CEDAR folder")
+@Command(name = "list-contents", description = "Lists the contents of a CEDAR folder")
 public class ListFolderContentsCommand implements CedarCliCommand {
 
     @Mixin
