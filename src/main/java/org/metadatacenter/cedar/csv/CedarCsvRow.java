@@ -27,6 +27,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Example") String example,
                           @JsonProperty("Property") String propertyIri,
                           @JsonProperty("Type") CedarCsvInputType inputType,
+                          @JsonProperty("Controlled Terms") String controlledTerms,
                           @JsonProperty("Lookup") String lookup) {
 
     public CedarCsvRow(@JsonProperty("Section") String section,
@@ -40,6 +41,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Example") String example,
                        @JsonProperty("Property") String propertyIri,
                        @JsonProperty("Type") CedarCsvInputType inputType,
+                       @JsonProperty("Controlled Terms") String controlledTerms,
                        @JsonProperty("Lookup") String lookup) {
         this.section = section;
         this.element = element;
@@ -53,6 +55,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.example = example;
         this.inputType = inputType;
         this.lookup = lookup;
+        this.controlledTerms = controlledTerms;
     }
 
     public boolean isSection() {

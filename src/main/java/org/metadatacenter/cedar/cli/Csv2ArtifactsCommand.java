@@ -70,6 +70,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             description = "Specifies that individual CEDAR template elements should be individually generated.")
     boolean generateElements;
 
+    @Option(names = "--bioportal-api-key", required = false)
+    String bioportalApiKey;
+
 
 
     @Option(names = "--artifact-previous-version", defaultValue = "", hidden = true)
