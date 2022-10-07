@@ -52,13 +52,11 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         return new CedarTemplate(replacementId, artifactInfo, versionInfo, modificationInfo, replacedChildNodes);
     }
 
-
-
     /**
      * Gets all nested elements and this element in a depth first traversal order.
      */
     @JsonIgnore
-    public List<CedarTemplateElement> getElements() {
+    public List<CedarTemplateElement> getAllElements() {
         var elements = new ArrayList<CedarTemplateElement>();
         collectElements(nodes, elements);
         return elements;
@@ -76,7 +74,7 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
     }
 
     @JsonIgnore
-    public List<CedarTemplateField> getFields() {
+    public List<CedarTemplateField> getAllFields() {
         var fields = new ArrayList<CedarTemplateField>();
         collectFields(nodes, fields);
         return fields;

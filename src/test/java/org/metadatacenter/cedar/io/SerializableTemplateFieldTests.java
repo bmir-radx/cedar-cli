@@ -144,7 +144,8 @@ public class SerializableTemplateFieldTests {
                 new StringValueConstraints(3, 4, "the default value", Required.OPTIONAL, Cardinality.SINGLE),
                 new BasicFieldUi(InputType.TEXTFIELD,
                                  false,
-                                 false)
+                                 false),
+                SupplementaryInfo.empty()
         );
     }
 

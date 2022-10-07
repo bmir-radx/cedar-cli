@@ -173,7 +173,9 @@ public class CedarCsvParser {
                                                   InputType.SECTION_BREAK,
                                                   false,
                                                   false
-                                          ));
+                                          ),
+                                          new SupplementaryInfo(node.example(),
+                                                                node.row.optionality()));
         }
         else {
             throw new RuntimeException();
@@ -227,7 +229,8 @@ public class CedarCsvParser {
                                       new VersionInfo(version, defaultArtifactStatus, previousVersion),
                                       ModificationInfo.empty(),
                                       getValueConstraints(fieldRow),
-                                      getFieldUi(fieldRow)
+                                      getFieldUi(fieldRow),
+                                      new SupplementaryInfo(node.example(), node.row.optionality())
         );
     }
 
@@ -337,6 +340,10 @@ public class CedarCsvParser {
 
         public boolean isRoot() {
             return parentNode == null;
+        }
+
+        public String example() {
+            return row.example();
         }
 
         public void addChild(Node child) {

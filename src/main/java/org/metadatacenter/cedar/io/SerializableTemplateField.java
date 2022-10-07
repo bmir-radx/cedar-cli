@@ -159,7 +159,7 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
                                       versionInfo,
                                       modificationInfo,
                                       valueConstraints,
-                                      ui);
+                                      ui, toTemplateField().supplementaryInfo());
     }
 
     @JsonProperty("@type")
@@ -214,7 +214,8 @@ public final class SerializableTemplateField implements SerializableEmbeddableAr
                                                            pavLastUpdatedOn,
                                                            oslcModifiedBy),
                                       valueConstraints,
-                                      ui);
+                                      ui,
+                                      SupplementaryInfo.empty());
     }
 
     @Override

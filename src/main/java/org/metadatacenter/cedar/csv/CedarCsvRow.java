@@ -24,6 +24,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
                           @JsonProperty("Default Value") String defaultValue,
+                          @JsonProperty("Example") String example,
                           @JsonProperty("Property") String propertyIri,
                           @JsonProperty("Type") CedarCsvInputType inputType,
                           @JsonProperty("Lookup") String lookup) {
@@ -36,6 +37,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Description") String description,
                        @JsonProperty("Default Value") String defaultValue,
+                       @JsonProperty("Example") String example,
                        @JsonProperty("Property") String propertyIri,
                        @JsonProperty("Type") CedarCsvInputType inputType,
                        @JsonProperty("Lookup") String lookup) {
@@ -48,12 +50,13 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.propertyIri = propertyIri;
         this.description = description;
         this.defaultValue = defaultValue;
+        this.example = example;
         this.inputType = inputType;
         this.lookup = lookup;
     }
 
     public boolean isSection() {
-        return !section.isBlank();
+        return section != null && !section.isBlank();
     }
 
     public boolean isElement() {

@@ -1,19 +1,23 @@
 package org.metadatacenter.cedar.cli;
 
+import com.google.common.base.Charsets;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.csv.CedarCsvParseException;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
+import org.metadatacenter.cedar.csv.Optionality;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
 import org.metadatacenter.cedar.webapi.CreateFolderRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -84,7 +88,6 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     private final Map<CedarId, CedarId> artifact2GeneratedIdMap = new HashMap<>();
 
-
     public Csv2ArtifactsCommand(CedarArtifactPoster importer,
                                 CedarCsvParserFactory cedarCsvParserFactory,
                                 CliCedarArtifactWriter writer, CreateFolderRequest createFolderRequest) {
@@ -128,18 +131,21 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             // Write artifacts in a depth first manner
 
             if (generateFields) {
-                var fields = template.getFields()
+                var fields = template.getAllFields()
                                      .stream().filter(f -> !f.ui().inputType().equals(InputType.ATTRIBUTE_VALUE))
                                      .toList();
                 writeArtifacts(fields);
             }
 
             if (generateElements) {
-                var elements = template.getElements();
+                var elements = template.getAllElements();
                 writeArtifacts(elements);
             }
 
             writeArtifacts(List.of(template));
+
+            writeDocs(template);
+
         } catch (CedarCsvParseException e) {
             System.err.println("\033[31;1mERROR: " + e.getMessage() + "\033[0m");
             System.err.println("   \033[31;1mAt: " + e.getNode().getPath().stream()
@@ -148,6 +154,65 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         }
 
         return 0;
+    }
+
+    private void writeDocs(CedarTemplate template) throws IOException {
+        var outputFile = outputDirectory.resolve("fields.md");
+        var out = Files.newBufferedWriter(outputFile, Charsets.UTF_8);
+        var pw = new PrintWriter(out);
+        var file = ResourceUtils.getFile("classpath:documentation.css");
+        var css = Files.readString(file.toPath());
+        pw.println("<style>");
+        pw.println(css);
+        pw.println("</style>");
+        pw.println();
+        template.nodes().forEach(n -> printArtifact(n, pw));
+        pw.flush();
+        pw.close();
+    }
+
+    private void printArtifact(EmbeddedCedarArtifact artifact, PrintWriter pw) {
+        var embeddedArtifact = artifact.artifact();
+        if(embeddedArtifact instanceof CedarTemplateElement element) {
+            var name = element.getSchemaName();
+            pw.printf("## %s    ", name);
+            pw.println();
+            pw.println(element.getSchemaDescription());
+            pw.println();
+            element.nodes().forEach(a -> printArtifact(a, pw));
+            pw.println();
+            pw.println("***");
+            pw.println();
+        }
+        else if(embeddedArtifact instanceof CedarTemplateField field) {
+            var name = field.getSchemaName();
+            pw.printf("### %s    ", name);
+            printBadge(field.supplementaryInfo(), pw);
+            pw.println();
+            pw.println(field.getSchemaDescription());
+            pw.println();
+            var example = field.supplementaryInfo().example();
+            if(!example.isBlank()) {
+                pw.println("<div class=\"example\">");
+                pw.println("<div class=\"example-heading\">Example</div>");
+                pw.println(example);
+                pw.println("</div>");
+                pw.println();
+            }
+        }
+    }
+
+    private void printBadge(SupplementaryInfo supplementaryInfo, PrintWriter pw) {
+        if(supplementaryInfo.optionality().equals(Optionality.REQUIRED)) {
+            pw.print("""
+        <span class="badge badge--required">Required</span>
+        """);
+        }
+        else if(supplementaryInfo.optionality().equals(Optionality.RECOMMENDED)) {
+            pw.print("""
+        <span class="badge badge--recommended">Recommended</span>
+        """);
+        }
     }
 
     private void writeArtifacts(List<? extends CedarArtifact> artifacts) {

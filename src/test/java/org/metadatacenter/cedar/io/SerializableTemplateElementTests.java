@@ -269,7 +269,8 @@ public class SerializableTemplateElementTests {
                                                                    VersionInfo.initialDraft(),
                                                                    ModificationInfo.empty(),
                                                                    new StringValueConstraints(0, null, null, Required.OPTIONAL, Cardinality.SINGLE),
-                                                                   new BasicFieldUi(InputType.TEXTFIELD, false, false)
+                                                                   new BasicFieldUi(InputType.TEXTFIELD, false, false),
+                                                                   SupplementaryInfo.empty()
                                                            ),
                                                            Multiplicity.ZERO_TO_ONE,
                                                            Visibility.VISIBLE,
