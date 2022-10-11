@@ -1,23 +1,18 @@
 package org.metadatacenter.cedar.cli;
 
-import com.google.common.base.Charsets;
 import org.metadatacenter.cedar.api.*;
-import org.metadatacenter.cedar.bioportal.GetClassesRequest;
 import org.metadatacenter.cedar.csv.*;
+import org.metadatacenter.cedar.docs.DocsGenerator;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
-import org.metadatacenter.cedar.webapi.CreateFolderRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -67,7 +62,14 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             description = "Specifies that individual CEDAR template elements should be individually generated.")
     boolean generateElements;
 
-    @CommandLine.Mixin
+    @Option(names = "--generate-docs", defaultValue = "false", description = "Specifies that markdown documentation for elements and fields should be generated.")
+    boolean generateDocs;
+
+    @Option(names = "--docs-file-name", description = "The output file name for the markdown file that is generated if the --generate-docs option is set to true.  By default this will be output to a file called docs.md in the output path.  This option may be used to override this file path/name.")
+    String docsOutputFileName;
+
+
+    @Mixin
     BioPortalApiKeyMixin bioportalApiKey;
 
     @Option(names = "--artifact-previous-version", defaultValue = "", hidden = true)
@@ -82,25 +84,18 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     private final CliCedarArtifactWriter writer;
 
-    private final CreateFolderRequest createFolderRequest;
-
     private final Map<CedarId, CedarId> artifact2GeneratedIdMap = new HashMap<>();
 
-    private final GetClassesRequest getClassesRequest;
-
-    private final List<LanguageCode> languageCodes;
+    private final DocsGenerator docsGenerator;
 
     public Csv2ArtifactsCommand(CedarArtifactPoster importer,
                                 CedarCsvParserFactory cedarCsvParserFactory,
                                 CliCedarArtifactWriter writer,
-                                CreateFolderRequest createFolderRequest,
-                                GetClassesRequest getClassesRequest, List<LanguageCode> languageCodes) {
+                                DocsGenerator docsGenerator) {
         this.importer = importer;
         this.cedarCsvParserFactory = cedarCsvParserFactory;
         this.writer = writer;
-        this.createFolderRequest = createFolderRequest;
-        this.getClassesRequest = getClassesRequest;
-        this.languageCodes = languageCodes;
+        this.docsGenerator = docsGenerator;
     }
 
     @Override
@@ -150,7 +145,14 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
             writeArtifacts(List.of(template));
 
-            writeDocs(template);
+            if(generateDocs) {
+                var docsPath = getDocumentationFileName();
+                if (!Files.exists(docsPath.getParent())) {
+                    Files.createDirectories(docsPath.getParent());
+                }
+                docsGenerator.writeDocs(template, docsPath, bioportalApiKey.getApiKey());
+            }
+
 
         } catch (CedarCsvParseException e) {
             System.err.println("\033[31;1mERROR: " + e.getMessage() + "\033[0m");
@@ -162,155 +164,17 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         return 0;
     }
 
-    private void writeDocs(CedarTemplate template) throws IOException {
-        var outputFile = outputDirectory.resolve("fields.md");
-        var out = Files.newBufferedWriter(outputFile, Charsets.UTF_8);
-        var pw = new PrintWriter(out);
-        pw.println("<!-- This file has been generated from a spreadsheet.  Do not edit by hand because it will be overwritten. -->");
-        pw.println();
-        pw.println("""
-                           <link rel="stylesheet" href="../specification.css"/>
-                           """);
-        pw.println();
-        pw.println("# Specification");
-        pw.println();
-        pw.println("<h2 plain>Required fields</h2>");
-        pw.println("The following fields are required fields.  These fields MUST be filled out in a metadata instance for the instance to be valid.\n");
-        printFieldList(template, pw, Optionality.REQUIRED);
-
-        pw.println("<h2 plain>Recommended fields</h2>");
-        pw.println("The following fields are recommended fields.  These fields SHOULD be filled out in a metadata instance to greatly increase the likelihood of the associated data file being found by interested parties and to provide proper accreditation for the creators of the file.\n");
-        printFieldList(template, pw, Optionality.RECOMMENDED);
-
-        pw.println();
-
-        template.nodes().forEach(n -> printArtifact(n, pw));
-        pw.flush();
-        pw.close();
-    }
-
-    private void printFieldList(CedarTemplate template, PrintWriter pw, Optionality opt) {
-        var list = template.getAllFieldsWithPaths()
-                .stream()
-                .filter(p -> ((CedarTemplateField) p.get(p.size() - 1)).supplementaryInfo().optionality().equals(opt))
-                           .map(p -> {
-                               return p.stream()
-                                       .map(n -> String.format("[%s](#%s)",
-                                                               n.artifactInfo().schemaName(),
-                                                               n.artifactInfo().schemaName().toLowerCase().replace(" ", "-")))
-                                       .collect(Collectors.joining("  >>  "));
-                           })
-                .collect(Collectors.joining("\n\n"));
-        pw.println(list);
-    }
-
-    private void printArtifact(EmbeddedCedarArtifact artifact, PrintWriter pw) {
-        var embeddedArtifact = artifact.artifact();
-        if(embeddedArtifact instanceof CedarTemplateElement element) {
-            var name = element.getSchemaName();
-            pw.printf("## %s", name);
-            pw.println();
-            printCardinalityBadge(!artifact.multiplicity().isMaxOne(), pw);
-            pw.println();
-            pw.println(element.getSchemaDescription());
-            pw.println();
-            element.nodes().forEach(a -> printArtifact(a, pw));
-            pw.println();
+    private Path getDocumentationFileName() {
+        if(docsOutputFileName == null) {
+            var docsDirectory = outputDirectory.resolve("docs");
+            return docsDirectory.resolve("docs.md");
         }
-        else if(embeddedArtifact instanceof CedarTemplateField field) {
-            var name = field.getSchemaName();
-            pw.printf("### %s\n", name);
-            printBadge(field.supplementaryInfo(), pw);
-            pw.println();
-            if(field.supplementaryInfo().derived().equals(Derived.DERIVED)) {
-                pw.print(field.supplementaryInfo().derivedExplanation().trim());
-                pw.println("  This field should not be manually specified or edited.");
-                pw.println();
-            }
-
-            pw.println(field.getSchemaDescription());
-            pw.println();
-
-            if(CedarCsvInputType.LANGUAGE.equals(field.supplementaryInfo().csvInputType())) {
-                pw.println("The value of this field is a language code.  See the [language code table](language-codes.md) for a list of possible language codes.");
-                pw.println();
-            }
-            if (bioportalApiKey != null) {
-                field.supplementaryInfo().getLookupSpec().ifPresent(lookupSpec -> {
-                    lookupSpec.getOntologyAcronym().ifPresent(ontologyAcroymn -> {
-                        var branchSpec = lookupSpec.getBranch().map(branch -> String.format("&conceptid=%s", branch)).orElse("");
-                        pw.printf("Values for this field are taken from the %s ontology.  You may [use BioPortal to search for values for this field](https://bioportal.bioontology.org/ontologies/%s/?p=classes%s).", ontologyAcroymn, ontologyAcroymn, branchSpec);
-                        pw.println();
-                        pw.println();
-
-                        var clsIri = lookupSpec.getBranch().orElse(null);
-                        var result = getClassesRequest.execute(ontologyAcroymn, clsIri, bioportalApiKey.getApiKey());
-                        if (result.totalCount() < 500) {
-                            var termList = result.collection()
-                                    .stream().map(entity -> String.format("[%s](%s)", entity.prefLabel(), entity.iri()))
-                                    .sorted(String::compareToIgnoreCase)
-                                  .collect(Collectors.joining("  |  "));
-                            pw.println(termList);
-
-                        }
-                        try {
-                            // Throttle.  BioPortal limits rate to 15 calls per second.
-                            Thread.sleep(70);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                });
-            }
-            var example = field.supplementaryInfo().example();
-            if(!example.isBlank()) {
-                pw.println("<div class=\"example\">");
-                pw.println("<div class=\"example-heading\">Example</div>");
-                pw.println(example);
-                pw.println("</div>");
-                pw.println();
-            }
-        }
-    }
-
-    private void printLanguageCodesTable(PrintWriter pw) {
-        pw.println("|Language Code|Language|");
-        pw.println("|-------------|--------|");
-        languageCodes.forEach(lc -> {
-            pw.printf("|%s|%s|\n", lc.code(), lc.name());
-        });
-        pw.println();
-    }
-
-    private void printBadge(SupplementaryInfo supplementaryInfo, PrintWriter pw) {
-        if(supplementaryInfo.derived().equals(Derived.DERIVED)) {
-            pw.print("""
-        <span class="badge badge--derived">Derived</span>
-        """);
-        }
-        if(supplementaryInfo.optionality().equals(Optionality.REQUIRED)) {
-            pw.print("""
-        <span class="badge badge--required">Required</span>
-        """);
-        }
-        else if(supplementaryInfo.optionality().equals(Optionality.RECOMMENDED)) {
-            pw.print("""
-        <span class="badge badge--recommended">Recommended</span>
-        """);
+        var outputFile = Path.of(docsOutputFileName);
+        if(outputFile.isAbsolute()) {
+            return outputFile;
         }
         else {
-            pw.print("""
-        <span class="badge badge--optional">Optional</span>
-        """);
-        }
-        printCardinalityBadge(supplementaryInfo.cardinality().equals(Cardinality.MULTIPLE), pw);
-    }
-
-    private void printCardinalityBadge(boolean multiple, PrintWriter pw) {
-        if(multiple) {
-            pw.print("""
-        <span class="badge badge--multi">Multi-valued</span>
-        """);
+            return outputDirectory.resolve(outputFile);
         }
     }
 
