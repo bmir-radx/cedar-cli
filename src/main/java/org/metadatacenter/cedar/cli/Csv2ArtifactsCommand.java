@@ -65,7 +65,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--generate-docs", defaultValue = "false", description = "Specifies that markdown documentation for elements and fields should be generated.")
     boolean generateDocs;
 
-    @Option(names = "--docs-file-name", description = "The output file name for the markdown file that is generated if the --generate-docs option is set to true.  By default this will be output to a file called docs.md in the output path.  This option may be used to override this file path/name.")
+    @Option(names = "--docs-file-name", description = "The output file name for the markdown file that is generated if the --generate-docs option is set to true.  By default this will be output to a file called docs.md in a docs directory in the output path.  This option may be used to override this file path/name.")
     String docsOutputFileName;
 
 
