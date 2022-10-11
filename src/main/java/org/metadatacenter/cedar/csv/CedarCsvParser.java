@@ -175,7 +175,12 @@ public class CedarCsvParser {
                                                   false
                                           ),
                                           new SupplementaryInfo(node.example(),
-                                                                node.row.optionality()));
+                                                                node.row.optionality(),
+                                                                node.row.getCardinality(),
+                                                                node.row.getDerivedFlag(),
+                                                                node.row.derived(),
+                                                                node.row.getLookupSpec().orElse(null),
+                                                                node.row.inputType()));
         }
         else {
             throw new RuntimeException();
@@ -230,7 +235,13 @@ public class CedarCsvParser {
                                       ModificationInfo.empty(),
                                       getValueConstraints(fieldRow),
                                       getFieldUi(fieldRow),
-                                      new SupplementaryInfo(node.example(), node.row.optionality())
+                                      new SupplementaryInfo(node.example(),
+                                                            node.row.optionality(),
+                                                            node.row.getCardinality(),
+                                                            node.row.getDerivedFlag(),
+                                                            node.row.derived(),
+                                                            node.row.getLookupSpec().orElse(null),
+                                                            node.row.inputType())
         );
     }
 

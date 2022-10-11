@@ -80,6 +80,28 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         return fields;
     }
 
+    @JsonIgnore
+    public List<List<CedarArtifact>> getAllFieldsWithPaths() {
+        var path = new ArrayList<CedarArtifact>();
+        var fields = new ArrayList<List<CedarArtifact>>();
+        collectFieldsWithPaths(nodes, path, fields);
+        return fields;
+    }
+
+
+    private void collectFieldsWithPaths(Collection<EmbeddedCedarArtifact> nodes, List<CedarArtifact> currentPath, List<List<CedarArtifact>> fields) {
+        nodes.forEach(n -> {
+            var pathForNode = new ArrayList<>(currentPath);
+            pathForNode.add(n.artifact());
+            n.artifact().ifTemplateField(f -> {
+                fields.add(pathForNode);
+            });
+            n.artifact().ifTemplateElement(e -> {
+                collectFieldsWithPaths(e.nodes(), pathForNode, fields);
+            });
+        });
+    }
+
     private void collectFields(Collection<EmbeddedCedarArtifact> nodes, List<CedarTemplateField> fields) {
         nodes.forEach(n -> collectFields(n, fields));
     }

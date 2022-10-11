@@ -23,6 +23,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Visibility") Visibility visibility,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
+                          @JsonProperty("Derived") String derived,
                           @JsonProperty("Default Value") String defaultValue,
                           @JsonProperty("Example") String example,
                           @JsonProperty("Property") String propertyIri,
@@ -37,6 +38,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Visibility") Visibility visibility,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Description") String description,
+                       @JsonProperty("Derived") String derived,
                        @JsonProperty("Default Value") String defaultValue,
                        @JsonProperty("Example") String example,
                        @JsonProperty("Property") String propertyIri,
@@ -51,6 +53,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.fieldTitle = fieldTitle;
         this.propertyIri = propertyIri;
         this.description = description;
+        this.derived = derived;
         this.defaultValue = defaultValue;
         this.example = example;
         this.inputType = inputType;
@@ -151,5 +154,9 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         else {
             return "Field(" + fieldTitle() + ")" + suffix;
         }
+    }
+
+    public Derived getDerivedFlag() {
+        return derived.isBlank() ? Derived.ASSERTED : Derived.DERIVED;
     }
 }

@@ -73,7 +73,9 @@ public enum CedarCsvInputType {
     IRI("iri", InputType.LINK, CedarConstraintsType.NONE, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.IRI),
 
     @JsonAlias("attributevalue")
-    ATTRIBUTE_VALUE("attribute-value", InputType.ATTRIBUTE_VALUE, CedarConstraintsType.NONE, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL);
+    ATTRIBUTE_VALUE("attribute-value", InputType.ATTRIBUTE_VALUE, CedarConstraintsType.NONE, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL),
+
+    LANGUAGE("language", InputType.TEXTFIELD, CedarConstraintsType.NONE, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL);
 
     private final String name;
 

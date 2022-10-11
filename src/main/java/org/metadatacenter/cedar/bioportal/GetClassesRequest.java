@@ -47,10 +47,10 @@ public class GetClassesRequest {
     @Nonnull
     private String getPath(@Nonnull String ontologyAcronym,
                            @Nullable String classIri) {
-        var path = "/ontologies/" + ontologyAcronym + "/classes";
+        final var path = "/ontologies/" + ontologyAcronym + "/classes";
         if(classIri == null) {
-            return path;
+            return path + "?pagesize=500";
         }
-        return path + "/" + URLEncoder.encode(classIri, Charsets.UTF_8) + "/descendants";
+        return path + "/" + URLEncoder.encode(classIri, Charsets.UTF_8) + "/descendants?pagesize=500";
     }
 }
