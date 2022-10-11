@@ -150,6 +150,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                 if (!Files.exists(docsPath.getParent())) {
                     Files.createDirectories(docsPath.getParent());
                 }
+                System.err.println("Generating documentation in " + docsPath);
                 docsGenerator.writeDocs(template, docsPath, bioportalApiKey.getApiKey());
             }
 
