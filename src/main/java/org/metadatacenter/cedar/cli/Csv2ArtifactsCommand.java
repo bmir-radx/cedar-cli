@@ -153,15 +153,12 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                 System.err.println("Generating documentation in " + docsPath);
                 docsGenerator.writeDocs(template, docsPath, bioportalApiKey.getApiKey());
             }
-
-
         } catch (CedarCsvParseException e) {
             System.err.println("\033[31;1mERROR: " + e.getMessage() + "\033[0m");
             System.err.println("   \033[31;1mAt: " + e.getNode().getPath().stream()
                                                           .map(CedarCsvParser.Node::getName)
                                                       .collect(Collectors.joining(" > "))+ "\033[0m");
         }
-
         return 0;
     }
 
