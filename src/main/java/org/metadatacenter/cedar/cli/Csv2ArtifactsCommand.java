@@ -13,6 +13,7 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -31,7 +32,7 @@ import java.util.stream.Collectors;
 public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format.")
-    Path inputCsvFile;
+    String input;
 
     @Option(names = "--out", required = true, description = "A path to a local directory where JSON-LD CEDAR representations of CEDAR artifacts will be written to.")
     Path outputDirectory;
@@ -100,16 +101,30 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     @Override
     public Integer call() throws Exception {
+        if(input == null) {
+            System.err.println("Input (file or URL) not specified");
+            return 1;
+        }
+        final URI inputUri;
+        final String inputShortName;
+        if(input.startsWith("http")) {
+           inputUri = new URI(input);
+           inputShortName = input;
+        }
+        else {
+            var inputPath = Path.of(input);
+            if(!Files.exists(inputPath)) {
+                System.err.println("Input file " + inputPath + " does not exist");
+                System.exit(1);
+            }
+            inputUri = inputPath.toUri();
+            inputShortName = inputPath.getFileName().toString();
+        }
+
         if(jsonSchemaDescription == null) {
-            jsonSchemaDescription = "Generated from " + inputCsvFile.getFileName().toString() + " by CEDAR-CSV on " + Instant.now();
+            jsonSchemaDescription = "Generated from " + inputShortName + " by CEDAR-CSV on " + Instant.now();
         }
-        if(inputCsvFile == null) {
-            System.err.println("Input file not specified");
-        }
-        if(!Files.exists(inputCsvFile)) {
-            System.err.println("Input file " + inputCsvFile + " does not exist");
-            System.exit(1);
-        }
+
         if(version == null) {
             version = VersionInfo.initialDraft().pavVersion();
         }
@@ -123,7 +138,8 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                 return 1;
             }
         }
-        var inputStream = Files.newInputStream(inputCsvFile);
+        System.err.println("Loading template sheet from " + inputUri);
+        var inputStream = inputUri.toURL().openStream();
         var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
                                                                 version, previousVersion);
         try {
