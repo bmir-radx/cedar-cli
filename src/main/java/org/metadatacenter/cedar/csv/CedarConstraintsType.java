@@ -9,6 +9,8 @@ public enum CedarConstraintsType {
 
     ONTOLOGY_TERMS,
 
+    LANGUAGE_TAG,
+
     STRING,
 
     NUMERIC,

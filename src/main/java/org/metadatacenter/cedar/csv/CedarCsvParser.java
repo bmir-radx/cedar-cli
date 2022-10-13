@@ -28,12 +28,16 @@ public class CedarCsvParser {
 
     private final String previousVersion;
 
+    private final List<LanguageCode> languageCodes;
+
     public CedarCsvParser(ArtifactStatus defaultArtifactStatus,
                           String version,
-                          String previousVersion) {
+                          String previousVersion,
+                          List<LanguageCode> languageCodes) {
         this.defaultArtifactStatus = defaultArtifactStatus;
         this.version = version;
         this.previousVersion = previousVersion;
+        this.languageCodes = languageCodes;
     }
 
     /**
@@ -255,7 +259,7 @@ public class CedarCsvParser {
         }
     }
 
-    private static FieldValueConstraints getValueConstraints(CedarCsvRow fieldRow) {
+    private FieldValueConstraints getValueConstraints(CedarCsvRow fieldRow) {
         var inputType = getInputType(fieldRow);
         if(inputType.equals(CedarCsvInputType.ATTRIBUTE_VALUE)) {
             return new EmptyValueConstraints();
@@ -267,7 +271,23 @@ public class CedarCsvParser {
             case TEMPORAL -> getCedarTemporalConstraints(fieldRow, inputType);
             case ONTOLOGY_TERMS ->  getOntologyTermsConstaints(fieldRow);
             case STRING -> getCedarStringConstraints(fieldRow);
+            case LANGUAGE_TAG -> getCedarLanguageTagConstraints(fieldRow, languageCodes);
         };
+    }
+
+    private static FieldValueConstraints getCedarLanguageTagConstraints(CedarCsvRow fieldRow, List<LanguageCode> languageCodes) {
+        var literalConstraints = languageCodes.stream()
+                .map(lc -> LiteralValueConstraint.of(lc.code(), lc.code().equals(fieldRow.defaultValue().trim())))
+                .toList();
+        return new EnumerationValueConstraints(
+                fieldRow.getRequired(),
+                Cardinality.SINGLE,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                literalConstraints,
+                null
+        );
     }
 
     private static StringValueConstraints getCedarStringConstraints(CedarCsvRow fieldRow) {

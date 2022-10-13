@@ -2,8 +2,7 @@ package org.metadatacenter.cedar.csv;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.metadatacenter.cedar.api.constraints.EnumerationValueConstraints;
-import org.metadatacenter.cedar.api.constraints.EnumerationValueConstraints.DefaultValue;
+import org.metadatacenter.cedar.api.constraints.EnumerationValueConstraints.TermDefaultValue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -38,7 +37,13 @@ public record DefaultValueSpec(String value) {
         if(openParIndex == -1) {
             return trimmedValue;
         }
-        return trimmedValue.substring(0, openParIndex).trim();
+        var substring = trimmedValue.substring(0, openParIndex);
+        if(substring.startsWith("[") && substring.endsWith("]")) {
+            return substring.substring(1, substring.length() - 1);
+        }
+        else {
+            return substring;
+        }
     }
 
     public Optional<String> getIri() {
@@ -53,7 +58,7 @@ public record DefaultValueSpec(String value) {
         return Optional.of((trimmedValue.substring(openParIndex + 1, trimmedValue.length() - 1)));
     }
 
-    public Optional<DefaultValue> getDefaultValue() {
-        return getIri().map(iri -> new DefaultValue(iri, getLabel()));
+    public Optional<TermDefaultValue> getDefaultValue() {
+        return getIri().map(iri -> new TermDefaultValue(iri, getLabel()));
     }
 }

@@ -75,7 +75,7 @@ public enum CedarCsvInputType {
     @JsonAlias("attributevalue")
     ATTRIBUTE_VALUE("attribute-value", InputType.ATTRIBUTE_VALUE, CedarConstraintsType.NONE, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL),
 
-    LANGUAGE("language", InputType.TEXTFIELD, CedarConstraintsType.NONE, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL);
+    LANGUAGE("language", InputType.LIST, CedarConstraintsType.LANGUAGE_TAG, TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL);
 
     private final String name;
 
