@@ -37,4 +37,33 @@ class LookupSpec_Test {
         var s = "stuff";
         assertThat(new LookupSpec(s).getOntology()).isEmpty();
     }
+
+    @Test
+    void shouldNotMatchTermList() {
+        var s = "stuff";
+        assertThat(new LookupSpec(s).getTermSpecList()).isEmpty();
+    }
+
+    @Test
+    void shouldMatchSingleTermListWithSpace() {
+        var s = "[thelabel] (theiri)";
+        assertThat(new LookupSpec(s).getTermSpecList()).contains(new LookupSpec.TermSpec("thelabel", "theiri"));
+    }
+
+    @Test
+    void shouldMatchSingleTermListWithoutSpace() {
+        var s = "[thelabel](theiri)";
+        assertThat(new LookupSpec(s).getTermSpecList()).contains(new LookupSpec.TermSpec("thelabel", "theiri"));
+    }
+
+    @Test
+    void shouldMatchMultipeTermListWithoutSpace() {
+        var s = "[thelabel](theiri)\n[thesecondlabel](thesecondiri)";
+        assertThat(new LookupSpec(s).getTermSpecList()).contains(new LookupSpec.TermSpec("thelabel", "theiri"));
+        assertThat(new LookupSpec(s).getTermSpecList()).contains(new LookupSpec.TermSpec("thesecondlabel", "thesecondiri"));
+    }
+
+
+
+
 }
