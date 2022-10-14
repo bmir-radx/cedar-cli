@@ -52,7 +52,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     @Option(names = "--artifact-version",
             required = true,
-            description = "A string in the format major.minor.patch that specifies the version number for generatated artifacts")
+            description = "A string in the format major.minor.patch that specifies the version number for generated artifacts",
+            defaultValue = "0.0.1",
+            showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
     String version;
 
     @Option(names = "--generate-fields", defaultValue = "false",
@@ -68,6 +70,16 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     @Option(names = "--docs-file-name", description = "The output file name for the markdown file that is generated if the --generate-docs option is set to true.  By default this will be output to a file called docs.md in a docs directory in the output path.  This option may be used to override this file path/name.")
     String docsOutputFileName;
+
+    @Option(names = "--generate-umbrella-element", description = "Specifies that an umbrella element that contains all other elements in the template should be generated.")
+    boolean generateUmbrellaElement;
+
+    @Option(names = "--umbrella-element-name", description = "The name for the umbrella element.  This only has an effect if the --generate-umbrella-element flag is specified.")
+    String umbrellaElementName;
+
+
+    @Option(names = "--umbrella-element-description", description = "The description for the umbrella element.  This only has an effect if the --generate-umbrella-element flag is specified.")
+    String umbrellaElementDescription;
 
 
     @Mixin
@@ -128,6 +140,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
         if(version == null) {
             version = VersionInfo.initialDraft().pavVersion();
         }
+
         if(!Files.exists(outputDirectory)) {
             Files.createDirectories(outputDirectory);
         }
@@ -160,6 +173,15 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             }
 
             writeArtifacts(List.of(template));
+
+            if (generateUmbrellaElement) {
+                var umbrellaElement = template.asElement(umbrellaElementName,
+                                                         umbrellaElementDescription,
+                                                         version,
+                                                         artifactStatus,
+                                                         previousVersion);
+                writeArtifacts(List.of(umbrellaElement));
+            }
 
             if(generateDocs) {
                 var docsPath = getDocumentationFileName();

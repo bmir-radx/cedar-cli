@@ -24,8 +24,7 @@ public class CedarCsvParserFactory {
                                        String version,
                                        String previousVersion) {
         return new CedarCsvParser(artifactStatus,
-                                  version,
-                                  previousVersion,
+                                  version, previousVersion,
                                   languageCodes);
     }
 }

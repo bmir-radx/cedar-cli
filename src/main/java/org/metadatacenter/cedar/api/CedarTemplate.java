@@ -112,4 +112,28 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
         });
         node.artifact().ifTemplateField(fields::add);
     }
+
+    /**
+     * Create an element that essentially contains all elements from this template
+     * @return The element
+     */
+    public CedarTemplateElement asElement(String schemaName,
+                                          String schemaDescription,
+                                          String version,
+                                          ArtifactStatus status,
+                                          String previousVersion) {
+        return new CedarTemplateElement(
+                CedarId.generateUrn(),
+                null,
+                new ArtifactInfo(schemaName.trim().toLowerCase().replace(" ", "_"),
+                                 schemaName,
+                                 schemaDescription,
+                                 null,
+                                 schemaName,
+                                 List.of()),
+                new VersionInfo(version, status, previousVersion),
+                ModificationInfo.empty(),
+                nodes
+        );
+    }
 }

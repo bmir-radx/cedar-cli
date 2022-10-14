@@ -159,4 +159,8 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
     public Derived getDerivedFlag() {
         return derived.isBlank() ? Derived.ASSERTED : Derived.DERIVED;
     }
+
+    public String getStrippedElementNameAsId() {
+        return getStrippedElementName().trim().toLowerCase().replace(" ", "_");
+    }
 }
