@@ -16,7 +16,7 @@ public enum InputType {
 
     RADIO("radio", null, null, false),
 
-    LIST("list", null, null, false),
+    LIST("list", TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL, null, false),
 
     TEXTFIELD("textfield", null, null, false),
 

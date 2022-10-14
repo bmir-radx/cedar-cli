@@ -339,7 +339,14 @@ public class CedarCsvParser {
     }
 
     private static List<OntologyTermsSpecification> getOntologyTermsSelectors(LookupSpec theLookupSpec) {
-        if(theLookupSpec.getBranch().isPresent()) {
+        if(!theLookupSpec.getTermSpecList().isEmpty()) {
+            return theLookupSpec.getTermSpecList()
+                    .stream()
+                    .map(ts -> new SpecificOntologyClassSpecification(ts.iri(), ts.label(), "ENUM", false))
+                    .map(s -> (OntologyTermsSpecification) s)
+                                .toList();
+        }
+        else if(theLookupSpec.getBranch().isPresent()) {
             return List.of(new OntologyBranchTermsSpecification(theLookupSpec.getOntology().orElse(""),
                                                            theLookupSpec.getOntologyAcronym().orElse(""),
                                                            theLookupSpec.getOntologyAcronym().orElse(""),

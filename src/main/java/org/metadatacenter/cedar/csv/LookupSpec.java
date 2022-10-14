@@ -19,7 +19,17 @@ public record LookupSpec(String lookup) {
     private static final Pattern termListElement = Pattern.compile("\\[([^]]+)]\\s*\\(([^)]+)\\)");
 
     public boolean isLookup() {
-        return !lookup.isBlank() && pattern.matcher(lookup).matches();
+        return !lookup.isBlank() && patternsMatch();
+    }
+
+    private boolean patternsMatch() {
+        if(pattern.matcher(lookup).matches()) {
+            return true;
+        }
+        var termSpecs = lookup.trim().split("\n");
+        return Arrays.stream(termSpecs)
+                .map(termListElement::matcher)
+                .allMatch(Matcher::matches);
     }
 
     public Optional<String> getOntology() {
