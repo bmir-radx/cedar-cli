@@ -45,6 +45,11 @@ public class CedarCsvParser {
      * @param inputStream The input stream
      */
     public CedarTemplate parse(InputStream inputStream) throws IOException {
+        var rootNode = parseNodes(inputStream);
+        return translateToTemplate(rootNode);
+    }
+
+    public Node parseNodes(InputStream inputStream) throws IOException {
         Objects.requireNonNull(inputStream);
         var mapper = CsvMapper.csvBuilder()
                 .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
@@ -66,7 +71,7 @@ public class CedarCsvParser {
         var rootNode = processRows(rows);
         rootNode.printBranch(System.out);
         rootNode.validate();
-        return translateToTemplate(rootNode);
+        return rootNode;
     }
 
     private Node processRows(List<CedarCsvRow> rows) {
