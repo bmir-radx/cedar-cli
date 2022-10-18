@@ -20,6 +20,8 @@ import org.springframework.util.ResourceUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -104,8 +106,8 @@ public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator
 
 	@Bean
 	List<LanguageCode> languageCodes(LanguageCodesParser parser) throws IOException {
-		var file = ResourceUtils.getFile("classpath:lang-tags.csv");
-		var codes = Files.readString(file.toPath());
+		var url = ResourceUtils.getURL("classpath:lang-tags.csv");
+		var codes = new String(url.openStream().readAllBytes(), StandardCharsets.UTF_8);
 		return parser.parse(codes);
 	}
 }
