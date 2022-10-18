@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.List;
 
 @SpringBootApplication
@@ -103,8 +104,9 @@ public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator
 
 	@Bean
 	List<LanguageCode> languageCodes(LanguageCodesParser parser) throws IOException {
-		var file = ResourceUtils.getFile("classpath:lang-tags.csv");
-		var codes = Files.readString(file.toPath());
-		return parser.parse(codes);
+//		var file = ResourceUtils.getFile("classpath:lang-tags.csv");
+//		var codes = Files.readString(file.toPath());
+//		return parser.parse(codes);
+		return Collections.emptyList();
 	}
 }
