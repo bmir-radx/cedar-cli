@@ -226,7 +226,7 @@ public class CedarCsvParser {
                                                          null,
                                                          node.row.getStrippedElementName(),
                                                          List.of()),
-                                        VersionInfo.initialDraft(),
+                                        new VersionInfo(version, defaultArtifactStatus, previousVersion),
                                         ModificationInfo.empty(),
                                         embeddedArtifacts);
     }
