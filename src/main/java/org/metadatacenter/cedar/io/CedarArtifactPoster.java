@@ -74,10 +74,13 @@ public class CedarArtifactPoster {
             }
             return Optional.empty();
         } catch (WebClientResponseException e) {
-                System.err.printf("Posted %s to CEDAR Server and received a response of %s (%s)\n",
+                System.err.printf("Posted %s to CEDAR Server and received an error response of %s (%s)\n",
                                   artifact.toCompactString(),
                                   e.getStatusCode().value(),
                                   e.getStatusCode().getReasonPhrase());
+                if(e.getCause() != null) {
+                    System.err.printf("    Cause: %s\n", e.getCause().getMessage());
+                }
             return Optional.empty();
         }
     }

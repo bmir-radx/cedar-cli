@@ -28,7 +28,9 @@ public class CedarWebClientFactory {
     public WebClient.RequestBodySpec createWebClient(HttpMethod httpMethod,
                                      String uri,
                                      CedarApiKey cedarApiKey) {
-        return WebClient.builder()
+        return WebClient.builder().codecs(configurer -> configurer
+                                .defaultCodecs()
+                                .maxInMemorySize(256 * 1024 * 1024))
                         .baseUrl(baseUrl)
                         .uriBuilderFactory(new NonEncodingUriFactory(baseUrl))
                         .build()
@@ -42,7 +44,9 @@ public class CedarWebClientFactory {
     public WebClient.RequestBodySpec createWebClient(HttpMethod httpMethod,
                                      URI uri,
                                      CedarApiKey cedarApiKey) {
-        return WebClient.builder()
+        return WebClient.builder().codecs(configurer -> configurer
+                                .defaultCodecs()
+                                .maxInMemorySize(256 * 1024 * 1024))
                         .uriBuilderFactory(new NonEncodingUriFactory(baseUrl))
                         .build()
                         .method(httpMethod)

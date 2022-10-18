@@ -32,7 +32,7 @@ public class BioPortalWebClientFactory {
         return WebClient.builder()
                         .codecs(configurer -> configurer
                                 .defaultCodecs()
-                                .maxInMemorySize(16 * 1024 * 1024))
+                                .maxInMemorySize(256 * 1024 * 1024))
                         .baseUrl(baseUrl)
                         .uriBuilderFactory(new NonEncodingUriFactory(baseUrl))
                         .build()
@@ -49,7 +49,7 @@ public class BioPortalWebClientFactory {
         return WebClient.builder()
                         .codecs(configurer -> configurer
                                 .defaultCodecs()
-                                .maxInMemorySize(16 * 1024 * 1024))
+                                .maxInMemorySize(256 * 1024 * 1024))
                         .uriBuilderFactory(new NonEncodingUriFactory(baseUrl))
                         .build()
                         .method(httpMethod)
