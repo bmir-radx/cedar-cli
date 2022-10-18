@@ -7,4 +7,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record CedarInstanceIriNode(@JsonProperty("rdfs:label") String label,
                                    @JsonProperty("@id") String iri) implements CedarInstanceFieldValueNode {
 
+    public CedarInstanceIriNode(@JsonProperty("rdfs:label") String label, @JsonProperty("@id") String iri) {
+        this.label = normalize(label);
+        this.iri = normalize(iri);
+    }
+
+    private static String normalize(String s) {
+        if(s == null) {
+            return null;
+        }
+        if(s.isEmpty()) {
+            return null;
+        }
+        return s;
+    }
 }

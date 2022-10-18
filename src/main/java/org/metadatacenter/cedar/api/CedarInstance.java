@@ -1,6 +1,7 @@
 package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,6 +46,7 @@ public record CedarInstance(@JsonProperty("@context") CedarInstanceContext conte
 
     @Nonnull
     @Override
+    @JsonIgnore
     public ArtifactInfo artifactInfo() {
         return new ArtifactInfo(schemaName, schemaName, schemaDescription, null, schemaName, List.of());
     }
