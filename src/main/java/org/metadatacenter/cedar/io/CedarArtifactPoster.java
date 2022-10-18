@@ -96,7 +96,7 @@ public class CedarArtifactPoster {
             return "/templates";
         }
         else {
-            return "/instances";
+            return "/template-instances";
         }
     }
 

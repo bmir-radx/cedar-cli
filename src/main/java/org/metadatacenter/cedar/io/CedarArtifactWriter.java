@@ -23,9 +23,15 @@ public class CedarArtifactWriter {
     public void writeCedarArtifact(CedarArtifact cedarArtifact,
                                    String jsonSchemaDescription,
                                    OutputStream outputStream) throws IOException {
-        var visitor = new ArtifactToSerializableArtifactVisitor(jsonSchemaDescription);
-        var serializableArtifact = ((CedarSchemaArtifact) cedarArtifact).accept(visitor);
-        jsonMapper.writerWithDefaultPrettyPrinter()
-                .writeValue(outputStream, serializableArtifact);
+        if (cedarArtifact instanceof CedarSchemaArtifact) {
+            var visitor = new ArtifactToSerializableArtifactVisitor(jsonSchemaDescription);
+            var serializableArtifact = ((CedarSchemaArtifact) cedarArtifact).accept(visitor);
+            jsonMapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(outputStream, serializableArtifact);
+        }
+        else {
+            jsonMapper.writerWithDefaultPrettyPrinter()
+                    .writeValue(outputStream, cedarArtifact);
+        }
     }
 }
