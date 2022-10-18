@@ -39,10 +39,10 @@ public record DefaultValueSpec(String value) {
         }
         var substring = trimmedValue.substring(0, openParIndex);
         if(substring.startsWith("[") && substring.endsWith("]")) {
-            return substring.substring(1, substring.length() - 1);
+            return substring.substring(1, substring.length() - 1).trim();
         }
         else {
-            return substring;
+            return substring.trim();
         }
     }
 
