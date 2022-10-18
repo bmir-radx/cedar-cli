@@ -5,10 +5,12 @@ import org.metadatacenter.cedar.webapi.ValidateArtifactRequest;
 import org.metadatacenter.cedar.webapi.ValidateArtifactResponse;
 import org.metadatacenter.cedar.webapi.ValidationError;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -45,14 +47,18 @@ public class ValidateArtifactCommand implements CedarCliCommand {
 
     @Override
     public Integer call() throws Exception {
-        var serialization = Files.readString(artifact, StandardCharsets.UTF_8);
-        var result = request.send(serialization, artifactType, apiKey.getApiKey());
-        System.err.println("Valid: " + result.validates());
-        var errors = result.errors();
-        if(!errors.isEmpty()) {
-            System.err.printf("\033[31;1mNumber of errors: %d\033[30m\n\n", errors.size());
+        try {
+            var serialization = Files.readString(artifact, StandardCharsets.UTF_8);
+            var result = request.send(serialization, artifactType, apiKey.getApiKey());
+            System.err.println("Valid: " + result.validates());
+            var errors = result.errors();
+            if(!errors.isEmpty()) {
+                System.err.printf("\033[31;1mNumber of errors: %d\033[30m\n\n", errors.size());
+            }
+            errors.forEach(ValidationError::printToStdError);
+        } catch (WebClientResponseException e) {
+            System.err.println(e.getResponseBodyAsString());
         }
-        errors.forEach(ValidationError::printToStdError);
         return 0;
     }
 }

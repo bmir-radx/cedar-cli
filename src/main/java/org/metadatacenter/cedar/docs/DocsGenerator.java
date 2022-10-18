@@ -1,6 +1,9 @@
 package org.metadatacenter.cedar.docs;
 
 import com.google.common.base.Charsets;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
+import org.commonmark.renderer.text.TextContentRenderer;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.bioportal.BioPortalApiKey;
 import org.metadatacenter.cedar.bioportal.GetClassesRequest;
@@ -135,11 +138,18 @@ public class DocsGenerator {
             if(!example.isBlank()) {
                 pw.println("<div class=\"example\">");
                 pw.println("<div class=\"example-heading\">Example</div>");
-                pw.println(example);
+                pw.println(toHtml(example));
                 pw.println("</div>");
                 pw.println();
             }
         }
+    }
+
+    private static String toHtml(String markdown) {
+        var parser = Parser.builder().build();
+        var document = parser.parse(markdown);
+        var renderer = HtmlRenderer.builder().build();
+        return renderer.render(document);
     }
 
     private void printLanguageCodesTable(PrintWriter pw) {

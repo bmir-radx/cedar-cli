@@ -3,6 +3,7 @@ package org.metadatacenter.cedar.io;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.metadatacenter.cedar.api.Iri;
 
 import java.io.IOException;
 import java.util.*;
@@ -52,7 +53,7 @@ public record TemplateJsonSchemaMixin(@JsonProperty("title") String title,
         var contextProperties = new HashMap<>(TemplateBoilerPlate.jsonld_context_jsonschema_properties);
         var requiredList = new ArrayList<String>();
         nodes.forEach(f -> {
-            var propertyIri = "https://schema.metadatacenter.org/properties/" + UUID.randomUUID();
+            var propertyIri = f.getPropertyIri().orElse(new Iri("https://schema.metadatacenter.org/properties/" + UUID.randomUUID())).lexicalValue();
             contextProperties.put(f.getSchemaName(), Map.of("enum", List.of(propertyIri)));
             requiredList.add(f.getSchemaName());
         });

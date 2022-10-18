@@ -137,7 +137,13 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
     }
 
     public Optional<CedarCsvInputType> getInputType() {
-        return Optional.ofNullable(inputType);
+            if(getLookupSpec().isPresent()) {
+                // Type ahead is the default now
+                return Optional.of(CedarCsvInputType.TYPEAHEAD);
+            }
+            else {
+                return Optional.ofNullable(inputType);
+            }
     }
 
     public Cardinality getCardinality() {
