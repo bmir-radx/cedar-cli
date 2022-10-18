@@ -104,9 +104,8 @@ public class CedarCliApplication implements ApplicationRunner, ExitCodeGenerator
 
 	@Bean
 	List<LanguageCode> languageCodes(LanguageCodesParser parser) throws IOException {
-//		var file = ResourceUtils.getFile("classpath:lang-tags.csv");
-//		var codes = Files.readString(file.toPath());
-//		return parser.parse(codes);
-		return Collections.emptyList();
+		var file = ResourceUtils.getFile("classpath:lang-tags.csv");
+		var codes = Files.readString(file.toPath());
+		return parser.parse(codes);
 	}
 }
