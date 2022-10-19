@@ -3,6 +3,8 @@ package org.metadatacenter.cedar.util;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.stereotype.Component;
 
+import java.util.Set;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -38,16 +40,29 @@ public class StripInstance {
     }
 
     public JsonNode stripInstance(JsonNode node,
-                                  boolean removeContext) {
+                                  Set<StrippingOperations> operations) {
         // Remove @context
 //        if(removeContext) {
-            var n0 = contextRemover.removeContext(node);
-            var n1 = typeRemover.removeType(n0);
-            var n2 = valueNodeCollapser.collapseJsonLdValues(n1);
-            var n3 = ontologyEntityCollapser.collapseOntologyEntityNodes(n2);
-            var n4 = idRemover.removeId(n3);
-            var n5 = emptyNodeRemover.removeEmpty(n4);
-            return n5;
+        JsonNode workingNode = node;
+        if(operations.contains(StrippingOperations.STRIP_CONTEXT)) {
+            workingNode = contextRemover.process(workingNode);
+        }
+        if(operations.contains(StrippingOperations.STRIP_TYPES)) {
+            workingNode = typeRemover.process(workingNode);
+        }
+        if(operations.contains(StrippingOperations.COLLAPSE_VALUES)) {
+            workingNode = valueNodeCollapser.process(workingNode);
+        }
+        if(operations.contains(StrippingOperations.COLLAPSE_ENTITIES)) {
+            workingNode = ontologyEntityCollapser.process(workingNode);
+        }
+        if(operations.contains(StrippingOperations.STRIP_IDS)) {
+            workingNode = idRemover.process(workingNode);
+        }
+        return workingNode;
     }
+
+
+
 
 }

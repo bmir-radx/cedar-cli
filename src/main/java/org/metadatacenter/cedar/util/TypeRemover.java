@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * 2022-10-12
  */
 @Component
-public class TypeRemover {
+public class TypeRemover implements StrippingOperation {
 
     private final FieldRemover fieldRemover;
 
@@ -17,7 +17,7 @@ public class TypeRemover {
         this.fieldRemover = fieldRemover;
     }
 
-    public JsonNode removeType(JsonNode node) {
+    public JsonNode process(JsonNode node) {
         return fieldRemover.removeField("@type", node);
     }
 }

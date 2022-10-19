@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
  * 2022-10-12
  */
 @Component
-public class IdRemover {
+public class IdRemover implements StrippingOperation {
 
     private final FieldRemover fieldRemover;
 
@@ -17,7 +17,7 @@ public class IdRemover {
         this.fieldRemover = fieldRemover;
     }
 
-    public JsonNode removeId(JsonNode node) {
+    public JsonNode process(JsonNode node) {
         return fieldRemover.removeField("@id", node);
     }
 }

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
  * 2022-10-12
  */
 @Component
-public class ContextRemover {
+public class ContextRemover implements StrippingOperation {
 
     private final FieldRemover fieldRemover;
 
@@ -19,7 +19,8 @@ public class ContextRemover {
         this.fieldRemover = fieldRemover;
     }
 
-    public JsonNode removeContext(JsonNode node) {
+    @Override
+    public JsonNode process(JsonNode node) {
         return fieldRemover.removeField("@context", node);
     }
 

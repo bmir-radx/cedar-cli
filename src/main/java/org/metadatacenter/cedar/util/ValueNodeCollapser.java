@@ -13,26 +13,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class ValueNodeCollapser {
 
-    public JsonNode collapseJsonLdValues(JsonNode node) {
+    public JsonNode process(JsonNode node) {
         if(node instanceof ObjectNode objectNode) {
             objectNode.remove("@type");
             if(objectNode.size() == 1) {
                 var valueFieldValue = objectNode.get("@value");
                 if(valueFieldValue != null) {
-                   return collapseJsonLdValues(valueFieldValue);
+                   return process(valueFieldValue);
                 }
             }
             for(var it = objectNode.fieldNames(); it.hasNext(); ) {
                 var fieldName = it.next();
                 var fieldValue = objectNode.get(fieldName);
-                var collapsedNode = collapseJsonLdValues(fieldValue);
+                var collapsedNode = process(fieldValue);
                 objectNode.set(fieldName, collapsedNode);
             }
         }
         if(node instanceof ArrayNode arrayNode) {
             for(int i = 0; i < arrayNode.size(); i++) {
                 var containedNode = arrayNode.get(i);
-                var collapsedNode = collapseJsonLdValues(containedNode);
+                var collapsedNode = process(containedNode);
                 arrayNode.set(i, collapsedNode);
             }
         }

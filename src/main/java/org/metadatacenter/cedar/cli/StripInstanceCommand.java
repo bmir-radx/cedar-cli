@@ -4,12 +4,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import org.metadatacenter.cedar.util.StripInstance;
+import org.metadatacenter.cedar.util.StrippingOperation;
+import org.metadatacenter.cedar.util.StrippingOperations;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.Option;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Matthew Horridge
@@ -20,11 +24,14 @@ import java.nio.file.Path;
 @CommandLine.Command(name = "strip-instance")
 public class StripInstanceCommand implements CedarCliCommand {
 
-    @Option(names = "--in")
+    @Option(names = "--in", required = true)
     Path inputFile;
 
-    @Option(names = "--out")
+    @Option(names = "--out", required = true)
     Path outputFile;
+
+    @Option(names = "--operations", split = ",", defaultValue = "STRIP_CONTEXT,COLLAPSE_VALUES,COLLAPSE_ENTITIES,STRIP_IDS", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    Set<StrippingOperations> operations;
 
     private final ObjectMapper objectMapper;
 
@@ -38,7 +45,7 @@ public class StripInstanceCommand implements CedarCliCommand {
     @Override
     public Integer call() throws Exception {
         var node = objectMapper.readTree(inputFile.toFile());
-        var strippedNode = stripInstance.stripInstance(node, true);
+        var strippedNode = stripInstance.stripInstance(node, operations);
         if(!Files.exists(outputFile.getParent())) {
             Files.createDirectories(outputFile.getParent());
         }

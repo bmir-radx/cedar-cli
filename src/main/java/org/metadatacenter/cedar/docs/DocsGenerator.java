@@ -29,10 +29,13 @@ public class DocsGenerator {
 
     private final GetClassesRequest getClassesRequest;
 
+    private final ExampleTemplateInstanceGenerator exampleGenerator;
+
     public DocsGenerator(List<LanguageCode> languageCodes,
-                         GetClassesRequest getClassesRequest) {
+                         GetClassesRequest getClassesRequest, ExampleTemplateInstanceGenerator exampleGenerator) {
         this.languageCodes = languageCodes;
         this.getClassesRequest = getClassesRequest;
+        this.exampleGenerator = exampleGenerator;
     }
 
     public void writeDocs(CedarTemplate template, Path outputFile, BioPortalApiKey bioPortalApiKey) throws IOException {
@@ -107,6 +110,7 @@ public class DocsGenerator {
                 pw.println("The value of this field is a language code.  See the [language code table](language-codes.md) for a list of possible language codes.");
                 pw.println();
             }
+
             if (bioPortalApiKey != null) {
                 field.supplementaryInfo().getLookupSpec().ifPresent(lookupSpec -> {
                     lookupSpec.getOntologyAcronym().ifPresent(ontologyAcroymn -> {
