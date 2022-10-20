@@ -2,6 +2,7 @@ package org.metadatacenter.cedar.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,9 @@ public class OntologyEntityCollapser implements StrippingOperation {
 
     public JsonNode process(JsonNode node) {
         if(node instanceof ObjectNode objectNode) {
+            if(objectNode.size() == 0) {
+                return NullNode.getInstance();
+            }
             if(objectNode.has("@id") && objectNode.has("rdfs:label") && objectNode.size() == 2) {
                 var valueFieldValue = objectNode.get("@id");
                 if(valueFieldValue != null) {
@@ -32,7 +36,9 @@ public class OntologyEntityCollapser implements StrippingOperation {
             for(int i = 0; i < arrayNode.size(); i++) {
                 var containedNode = arrayNode.get(i);
                 var collapsedNode = process(containedNode);
-                arrayNode.set(i, collapsedNode);
+                if (!collapsedNode.isNull()) {
+                    arrayNode.set(i, collapsedNode);
+                }
             }
         }
         return node;

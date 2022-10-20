@@ -5,12 +5,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.annotation.Nonnull;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,5 +62,32 @@ public record CedarInstance(@JsonProperty("@context") CedarInstanceContext conte
     @Override
     public ArtifactSimpleTypeName getSimpleTypeName() {
         return ArtifactSimpleTypeName.INSTANCE;
+    }
+
+    public CedarInstance getJsonLdBoilerPlate() {
+        var childrenBoilerPlate =  new LinkedHashMap<String, CedarInstanceNode>();
+        children.forEach((fieldName, fieldValue) -> {
+            if(!(fieldValue instanceof CedarInstanceFieldValueNode)) {
+                var fieldBoilerPlate = fieldValue.getJsonLdBoilerPlate();
+                if (fieldBoilerPlate instanceof CedarInstanceListNode listNode) {
+                    if(!listNode.isEmpty()) {
+                        childrenBoilerPlate.put(fieldName, fieldBoilerPlate);
+                    }
+                }
+                else {
+                    childrenBoilerPlate.put(fieldName, fieldBoilerPlate);
+                }
+            }
+        });
+        return new CedarInstance(context, id, childrenBoilerPlate, schemaName, null, null, null);
+    }
+
+    @Override
+    public CedarInstance getEmptyCopy() {
+        var emptyChildren = new LinkedHashMap<String, CedarInstanceNode>();
+        children.forEach((fieldName, fieldValue) -> {
+            emptyChildren.put(fieldName, fieldValue.getEmptyCopy());
+        });
+        return new CedarInstance(context, id, emptyChildren, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
     }
 }

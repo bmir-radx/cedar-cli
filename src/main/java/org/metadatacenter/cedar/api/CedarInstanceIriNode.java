@@ -21,4 +21,14 @@ public record CedarInstanceIriNode(@JsonProperty("rdfs:label") String label,
         }
         return s;
     }
+
+    @Override
+    public CedarInstanceNode getJsonLdBoilerPlate() {
+        return this;
+    }
+
+    @Override
+    public CedarInstanceNode getEmptyCopy() {
+        return new CedarInstanceIriNode(null, null);
+    }
 }

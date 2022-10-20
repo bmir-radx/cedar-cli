@@ -3,7 +3,6 @@ package org.metadatacenter.cedar.docs;
 import com.google.common.base.Charsets;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import org.commonmark.renderer.text.TextContentRenderer;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.bioportal.BioPortalApiKey;
 import org.metadatacenter.cedar.bioportal.GetClassesRequest;
@@ -29,10 +28,10 @@ public class DocsGenerator {
 
     private final GetClassesRequest getClassesRequest;
 
-    private final ExampleTemplateInstanceGenerator exampleGenerator;
+    private final TemplateInstanceGenerator exampleGenerator;
 
     public DocsGenerator(List<LanguageCode> languageCodes,
-                         GetClassesRequest getClassesRequest, ExampleTemplateInstanceGenerator exampleGenerator) {
+                         GetClassesRequest getClassesRequest, TemplateInstanceGenerator exampleGenerator) {
         this.languageCodes = languageCodes;
         this.getClassesRequest = getClassesRequest;
         this.exampleGenerator = exampleGenerator;

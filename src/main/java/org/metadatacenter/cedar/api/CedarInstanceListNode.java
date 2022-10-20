@@ -3,10 +3,7 @@ package org.metadatacenter.cedar.api;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
+import java.util.*;
 
 /**
  * Matthew Horridge
@@ -129,5 +126,24 @@ public record CedarInstanceListNode(@JsonIgnore List<CedarInstanceNode> elements
     @Override
     public List<CedarInstanceNode> subList(int fromIndex, int toIndex) {
         return elements.subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public CedarInstanceNode getJsonLdBoilerPlate() {
+        var elementsBoilerPlate = new ArrayList<CedarInstanceNode>();
+        elements.forEach(e -> {
+            if(!(e instanceof CedarInstanceFieldValueNode)) {
+                elementsBoilerPlate.add(e.getJsonLdBoilerPlate());
+            }
+        });
+        return new CedarInstanceListNode(elementsBoilerPlate);
+    }
+
+    @Override
+    public CedarInstanceNode getEmptyCopy() {
+        var emptyElements = elements.stream()
+                .map(CedarInstanceNode::getEmptyCopy)
+                .toList();
+        return new CedarInstanceListNode(emptyElements);
     }
 }

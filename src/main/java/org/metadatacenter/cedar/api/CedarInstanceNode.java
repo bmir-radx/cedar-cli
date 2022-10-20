@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.api;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -8,5 +9,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * 2022-10-14
  */
 public interface CedarInstanceNode {
+
+    @JsonIgnore
+    CedarInstanceNode getJsonLdBoilerPlate();
+
+    @JsonIgnore
+    CedarInstanceNode getEmptyCopy();
 
 }

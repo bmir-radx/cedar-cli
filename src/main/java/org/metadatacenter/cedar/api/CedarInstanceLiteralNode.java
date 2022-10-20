@@ -23,4 +23,14 @@ public record CedarInstanceLiteralNode(@JsonIgnore String value,
         }
         return value.isBlank() ? null : value;
     }
+
+    @Override
+    public CedarInstanceNode getJsonLdBoilerPlate() {
+        return null;
+    }
+
+    @Override
+    public CedarInstanceNode getEmptyCopy() {
+        return new CedarInstanceLiteralNode(null, null);
+    }
 }
