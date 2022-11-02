@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.UncheckedIOException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -67,6 +68,11 @@ public record CedarInstanceContext(@JsonAnyGetter Map<String, Object> fieldName2
         } catch (JsonProcessingException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    public CedarInstanceContext prune(String retain) {
+        var pruned = Map.of(retain, fieldName2IriMap.get(retain));
+        return new CedarInstanceContext(pruned);
     }
 
     @JsonCreator

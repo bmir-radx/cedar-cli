@@ -276,7 +276,7 @@ public class SerializableTemplateElementTests {
                                                            Visibility.VISIBLE,
                                                            new Iri(PROPERTY_IRI)
                                                    )
-                                           ));
+                                           ), SupplementaryInfo.empty());
     }
 
     @Test

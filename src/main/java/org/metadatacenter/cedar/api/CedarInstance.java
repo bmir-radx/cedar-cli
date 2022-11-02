@@ -1,9 +1,6 @@
 package org.metadatacenter.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,9 +18,9 @@ import java.util.Map;
  * Stanford Center for Biomedical Informatics Research
  * 2022-10-14
  */
-public record CedarInstance(@JsonProperty("@context") CedarInstanceContext context,
-                            @JsonProperty("@id") CedarId id,
-                            @JsonAnyGetter Map<String, CedarInstanceNode> children,
+public record CedarInstance(@JsonView(FragmentView.class) @JsonProperty("@context") CedarInstanceContext context,
+                            @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("@id") CedarId id,
+                            @JsonView(FragmentView.class) @JsonAnyGetter Map<String, CedarInstanceNode> children,
                             @JsonProperty("schema:name") String schemaName,
                             @JsonProperty("schema:description") String schemaDescription,
                             @JsonProperty("schema:isBasedOn") CedarId schemaIsBasedOn,
@@ -32,7 +29,22 @@ public record CedarInstance(@JsonProperty("@context") CedarInstanceContext conte
     @Nonnull
     @Override
     public CedarArtifact withId(CedarId id) {
-        return new CedarInstance(context, id, children, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
+        var childrenWithoutIds = new LinkedHashMap<String, CedarInstanceNode>();
+        children.forEach((name, node) -> {
+            childrenWithoutIds.put(name, node.withoutId());
+        });
+        return new CedarInstance(context, id, childrenWithoutIds, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
+    }
+
+    public CedarInstance prune(String retain) {
+        var pruned = new HashMap<String, CedarInstanceNode>();
+        pruned.put(retain, children.get(retain));
+        return new CedarInstance(context.prune(retain), id, pruned, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
+    }
+
+    @Override
+    public CedarInstanceNode withoutId() {
+        return new CedarInstance(context, null, children, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
     }
 
     @Nonnull

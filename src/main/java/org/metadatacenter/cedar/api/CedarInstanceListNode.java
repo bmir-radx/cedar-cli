@@ -14,6 +14,19 @@ import java.util.*;
 public record CedarInstanceListNode(@JsonIgnore List<CedarInstanceNode> elements) implements CedarInstanceNode, List<CedarInstanceNode> {
 
     @Override
+    public CedarInstanceNode prune(String retain) {
+        return this;
+    }
+
+    @Override
+    public CedarInstanceNode withoutId() {
+        var elementsWithoutId = elements.stream()
+                .map(e -> e.withoutId())
+                .toList();
+        return new CedarInstanceListNode(elementsWithoutId);
+    }
+
+    @Override
     public int size() {
         return elements.size();
     }

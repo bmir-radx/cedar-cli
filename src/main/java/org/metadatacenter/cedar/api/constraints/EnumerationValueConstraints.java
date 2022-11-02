@@ -3,10 +3,9 @@ package org.metadatacenter.cedar.api.constraints;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonValue;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
+import org.metadatacenter.cedar.io.CedarFieldValueType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -77,8 +76,8 @@ public record EnumerationValueConstraints(Required requiredValue,
     }
 
     @Override
-    public TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
-        return TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.IRI;
+    public CedarFieldValueType getJsonSchemaType() {
+        return CedarFieldValueType.IRI;
     }
 
     @JsonTypeInfo(

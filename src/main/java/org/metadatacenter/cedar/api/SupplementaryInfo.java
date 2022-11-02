@@ -9,10 +9,14 @@ import java.util.Optional;
  * Stanford Center for Biomedical Informatics Research
  * 2022-10-06
  */
-public record SupplementaryInfo(String example, Optionality optionality, Cardinality cardinality, Derived derived, String derivedExplanation, LookupSpec lookupSpec, CedarCsvInputType csvInputType) {
+public record SupplementaryInfo(CedarCsvParser.Node node, String example, Optionality optionality, Cardinality cardinality, Derived derived, String derivedExplanation, LookupSpec lookupSpec, CedarCsvInputType csvInputType) {
 
     public static SupplementaryInfo empty() {
-        return new SupplementaryInfo("", Optionality.OPTIONAL, Cardinality.SINGLE, Derived.ASSERTED, "", null, CedarCsvInputType.TEXTFIELD);
+        return new SupplementaryInfo(null, "", Optionality.OPTIONAL, Cardinality.SINGLE, Derived.ASSERTED, "", null, CedarCsvInputType.TEXTFIELD);
+    }
+
+    public Optional<CedarCsvParser.Node> getParsedNode() {
+        return Optional.ofNullable(node);
     }
 
     public Optional<LookupSpec> getLookupSpec() {

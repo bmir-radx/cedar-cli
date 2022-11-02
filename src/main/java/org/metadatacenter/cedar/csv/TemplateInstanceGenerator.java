@@ -2,7 +2,7 @@ package org.metadatacenter.cedar.csv;
 
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.csv.CedarCsvParser.Node;
-import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
+import org.metadatacenter.cedar.io.CedarFieldValueType;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -54,7 +54,7 @@ public class TemplateInstanceGenerator {
         }
     }
 
-    private Optional<CedarInstanceNode> toCedarInstanceJsonNode(Node node, TemplateInstanceGenerationMode mode) {
+    public Optional<CedarInstanceNode> toCedarInstanceJsonNode(Node node, TemplateInstanceGenerationMode mode) {
 
         if(node.isField()) {
             // No context
@@ -63,7 +63,13 @@ public class TemplateInstanceGenerator {
         else if(node.isElement()) {
             // context
             var context = getContext(node, Collections.emptyMap());
-            return Optional.of(new CedarInstanceElementNode(context, toCedarInstanceJsonObject(node, mode)));
+            var id = "http://example.org/" + UUID.randomUUID();
+            return Optional.of(new CedarInstanceElementNode(id, context, toCedarInstanceJsonObject(node, mode)));
+        }
+        else if(node.isRoot()) {
+            var context = getContext(node, CedarInstanceContext.getContextBoilerPlateNode());
+            return Optional.of(new CedarInstance(context, CedarId.generateUrn(), toCedarInstanceJsonObject(node, mode), "", "", null,
+                                                 ModificationInfo.empty()));
         }
         else {
             return Optional.empty();
@@ -107,13 +113,13 @@ public class TemplateInstanceGenerator {
     }
 
     private static CedarInstanceLiteralNode generateStringLiteralNode(Node node, TemplateInstanceGenerationMode mode) {
-        return new CedarInstanceLiteralNode("", null);
+        return new CedarInstanceLiteralNode(getExample(node, mode), null);
     }
 
     private static CedarInstanceFieldValueNode generateValueNode(Node node, TemplateInstanceGenerationMode mode) {
         var row = node.getRow();
         return row.getInputType().flatMap(CedarCsvInputType::getJsonSchemaValueType).map(ct -> {
-            if(ct.equals(TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.IRI)) {
+            if(ct.equals(CedarFieldValueType.IRI)) {
                 return new CedarInstanceIriNode(null, getExample(node, mode));
             }
             else {

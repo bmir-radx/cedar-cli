@@ -27,7 +27,8 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
                                    @Nonnull @JsonUnwrapped ArtifactInfo artifactInfo,
                                    @Nonnull @JsonUnwrapped VersionInfo versionInfo,
                                    @Nonnull @JsonUnwrapped ModificationInfo modificationInfo,
-                                   @Nonnull @JsonIgnore List<EmbeddedCedarArtifact> nodes) implements EmbeddableCedarArtifact, CedarSchemaArtifact, CedarArtifactContainer {
+                                   @Nonnull @JsonIgnore List<EmbeddedCedarArtifact> nodes,
+                                   @Nonnull @JsonIgnore SupplementaryInfo supplementaryInfo) implements EmbeddableCedarArtifact, CedarSchemaArtifact, CedarArtifactContainer {
 
     @Override
     public <R, E extends Exception> R accept(CedarSchemaArtifactVisitor<R, E> visitor) throws E {
@@ -37,7 +38,7 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
     @Nonnull
     @Override
     public CedarTemplateElement withId(CedarId id) {
-        return new CedarTemplateElement(id, propertyIri, artifactInfo, versionInfo, modificationInfo, nodes);
+        return new CedarTemplateElement(id, propertyIri, artifactInfo, versionInfo, modificationInfo, nodes, supplementaryInfo);
     }
 
     @Nonnull
@@ -47,7 +48,7 @@ public record CedarTemplateElement(@Nullable @JsonProperty("@id") CedarId id,
                 .map(n -> n.replaceIds(idReplacementMap))
                 .toList();
         var replacementId = getReplacementId(idReplacementMap);
-        return new CedarTemplateElement(replacementId, propertyIri, artifactInfo, versionInfo, modificationInfo, replacedChildNodes);
+        return new CedarTemplateElement(replacementId, propertyIri, artifactInfo, versionInfo, modificationInfo, replacedChildNodes, supplementaryInfo);
     }
 
     @Override

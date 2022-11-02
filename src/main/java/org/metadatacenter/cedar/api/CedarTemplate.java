@@ -133,7 +133,8 @@ public record CedarTemplate(@JsonProperty("@id") CedarId id,
                                  List.of()),
                 new VersionInfo(version, status, previousVersion),
                 ModificationInfo.empty(),
-                nodes
+                nodes,
+                SupplementaryInfo.empty()
         );
     }
 }

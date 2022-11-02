@@ -44,22 +44,6 @@ public record TemplateFieldObjectJsonSchemaMixin(@JsonProperty("title") String t
         }
     }
 
-    public enum CedarFieldValueType {
-        LITERAL("@value"),
-        IRI("@id");
-
-        private final String jsonProperty;
-
-
-        CedarFieldValueType(String jsonProperty) {
-            this.jsonProperty = jsonProperty;
-        }
-
-        public String getJsonProperty() {
-            return jsonProperty;
-        }
-    }
-
     private static final TemplateFieldObjectJsonSchemaMixin EMPTY = new TemplateFieldObjectJsonSchemaMixin("", "", CedarFieldValueType.LITERAL, null, false);
 
     @Override

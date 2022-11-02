@@ -3,7 +3,7 @@ package org.metadatacenter.cedar.api.constraints;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.io.TemplateFieldObjectJsonSchemaMixin;
+import org.metadatacenter.cedar.io.CedarFieldValueType;
 
 /**
  * Matthew Horridge
@@ -26,8 +26,8 @@ public class EmptyValueConstraints implements FieldValueConstraints {
 
     @JsonIgnore
     @Override
-    public TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType getJsonSchemaType() {
-        return TemplateFieldObjectJsonSchemaMixin.CedarFieldValueType.LITERAL;
+    public CedarFieldValueType getJsonSchemaType() {
+        return CedarFieldValueType.LITERAL;
     }
 
     @JsonIgnore

@@ -11,9 +11,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public interface CedarInstanceNode {
 
     @JsonIgnore
+    CedarInstanceNode prune(String retain);
+
+    @JsonIgnore
     CedarInstanceNode getJsonLdBoilerPlate();
 
     @JsonIgnore
     CedarInstanceNode getEmptyCopy();
 
+    @JsonIgnore
+    CedarInstanceNode withoutId();
 }

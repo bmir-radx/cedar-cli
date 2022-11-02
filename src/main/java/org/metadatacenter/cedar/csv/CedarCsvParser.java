@@ -200,7 +200,8 @@ public class CedarCsvParser {
                                                   false,
                                                   false
                                           ),
-                                          new SupplementaryInfo(node.example(),
+                                          new SupplementaryInfo(node,
+                                                                node.example(),
                                                                 node.row.optionality(),
                                                                 node.row.getCardinality(),
                                                                 node.row.getDerivedFlag(),
@@ -228,7 +229,17 @@ public class CedarCsvParser {
                                                          List.of()),
                                         new VersionInfo(version, defaultArtifactStatus, previousVersion),
                                         ModificationInfo.empty(),
-                                        embeddedArtifacts);
+                                        embeddedArtifacts,
+                                        new SupplementaryInfo(
+                                                node,
+                                                node.row.example(),
+                                                node.row.optionality(),
+                                                node.row.getCardinality(),
+                                                node.row.getDerivedFlag(),
+                                                node.row.derived(),
+                                                node.row.getLookupSpec().orElse(null),
+                                                node.row.inputType()
+                                        ));
     }
 
     private static String toPlainText(String markdown) {
@@ -268,7 +279,8 @@ public class CedarCsvParser {
                                       ModificationInfo.empty(),
                                       getValueConstraints(fieldRow),
                                       getFieldUi(fieldRow),
-                                      new SupplementaryInfo(node.example(),
+                                      new SupplementaryInfo(node,
+                                                            node.example(),
                                                             node.row.optionality(),
                                                             node.row.getCardinality(),
                                                             node.row.getDerivedFlag(),

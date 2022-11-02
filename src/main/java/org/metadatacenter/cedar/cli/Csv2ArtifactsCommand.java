@@ -2,6 +2,8 @@ package org.metadatacenter.cedar.cli;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.csv.*;
 import org.metadatacenter.cedar.docs.DocsGenerator;
@@ -268,6 +270,16 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                 Files.writeString(examplesDirectory.resolve("blank-stripped-collapsed.json"), strippedCollapsedJson);
 
 
+                new ObjectMapper(new YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER)
+                                                  .enable(YAMLGenerator.Feature.MINIMIZE_QUOTES))
+                        .writeValue(examplesDirectory.resolve("blank-stripped-collapsed.yml").toFile(), strippedCollapsedJsonNode);
+
+
+                var ctx = new JsonLdContextGenerator().generateContext(rootNode);
+                var ctxJson = objectMapper.writerWithDefaultPrettyPrinter()
+                        .writeValueAsString(ctx);
+                Files.writeString(examplesDirectory.resolve("context.json"), ctxJson);
+
 
             }
 
@@ -277,7 +289,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                     Files.createDirectories(docsPath.getParent());
                 }
                 System.err.println("Generating documentation in " + docsPath);
-                docsGenerator.writeDocs(template, docsPath, bioportalApiKey.getApiKey());
+                docsGenerator.writeDocs(template,  docsPath, bioportalApiKey.getApiKey());
             }
         } catch (CedarCsvParseException e) {
             System.err.println("\033[31;1mERROR: " + e.getMessage() + "\033[0m");

@@ -1,5 +1,8 @@
 package org.metadatacenter.cedar.docs;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Charsets;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -13,7 +16,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -30,11 +35,16 @@ public class DocsGenerator {
 
     private final TemplateInstanceGenerator exampleGenerator;
 
+    private final ObjectMapper objectMapper;
+
     public DocsGenerator(List<LanguageCode> languageCodes,
-                         GetClassesRequest getClassesRequest, TemplateInstanceGenerator exampleGenerator) {
+                         GetClassesRequest getClassesRequest,
+                         TemplateInstanceGenerator exampleGenerator,
+                         ObjectMapper objectMapper) {
         this.languageCodes = languageCodes;
         this.getClassesRequest = getClassesRequest;
         this.exampleGenerator = exampleGenerator;
+        this.objectMapper = objectMapper;
     }
 
     public void writeDocs(CedarTemplate template, Path outputFile, BioPortalApiKey bioPortalApiKey) throws IOException {
@@ -47,6 +57,10 @@ public class DocsGenerator {
                            """);
         pw.println();
         pw.println("# Specification");
+        pw.println();
+        pw.println("""
+                           <div class="controls"><button id="jsonld-example-visibility-toggle">Hide JSON-LD Examples</button></div>
+                           """);
         pw.println();
         pw.println("<h2 plain>Required fields</h2>");
         pw.println("The following fields are required fields.  These fields MUST be filled out in a metadata instance for the instance to be valid.\n");
@@ -90,6 +104,29 @@ public class DocsGenerator {
             pw.println();
             element.nodes().forEach(a -> printArtifact(a, bioPortalApiKey, pw));
             pw.println();
+            pw.println();
+            element.supplementaryInfo().getParsedNode().ifPresent(node -> {
+                node.getParentNode().ifPresent(parentNode -> {
+                    var exampleJsonLd = exampleGenerator.toCedarInstanceJsonNode(parentNode, TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS);
+                    exampleJsonLd.ifPresent(ex -> {
+                        try {
+                            var pruned = ex.prune(node.getSchemaName())
+                                                    .withoutId();
+                            var json = objectMapper.copy()
+                                                   .disable(MapperFeature.DEFAULT_VIEW_INCLUSION).writerWithDefaultPrettyPrinter()
+                                                   .withView(FragmentView.class).writeValueAsString(pruned);
+                            pw.println("<div class=\"example jsonld-example jsonld-example--element\"><div class=\"example-heading\">Example element in RADx Metadata Model JSON-LD</div>\n");
+                            pw.println("```json");
+                            pw.println(json);
+                            pw.println("```");
+                            pw.println("\n</div>");
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                });
+
+            });
         }
         else if(embeddedArtifact instanceof CedarTemplateField field) {
             var name = field.getSchemaName();
@@ -145,6 +182,34 @@ public class DocsGenerator {
                 pw.println("</div>");
                 pw.println();
             }
+
+            /**
+             * Generate a fragment of the JSON-LD for the field only.  To do this we need to get the parent (element)
+             * JSON-LD and prune it for the specified field.
+             */
+            field.supplementaryInfo().getParsedNode().ifPresent(node -> {
+                node.getParentNode().ifPresent(parentNode -> {
+                    var exampleJsonLd = exampleGenerator.toCedarInstanceJsonNode(parentNode, TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS);
+                    exampleJsonLd.ifPresent(ex -> {
+                        var elementNode = (CedarInstanceElementNode) ex;
+                        try {
+                            var pruned = elementNode.prune(node.getSchemaName())
+                                    .withoutId();
+                            var json = objectMapper.writerWithDefaultPrettyPrinter()
+                                                   .writeValueAsString(pruned);
+                            pw.println("<div class=\"example jsonld-example jsonld-example--field\"><div class=\"example-heading\">Example in RADx Metadata Model JSON-LD</div>\n");
+                            pw.println("```json");
+                            pw.println(json);
+                            pw.println("```");
+                            pw.println("\n</div>");
+                        } catch (JsonProcessingException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                });
+
+            });
+
         }
     }
 

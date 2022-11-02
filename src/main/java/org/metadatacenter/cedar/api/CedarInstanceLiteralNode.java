@@ -1,9 +1,6 @@
 package org.metadatacenter.cedar.api;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -13,9 +10,10 @@ import java.util.Optional;
  * Stanford Center for Biomedical Informatics Research
  * 2022-10-14
  */
-public record CedarInstanceLiteralNode(@JsonIgnore String value,
-                                       @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("@type") @Nullable String type) implements CedarInstanceFieldValueNode {
+public record CedarInstanceLiteralNode(@JsonView(FragmentView.class) @JsonIgnore String value,
+                                       @JsonView(FragmentView.class) @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("@type") @Nullable String type) implements CedarInstanceFieldValueNode {
 
+    @JsonView(FragmentView.class)
     @JsonProperty("@value")
     public String getValueOrNull() {
         if(value == null) {

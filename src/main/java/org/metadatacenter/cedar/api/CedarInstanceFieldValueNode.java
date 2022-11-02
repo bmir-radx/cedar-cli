@@ -7,4 +7,13 @@ package org.metadatacenter.cedar.api;
  */
 public interface CedarInstanceFieldValueNode extends CedarInstanceNode {
 
+    @Override
+    default CedarInstanceNode withoutId() {
+        return this;
+    }
+
+    @Override
+    default CedarInstanceNode prune(String retain) {
+        return this;
+    }
 }

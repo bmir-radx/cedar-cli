@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.api.Visibility;
+import org.metadatacenter.cedar.io.CedarFieldValueType;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -144,6 +145,18 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
             else {
                 return Optional.ofNullable(inputType);
             }
+    }
+
+    public Optional<CedarFieldValueType> getValueType() {
+        return getInputType().flatMap(CedarCsvInputType::getJsonSchemaValueType);
+    }
+
+    public boolean isIriValueType() {
+        return getValueType().map(vt -> vt.equals(CedarFieldValueType.IRI)).orElse(false);
+    }
+
+    public boolean isLiteralValueType() {
+        return getValueType().map(vt -> vt.equals(CedarFieldValueType.LITERAL)).orElse(false);
     }
 
     public Cardinality getCardinality() {
