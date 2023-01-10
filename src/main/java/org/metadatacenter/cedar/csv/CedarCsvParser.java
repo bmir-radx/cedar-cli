@@ -424,6 +424,9 @@ public class CedarCsvParser {
          * Gets the schema:name for the field.  This is the JSON attribute name for the field.
          */
         public String getSchemaName() {
+            if(row == null) {
+                return "";
+            }
             if(row.isSection()) {
                 return row.section();
             }
