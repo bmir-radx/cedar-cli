@@ -9,6 +9,7 @@ import org.metadatacenter.cedar.csv.*;
 import org.metadatacenter.cedar.docs.DocsGenerator;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
+import org.metadatacenter.cedar.ts.TypeScriptGenerator;
 import org.metadatacenter.cedar.util.StripInstance;
 import org.metadatacenter.cedar.util.StrippingOperations;
 import org.springframework.stereotype.Component;
@@ -107,6 +108,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--example-template-instance-file-name", description = "The output file name for the example template instance JSON-LD file that is generated if the --generate-example-template-instance option is set to true.  By default this will be output to a file called example-template-instance.json in a examples directory in the output path.  This option may be used to override this file path/name.")
     String exampleTemplateInstanceOutputFileName;
 
+    @Option(names = "--generate-type-script", description = "Generates a TypeScript source file that contains TypeScript interfaces that describe fields, elements and templates.", defaultValue = "false")
+    private boolean generateTypeScript;
+
     @ArgGroup(exclusive = false)
     public PostToCedarOptions pushToCedar;
 
@@ -188,6 +192,10 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                                                                 version, previousVersion);
         try {
             var rootNode = cedarCsvParser.parseNodes(inputStream);
+
+            if (generateTypeScript) {
+                new TypeScriptGenerator().generateTypeScript(Path.of("."), rootNode);
+            }
 
             if(templateIdentifier == null) {
                 templateIdentifier = templateName.trim().toLowerCase().replace(" ", "-");
