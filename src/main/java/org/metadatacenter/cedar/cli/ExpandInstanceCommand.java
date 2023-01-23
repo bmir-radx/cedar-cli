@@ -26,14 +26,18 @@ import java.util.stream.Collectors;
 public class ExpandInstanceCommand implements CedarCliCommand {
 
     @Option(names = "--blank-instance",
+            required = true,
             description = "A file path to a 'blank', or empty, CEDAR metadata template instance that is used as the basis for the expansion of the partial instance.")
     Path pathToBlankInstance;
 
     @Option(names = "--partial-instance",
+            required = true,
             description = "A file path to the partial CEDAR metadata template instance that will be expanded.")
     Path pathToPartialInstance;
 
-    @Option(names = "--out", description = "A file path that specifies where the expanded CEDAR metadata template instance will be written to.")
+    @Option(names = "--out",
+            required = true,
+            description = "A file path that specifies where the expanded CEDAR metadata template instance will be written to.")
     Path outputPath;
 
     private final ObjectMapper objectMapper;
@@ -69,10 +73,6 @@ public class ExpandInstanceCommand implements CedarCliCommand {
         var expandedInstance = expandInstance.expandInstance((ObjectNode) partialInstance,
                                                              (ObjectNode) blankInstance);
 
-        var parentDirectory = outputPath.getParent();
-        if(!Files.exists(parentDirectory)) {
-            Files.createDirectories(parentDirectory);
-        }
         objectMapper.writerWithDefaultPrettyPrinter()
                 .writeValue(outputPath.toFile(), expandedInstance);
 
