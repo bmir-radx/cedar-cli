@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.metadatacenter.cedar.util.ExpandInstance;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -37,141 +38,48 @@ public class ExpandInstanceCommand implements CedarCliCommand {
 
     private final ObjectMapper objectMapper;
 
-    public ExpandInstanceCommand(ObjectMapper objectMapper) {
+    private final ExpandInstance expandInstance;
+
+    public ExpandInstanceCommand(ObjectMapper objectMapper, ExpandInstance expandInstance) {
         this.objectMapper = objectMapper;
+        this.expandInstance = expandInstance;
     }
 
     @Override
     public Integer call() throws Exception {
         if(!Files.exists(pathToBlankInstance)) {
-            System.err.printf("Specified blank file %s does not exist\n", pathToBlankInstance);
+            System.err.printf("Specified blankInstance file %s does not exist\n", pathToBlankInstance);
             return 1;
         }
         if(!Files.exists(pathToPartialInstance)) {
-            System.err.printf("Specified instance file %s does not exist\n", pathToPartialInstance);
+            System.err.printf("Specified partialInstance file %s does not exist\n", pathToPartialInstance);
             return 1;
         }
-        var blank = objectMapper.readTree(pathToBlankInstance.toFile());
-        if(!blank.isObject()) {
+        var blankInstance = objectMapper.readTree(pathToBlankInstance.toFile());
+        if(!blankInstance.isObject()) {
             System.err.println("Expected object as the top level node in " + pathToBlankInstance);
             return 1;
         }
-        var instance = objectMapper.readTree(pathToPartialInstance.toFile());
-        if(!instance.isObject()) {
+        var partialInstance = objectMapper.readTree(pathToPartialInstance.toFile());
+        if(!partialInstance.isObject()) {
             System.err.println("Expected object as the top level node in " + pathToPartialInstance);
             return 1;
         }
 
-        processObject(List.of("$"), (ObjectNode) blank, (ObjectNode) instance);
+        var expandedInstance = expandInstance.expandInstance((ObjectNode) partialInstance,
+                                                             (ObjectNode) blankInstance);
 
         var parentDirectory = outputPath.getParent();
         if(!Files.exists(parentDirectory)) {
             Files.createDirectories(parentDirectory);
         }
         objectMapper.writerWithDefaultPrettyPrinter()
-                .writeValue(outputPath.toFile(), instance);
+                .writeValue(outputPath.toFile(), expandedInstance);
 
 
-        System.err.printf("Expansion completed.  Expanded instance output to %s\n", outputPath);
+        System.err.printf("Expansion completed.  Expanded partialInstance output to %s\n", outputPath);
 
         return 0;
     }
 
-    private void processObject(List<String> path, ObjectNode blankNode, ObjectNode instanceNode) {
-        // Every field on the blank node should be on the instance node
-        for(var blankIt = blankNode.fields(); blankIt.hasNext();) {
-            var entry = blankIt.next();
-            var fieldName = entry.getKey();
-            var fieldValue = entry.getValue();
-            var expectedType = fieldValue.getNodeType();
-            var childPath = appendToPath(fieldName, path);
-
-            var instanceValue = instanceNode.get(fieldName);
-            if(instanceValue == null) {
-                System.err.println(pathToString(childPath));
-                System.err.printf("    Expected %s field but did not find it\n", fieldName);
-                if(fieldName.equals("@id")) {
-                    System.err.println("    Inserting blank Id");
-                    instanceNode.set("@id", JsonNodeFactory.instance.textNode(""));
-                }
-                else {
-                    System.err.printf("    Will insert blank value, which is %s\n", fieldValue);
-                    instanceNode.set(fieldName, fieldValue.deepCopy());
-                }
-            }
-            else {
-                if(!instanceValue.getNodeType().equals(expectedType)) {
-                    if(!expectedType.equals(JsonNodeType.NULL)) {
-                        System.err.println(pathToString(childPath));
-                        System.err.printf("   Field %s, expected node of type %s but found %s\n",
-                                          fieldName,
-                                          expectedType,
-                                          instanceValue.getNodeType());
-                    }
-                }
-                else {
-                    if(fieldValue.isObject()) {
-                        processObject(childPath, (ObjectNode) fieldValue, (ObjectNode) instanceValue);
-                    }
-                    else if(fieldValue.isArray()) {
-                        processArray(childPath, (ArrayNode) fieldValue, (ArrayNode) instanceValue);
-                    }
-                }
-            }
-        }
-        // There should not be any extra fields
-    }
-
-    private void processArray(List<String> path, ArrayNode blankArray, ArrayNode instanceArray) {
-        if(blankArray.size() != 1) {
-            System.err.println("Encountered empty array in blank object");
-            throw new RuntimeException();
-        }
-        if(instanceArray.size() == 0) {
-            System.err.printf("Encountered empty array in instance value (%s)\n", pathToString(path));
-            var blankElement = blankArray.get(0).deepCopy();
-            instanceArray.add(blankElement);
-        }
-        else {
-            // Each element in the instance array must conform to the blank element structure
-            for(int i = 0; i < instanceArray.size(); i++) {
-                var blankValue = blankArray.get(0);
-                if(!blankValue.getNodeType().equals(instanceArray.get(i).getNodeType())) {
-                    System.err.printf("Expected array value of type %s but found array value of type %s (%s)\n",
-                                      blankValue.getNodeType(),
-                                      instanceArray.get(i).getNodeType(),
-                                      pathToString(appendToPath("[0]", path)));
-                }
-                else {
-                    if(blankValue.isObject()) {
-                        var childPath = appendToPath("[" + i + "]", path);
-                        processObject(childPath, (ObjectNode) blankValue, (ObjectNode) instanceArray.get(i));
-                    }
-                }
-            }
-
-        }
-    }
-
-    private static List<String> appendToPath(String element, List<String> path) {
-        var result = new ArrayList<>(path);
-        result.add(element);
-        return result;
-    }
-
-    private static String pathToString(List<String> path) {
-        return path.stream()
-                .map(e -> {
-                    if(e.equals("$")) {
-                        return e;
-                    }
-                    else if(e.startsWith("[")) {
-                        return e;
-                    }
-                    else {
-                        return "['" + e + "']";
-                    }
-                })
-                .collect(Collectors.joining());
-    }
 }

@@ -3,6 +3,7 @@ package org.metadatacenter.cedar.api;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
@@ -53,6 +54,11 @@ public record CedarId(String value) {
 
     public static CedarId generateUrn() {
         return new CedarId("urn:uuid:" + UUID.randomUUID());
+    }
+
+    @Nullable
+    public static CedarId nullId() {
+        return null;
     }
 
     public String getEscapedId() {

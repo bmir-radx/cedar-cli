@@ -19,7 +19,7 @@ import java.util.Map;
  * 2022-10-14
  */
 public record CedarInstance(@JsonView(FragmentView.class) @JsonProperty("@context") CedarInstanceContext context,
-                            @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("@id") CedarId id,
+                            @JsonProperty("@id") CedarId id,
                             @JsonView(FragmentView.class) @JsonAnyGetter Map<String, CedarInstanceNode> children,
                             @JsonProperty("schema:name") String schemaName,
                             @JsonProperty("schema:description") String schemaDescription,
