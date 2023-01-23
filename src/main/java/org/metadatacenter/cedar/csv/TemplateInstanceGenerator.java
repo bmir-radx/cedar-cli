@@ -46,7 +46,7 @@ public class TemplateInstanceGenerator {
                                                CedarId schemaIsBasedOn) {
         if(node.isRoot()) {
             var context = getContext(node, CedarInstanceContext.getContextBoilerPlateNode());
-            return new CedarInstance(context, CedarId.generateUrn(), toCedarInstanceJsonObject(node, mode), schemaName, schemaDescription, schemaIsBasedOn,
+            return new CedarInstance(context, CedarId.nullId(), toCedarInstanceJsonObject(node, mode), schemaName, schemaDescription, schemaIsBasedOn,
                                      ModificationInfo.empty());
         }
         else {
