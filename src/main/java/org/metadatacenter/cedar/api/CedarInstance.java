@@ -19,7 +19,7 @@ import java.util.Map;
  * 2022-10-14
  */
 public record CedarInstance(@JsonView(FragmentView.class) @JsonProperty("@context") CedarInstanceContext context,
-                            @JsonProperty("@id") CedarId id,
+                            @JsonView(FragmentView.class) @JsonProperty("@id") CedarId id,
                             @JsonView(FragmentView.class) @JsonAnyGetter Map<String, CedarInstanceNode> children,
                             @JsonProperty("schema:name") String schemaName,
                             @JsonProperty("schema:description") String schemaDescription,
@@ -44,7 +44,7 @@ public record CedarInstance(@JsonView(FragmentView.class) @JsonProperty("@contex
 
     @Override
     public CedarInstanceNode withoutId() {
-        return new CedarInstance(context, null, children, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
+        return new CedarInstance(context, new CedarId(""), children, schemaName, schemaDescription, schemaIsBasedOn, modificationInfo);
     }
 
     @Nonnull
