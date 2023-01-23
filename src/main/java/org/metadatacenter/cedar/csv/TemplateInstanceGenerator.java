@@ -63,7 +63,8 @@ public class TemplateInstanceGenerator {
         else if(node.isElement()) {
             // context
             var context = getContext(node, Collections.emptyMap());
-            var id = "http://example.org/" + UUID.randomUUID();
+            // Just insert a blank id here.  CEDAR allows this.
+            var id = "";
             return Optional.of(new CedarInstanceElementNode(id, context, toCedarInstanceJsonObject(node, mode)));
         }
         else if(node.isRoot()) {
