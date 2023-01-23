@@ -51,7 +51,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.cardinality = cardinality;
         this.optionality = optionality;
         this.visibility = Objects.requireNonNull(visibility);
-        this.fieldTitle = fieldTitle;
+        this.fieldTitle = fieldTitle != null ? fieldTitle.trim() : fieldTitle;
         this.propertyIri = propertyIri;
         this.description = description;
         this.derived = derived;
