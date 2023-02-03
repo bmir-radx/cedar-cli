@@ -41,8 +41,6 @@ public class StripInstance {
 
     public JsonNode stripInstance(JsonNode node,
                                   Set<StrippingOperations> operations) {
-        // Remove @context
-//        if(removeContext) {
         JsonNode workingNode = node;
         if(operations.contains(StrippingOperations.STRIP_CONTEXT)) {
             workingNode = contextRemover.process(workingNode);
