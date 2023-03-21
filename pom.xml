@@ -14,7 +14,7 @@
 	<name>csv-pipeline</name>
 	<description>A command line interface for interacting with CEDAR</description>
 	<properties>
-		<java.version>18</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
