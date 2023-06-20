@@ -441,6 +441,24 @@ public class CedarCsvParser {
             }
         }
 
+        public Optional<String> getXsdDatatype() {
+            if(row == null) {
+                return Optional.empty();
+            }
+            var inputType = row.getInputType();
+            if(inputType.isEmpty()) {
+                return Optional.empty();
+            }
+            var it = inputType.get();
+            if(it.getCedarTemporalType().isPresent()) {
+                return it.getCedarTemporalType().map(CedarTemporalType::getName);
+            }
+            if(it.getCedarNumberType().isPresent()) {
+                return it.getCedarNumberType().map(NumberType::getValue);
+            }
+            return Optional.empty();
+        }
+
         public Optional<Node> getParentNode() {
             return Optional.ofNullable(parentNode);
         }
@@ -550,6 +568,41 @@ public class CedarCsvParser {
 
         public List<Node> getChildNodes() {
             return new ArrayList<>(childNodes);
+        }
+
+        public boolean isLiteralValueType() {
+            if(row == null) {
+                return false;
+            }
+            return row.isLiteralValueType();
+        }
+
+        public String getDescription() {
+            if(row == null) {
+                return "";
+            }
+            return row.description();
+        }
+
+        public boolean isRequired() {
+            if(row == null) {
+                return false;
+            }
+            return row.getRequired().equals(Required.REQUIRED);
+        }
+
+        public boolean isMultiValued() {
+            if(row == null) {
+                return false;
+            }
+            return row.getCardinality().equals(Cardinality.MULTIPLE);
+        }
+
+        public Optional<String> getPropertyIri() {
+            if(row == null) {
+                return Optional.empty();
+            }
+            return row.getPropertyIri().map(Iri::lexicalValue);
         }
     }
 }

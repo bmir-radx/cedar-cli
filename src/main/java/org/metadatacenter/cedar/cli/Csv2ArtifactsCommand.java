@@ -9,6 +9,7 @@ import org.metadatacenter.cedar.csv.*;
 import org.metadatacenter.cedar.docs.DocsGenerator;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
+import org.metadatacenter.cedar.java.JavaGenerator;
 import org.metadatacenter.cedar.ts.TypeScriptGenerator;
 import org.metadatacenter.cedar.util.StripInstance;
 import org.metadatacenter.cedar.util.StrippingOperations;
@@ -19,7 +20,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -114,6 +117,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--generate-type-script", description = "Generates a TypeScript source file that contains TypeScript interfaces that describe fields, elements and templates.", defaultValue = "false")
     private boolean generateTypeScript;
 
+    @Option(names = "--generate-java", description = "Generates a Java source file that contains Java records that describe fields, elements and templates.", defaultValue = "false")
+    private boolean generateJava;
+
     @ArgGroup(exclusive = false)
     public PostToCedarOptions pushToCedar;
 
@@ -198,6 +204,11 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
             if (generateTypeScript) {
                 new TypeScriptGenerator().generateTypeScript(Path.of("."), rootNode);
+            }
+
+            if(generateJava) {
+                var cgn = JavaGenerator.toCodeGenerationNode(rootNode);
+                new JavaGenerator().generateJava(cgn, new PrintWriter("/tmp/code.java"));
             }
 
             if(templateIdentifier == null) {
