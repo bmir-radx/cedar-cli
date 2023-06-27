@@ -1,5 +1,11 @@
 package org.metadatacenter.cedar.java;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.jboss.forge.roaster.Roaster;
+import org.jboss.forge.roaster.model.JavaClass;
+import org.jboss.forge.roaster.model.source.JavaClassSource;
+import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
+import org.jboss.forge.roaster.model.source.MethodSource;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import java.io.PrintWriter;
@@ -33,7 +39,6 @@ public class JavaGenerator {
     }
 
     public void generateJava(CodeGenerationNode node, PrintWriter pw) {
-
 
         generateImports(pw);
         pw.println();
@@ -190,7 +195,9 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
     }
 
     private void generateConstants(CodeGenerationNode rootNode, PrintWriter pw) {
-        pw.println("public interface FieldNames {");
+
+        var src = Roaster.create(JavaInterfaceSource.class);
+        src.setName("FieldNames");
 
         var elements = new LinkedHashSet<CodeGenerationNode>();
         collectElements(rootNode, elements);
@@ -199,11 +206,17 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             var stripName = stripName(element.name());
             if(!processed.contains(stripName)) {
                 processed.add(stripName);
-                pw.println("String " + toConstantSymbol(element) + " = \"" + stripName + "\";");
+                var field = src.addField();
+                field.setPublic()
+                     .setStatic(true)
+                     .setFinal(true)
+                     .setType(String.class)
+                     .setName(toConstantSymbol(element))
+                        .setStringInitializer(stripName);
             }
         });
-        pw.println("String IRI_PREFIX = \"https://repo.metadatacenter.org/template-element-instances/\";");
-        pw.println("}\n");
+
+        pw.println(src);
     }
 
     private static String toConstantSymbol(CodeGenerationNode node) {
