@@ -1,5 +1,7 @@
 package org.metadatacenter.cedar.java;
 
+import org.metadatacenter.cedar.csv.CedarCsvInputType;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
@@ -20,7 +22,8 @@ public record CodeGenerationNode(@Nullable String id,
                                  @Nullable String xsdDatatype,
                                  boolean required,
                                  boolean multiValued,
-                                 @Nullable String propertyIri) {
+                                 @Nullable String propertyIri,
+                                 CedarCsvInputType inputType) {
 
     public Optional<String> getId() {
         return Optional.ofNullable(id);
@@ -36,5 +39,9 @@ public record CodeGenerationNode(@Nullable String id,
 
     public Optional<String> getDescription() {
         return Optional.ofNullable(description);
+    }
+
+    public boolean isAttributeValueField() {
+        return CedarCsvInputType.ATTRIBUTE_VALUE.equals(inputType());
     }
 }

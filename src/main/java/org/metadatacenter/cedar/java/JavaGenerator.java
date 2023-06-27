@@ -16,6 +16,7 @@ public class JavaGenerator {
 
     public static CodeGenerationNode toCodeGenerationNode(CedarCsvParser.Node node) {
         var row = node.getRow();
+        var inputType = row != null ? row.inputType() : null;
         return new CodeGenerationNode(
                 null,
                 node.isRoot(),
@@ -27,8 +28,8 @@ public class JavaGenerator {
                 node.getXsdDatatype().orElse(null),
                 node.isRequired(),
                 node.isMultiValued(),
-                node.getPropertyIri().orElse(null)
-        );
+                node.getPropertyIri().orElse(null),
+                inputType);
     }
 
     public void generateJava(CodeGenerationNode node, PrintWriter pw) {
@@ -52,13 +53,100 @@ public class JavaGenerator {
         pw.flush();
     }
 
+    private static String LITERAL_FIELD_IMPL = """
+
+public static record LiteralFieldImpl(@JsonProperty("@value") String value) implements LiteralField, Map<String, String> {
+
+        @Override
+        public int size() {
+            return 1;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            return "@value".equals(key);
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            return this.value.equals(value);
+        }
+
+        @Override
+        public String get(Object key) {
+            return value;
+        }
+
+        @Override
+        public String put(String key, String value) {
+            return value;
+        }
+
+        @Override
+        public String remove(Object key) {
+            return null;
+        }
+
+        @Override
+        public void putAll(Map<? extends String, ? extends String> m) {
+
+        }
+
+        @Override
+        public void clear() {
+
+        }
+
+        @Override
+        public Set<String> keySet() {
+            return Collections.singleton("@value");
+        }
+
+        @Override
+        public Collection<String> values() {
+            return Collections.singleton(value);
+        }
+
+        @Override
+        public Set<Entry<String, String>> entrySet() {
+            return Collections.singleton(new Entry<String, String>() {
+                @Override
+                public String getKey() {
+                    return "@value";
+                }
+
+                @Override
+                public String getValue() {
+                    return value;
+                }
+
+                @Override
+                public String setValue(String value) {
+                    return null;
+                }
+            });
+        }
+    }
+
+""";
+
     private void generateInterfaces(PrintWriter pw) {
+
+        pw.println(LITERAL_FIELD_IMPL);
         pw.println("""
                            public interface LiteralField extends Compactable {
                                    @JsonProperty("@value")
                                    String value();
                                    default String compact() {
                                     return this.value();
+                                   }
+                                   static LiteralField of(String value) {
+                                    return new LiteralFieldImpl(value);
                                    }
                            }
                            """);
@@ -88,6 +176,17 @@ public class JavaGenerator {
                                 String compact();
                            }
                            """);
+
+        pw.println("""
+                           
+                               public static String IRI_PREFIX = "https://repo.metadatacenter.org/template-element-instances/";
+                           """);
+
+        pw.println("""
+                           public static String generateId() {
+                            return IRI_PREFIX + UUID.randomUUID();
+                           }
+                           """);
     }
 
     private void generateConstants(CodeGenerationNode rootNode, PrintWriter pw) {
@@ -103,6 +202,7 @@ public class JavaGenerator {
                 pw.println("String " + toConstantSymbol(element) + " = \"" + stripName + "\";");
             }
         });
+        pw.println("String IRI_PREFIX = \"https://repo.metadatacenter.org/template-element-instances/\";");
         pw.println("}\n");
     }
 
@@ -134,12 +234,15 @@ public class JavaGenerator {
         pw.println("import com.fasterxml.jackson.annotation.JsonInclude;");
         pw.println("import com.fasterxml.jackson.annotation.JsonProperty;");
         pw.println("import com.fasterxml.jackson.annotation.JsonView;");
+        pw.println("import com.fasterxml.jackson.annotation.JsonCreator;");
+        pw.println("import com.fasterxml.jackson.annotation.JsonValue;");
+        pw.println("import com.fasterxml.jackson.annotation.JsonAnySetter;");
+        pw.println("import com.fasterxml.jackson.annotation.JsonAnyGetter;");
+        pw.println("import com.fasterxml.jackson.annotation.JsonUnwrapped;");
         pw.println("import java.time.Instant;");
-        pw.println("import java.util.LinkedHashMap;");
-        pw.println("import java.util.List;");
-        pw.println("import java.util.Map;");
         pw.println("import javax.annotation.Nonnull;");
         pw.println("import javax.annotation.Nullable;");
+        pw.println("import java.util.*;");
     }
 
     private static void generateViewClassDeclarations(PrintWriter pw) {
@@ -150,9 +253,13 @@ public class JavaGenerator {
     private static void generateFieldDeclaration(CodeGenerationNode node, PrintWriter pw) {
         var recordName = getRecordName(node);
 
+        if(node.isAttributeValueField()) {
+            // Nothing to do, because attribute value fields are phantom fields in a sense... they really mutate the
+            // parent element and therefore modify the class representing that element, not this field
+            return;
+        }
         if (node.literalField()) {
             generateLiteralFieldDeclaration(node, pw, recordName);
-
         }
         else {
             generateIriFieldDeclaration(pw, recordName);
@@ -173,7 +280,7 @@ public class JavaGenerator {
         }
         else {
             var decl = LITERAL_FIELD_TYPE_DECL.replace("${typeName}", recordName)
-                    .replace("${javadoc}", node.description());
+                    .replace("${javadoc}", Objects.requireNonNullElse(node.description(), ""));
             pw.println(decl);
         }
     }
@@ -243,8 +350,22 @@ public class JavaGenerator {
                 public Map<String, Object> context() {
                     ${context}
                 }
+                
+                ${attributeValueElementExtension}
             }
                         
+            """;
+
+    private static final String ATTRIBUTE_VALUE_ELEMENT_EXTENSION = """
+                @JsonCreator
+                public static ${typeName} fromJson(${paramDeclarationsList}) {
+                        return new ${typeName}(${argsList});
+                }
+                
+                @JsonAnySetter
+                public void setAttributeValue(String key, LiteralFieldImpl value) {
+                    this.attributeValues.put(key, value);
+                }
             """;
 
     private static void generateElementDeclaration(CodeGenerationNode node, PrintWriter pw) {
@@ -254,6 +375,12 @@ public class JavaGenerator {
                                   .stream()
                                   .map(JavaGenerator::getParameterDeclaration)
                                   .collect(Collectors.joining(",\n"));
+
+        if(containsAttributeValueField(node)) {
+            childParamDecls += ",\n@JsonAnyGetter Map<String, LiteralField> attributeValues";
+        }
+
+
 
 
         var rootNodeExtras = new ArrayList<String>();
@@ -271,13 +398,31 @@ public class JavaGenerator {
                                                             .map(s -> s + ",\n")
                                                             .collect(Collectors.joining()) + childParamDecls;
 
-        var emptyArgumentsList = "null,\n" + rootNodeExtras.stream()
+        var emptyArgumentsList = "generateId(),\n" + rootNodeExtras.stream()
                                                            .map(s -> "null,\n")
                                                            .collect(Collectors.joining()) + node.childNodes()
                                                                                                 .stream()
                                                                                                 .map(JavaGenerator::getEmptyInstance)
                                                                                                 .collect(Collectors.joining(
                                                                                                         ",\n"));
+
+        if(containsAttributeValueField(node)) {
+            emptyArgumentsList += ",\nnew LinkedHashMap<>()";
+        }
+
+
+        var argsList = "id,\n" + rootNodeExtras.stream()
+                                                                   .map(s -> "null,\n")
+                                                                   .collect(Collectors.joining())
+                + node.childNodes()
+                                                                                                        .stream()
+                                                                                                        .map(JavaGenerator::getParameterName)
+                                                                                                        .collect(Collectors.joining(
+                                                                                                                ",\n"));
+
+        if(containsAttributeValueField(node)) {
+            argsList += ",\nnew LinkedHashMap<>()";
+        }
 
         var typeName = getRecordName(node);
 
@@ -340,14 +485,32 @@ public class JavaGenerator {
 
 
         contextBlock.append("return contextMap;");
-        ;
+
+        String attributeValueElementExtension;
+        if (containsAttributeValueField(node)) {
+            // Slight hack here.  We remove the map for attribute values because this is set through the @AnySetter annotated method.
+             var truncatedParamDeclarationsList = paramDeclarationsList.substring(0, paramDeclarationsList.lastIndexOf(",\n@JsonAnyGetter"));
+             attributeValueElementExtension = ATTRIBUTE_VALUE_ELEMENT_EXTENSION.replace("${typeName}", typeName)
+                    .replace("${argsList}", argsList)
+                                                                                  .replace("${paramDeclarationsList}", truncatedParamDeclarationsList)
+                                                                                  .replace("${emptyArgumentsList}", emptyArgumentsList);
+
+        }
+        else {
+            attributeValueElementExtension = "";
+        }
 
 
         var decl = ELEMENT_TYPE_DECL.replace("${typeName}", typeName)
+                .replace("${attributeValueElementExtension}", attributeValueElementExtension)
                                     .replace("${paramDeclarationsList}", paramDeclarationsList)
                                     .replace("${emptyArgumentsList}", emptyArgumentsList)
                                     .replace("${context}", contextBlock.toString());
         pw.println(decl);
+    }
+
+    private static boolean containsAttributeValueField(CodeGenerationNode node) {
+        return node.childNodes().stream().anyMatch(CodeGenerationNode::isAttributeValueField);
     }
 
     private static String getRecordName(CodeGenerationNode node) {
@@ -376,6 +539,9 @@ public class JavaGenerator {
     }
 
     private static String getEmptyInstance(CodeGenerationNode node) {
+        if(node.isAttributeValueField()) {
+            return "List.of()";
+        }
         var typeName = getRecordName(node);
         if (isListType(node)) {
             return "List.of(" + typeName + ".of())";
@@ -386,12 +552,17 @@ public class JavaGenerator {
     }
 
     private static String getParameterDeclaration(CodeGenerationNode node) {
-        var typeName = getRecordName(node);
-        String paramType = getParamType(node, typeName);
-        var name = node.name();
-        name = stripName(name);
-        var paramName = toCamelCase(name, true);
+        String paramType;
+        String paramName = getParameterName(node);
         var constantName = toConstantSymbol(node);
+        if(node.isAttributeValueField()) {
+            paramType = "List<String>";
+        }
+        else {
+            var typeName = getRecordName(node);
+            paramType = getParamType(node, typeName);
+        }
+
         boolean required = isRequired(node);
         var requiredAnnotation = "";
         if(required) {
@@ -401,6 +572,12 @@ public class JavaGenerator {
             requiredAnnotation = "@Nullable";
         }
         return requiredAnnotation + " @JsonView(CoreView.class) @JsonProperty(FieldNames." + constantName + ") " + paramType + " " + paramName;
+    }
+
+    private static String getParameterName(CodeGenerationNode node) {
+        var name = stripName(node.name());
+        var paramName = toCamelCase(name, true);
+        return paramName;
     }
 
     private static boolean isRequired(CodeGenerationNode node) {
