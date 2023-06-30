@@ -120,6 +120,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--generate-java", description = "Generates a Java source file that contains Java records that describe fields, elements and templates.", defaultValue = "false")
     private boolean generateJava;
 
+    @Option(names = "--java-package-name", description = "If the generate-java option is specified then this option allows the package name for the generated Java code to be set", defaultValue = "")
+    private String javaPackageName;
+
     @ArgGroup(exclusive = false)
     public PostToCedarOptions pushToCedar;
 
@@ -208,7 +211,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
             if(generateJava) {
                 var cgn = JavaGenerator.toCodeGenerationNode(rootNode);
-                new JavaGenerator().generateJava(cgn, new PrintWriter("/tmp/code.java"));
+                new JavaGenerator().generateJava(cgn, javaPackageName, new PrintWriter("/tmp/code.java"));
             }
 
             if(templateIdentifier == null) {

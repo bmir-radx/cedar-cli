@@ -1,16 +1,21 @@
 package org.metadatacenter.cedar.java;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.JavaClass;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
+import org.jboss.forge.roaster.model.source.JavaRecordSource;
 import org.jboss.forge.roaster.model.source.MethodSource;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.PrintWriter;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Matthew Horridge
@@ -38,23 +43,22 @@ public class JavaGenerator {
                 inputType);
     }
 
-    public void generateJava(CodeGenerationNode node, PrintWriter pw) {
+    public void generateJava(CodeGenerationNode node,
+                             String packageName,
+                             PrintWriter pw) {
 
-        generateImports(pw);
-        pw.println();
-        pw.println();
+        var rootCls = Roaster.create(JavaClassSource.class);
+        rootCls.setPackage(packageName);
+        rootCls.setName("Cedar");
+        generateImports(rootCls);
+        generateConstants(node, rootCls);
+        generateInterfaces(rootCls);
+        rootCls.addNestedType(LITERAL_FIELD_IMPL);
+        generateViewClassDeclarations(rootCls);
+        generate(node, rootCls);
+
         pw.println("// Generated code.  Do not edit by hand.");
-        pw.println("public class Cedar {");
-
-        generateConstants(node, pw);
-
-        generateInterfaces(pw);
-
-        generate(node, pw);
-
-        generateViewClassDeclarations(pw);
-        pw.println("}");
-
+        pw.println(rootCls);
         pw.flush();
     }
 
@@ -140,61 +144,143 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
 """;
 
-    private void generateInterfaces(PrintWriter pw) {
+    private void generateInterfaces(JavaClassSource parentCls) {
 
-        pw.println(LITERAL_FIELD_IMPL);
-        pw.println("""
-                           public interface LiteralField extends Compactable {
-                                   @JsonProperty("@value")
-                                   String value();
-                                   default String compact() {
-                                    return this.value();
-                                   }
-                                   static LiteralField of(String value) {
-                                    return new LiteralFieldImpl(value);
-                                   }
-                           }
-                           """);
+//        pw.println(LITERAL_FIELD_IMPL);
 
-        pw.println("""
-                           public interface IriField extends Compactable {
-                                   @JsonProperty("@id")
-                                   String id();
-                                   
-                                   @JsonProperty("rdfs:label")
-                                   String label();
-                                   
-                                   default String compact() {
-                                    return this.id();
-                                   }
-                               }
-                           """);
 
-        pw.println("""
-                           public interface Element {
-                            
-                           }
-                           """);
+        var artifactInterface = Roaster.create(JavaInterfaceSource.class);
+        artifactInterface.setName("Artifact")
+                .addMethod()
+                .setReturnType(boolean.class)
+                .setName("isEmpty")
+                .addAnnotation(JsonIgnore.class);
+        parentCls.addNestedType(artifactInterface);
 
-        pw.println("""
-                           public interface Compactable {
-                                String compact();
-                           }
-                           """);
+        var fieldInterface = Roaster.create(JavaInterfaceSource.class);
+        fieldInterface.setName("Field")
+                .addInterface(artifactInterface);
+        parentCls.addNestedType(fieldInterface);
 
-        pw.println("""
-                           
-                               public static String IRI_PREFIX = "https://repo.metadatacenter.org/template-element-instances/";
-                           """);
+        var elementInterface = Roaster.create(JavaInterfaceSource.class);
+        elementInterface.setPublic()
+                .addInterface(artifactInterface)
+                        .setName("Element")
+                .addMethod()
+                .setDefault(true)
+                        .setReturnType("boolean")
+                .setName("isEmpty")
+                .setBody("return getArtifacts().allMatch(Artifact::isEmpty);")
+                .addAnnotation(Override.class);
+        elementInterface.addMethod()
+                .setName("getArtifacts")
+                .setReturnType("Stream<Artifact>")
+                .addAnnotation(JsonIgnore.class);
+        parentCls.addNestedType(elementInterface);
 
-        pw.println("""
-                           public static String generateId() {
-                            return IRI_PREFIX + UUID.randomUUID();
-                           }
-                           """);
+        var compactableInterface = Roaster.create(JavaInterfaceSource.class);
+        compactableInterface.setPublic()
+                            .setName("Compactable")
+                            .addMethod()
+                            .setName("compact")
+                            .setReturnType(String.class);
+        parentCls.addNestedType(compactableInterface);
+
+
+        var literalFieldInterface = Roaster.create(JavaInterfaceSource.class);
+        literalFieldInterface.setName("LiteralField");
+        literalFieldInterface.addInterface(fieldInterface);
+        literalFieldInterface.addInterface(compactableInterface);
+        literalFieldInterface.addMethod()
+                .setReturnType(String.class)
+                .setName("value")
+                .addAnnotation(JsonProperty.class)
+                .setStringValue("@value");
+        literalFieldInterface.addMethod()
+                .setDefault(true)
+                .setReturnType(String.class)
+                .setName("compact")
+                .setBody("return this.value();");
+        literalFieldInterface.addMethod()
+                .setPublic()
+                .setStatic(true)
+                .setReturnType("LiteralField")
+                .setName("of")
+                .setBody("return new LiteralFieldImpl(value);")
+                .addParameter(String.class, "value");
+        literalFieldInterface.addMethod()
+                .setDefault(true)
+                .setReturnType(boolean.class)
+                .setName("isEmpty")
+                .setBody("return value() == null;")
+                             .addAnnotation(JsonIgnore.class);
+
+        parentCls.addNestedType(literalFieldInterface);
+
+      var iriFieldInterface = Roaster.create(JavaInterfaceSource.class);
+        iriFieldInterface.setName("IriField");
+        iriFieldInterface.addInterface(fieldInterface);
+        iriFieldInterface.addInterface(compactableInterface);
+        iriFieldInterface.addMethod()
+                .setReturnType(String.class)
+                .setName("id")
+                .addAnnotation(JsonProperty.class)
+                .setStringValue("@id");
+        iriFieldInterface.addMethod()
+                .setReturnType(String.class)
+                .setName("label")
+                .addAnnotation(JsonProperty.class)
+                .setStringValue("@rdfs:label");
+        iriFieldInterface.addMethod()
+                .setDefault(true)
+                .setReturnType(String.class)
+                .setName("compact")
+                .setBody("return this.id();");
+        iriFieldInterface.addMethod()
+                             .setDefault(true)
+                             .setReturnType(boolean.class)
+                             .setName("isEmpty")
+                             .setBody("return id() == null;")
+                             .addAnnotation(JsonIgnore.class);
+
+        parentCls.addNestedType(iriFieldInterface);
+
+        parentCls.addField()
+                .setPublic()
+                .setStatic(true)
+                .setFinal(true)
+                .setType(String.class)
+                .setName("IRI_PREFIX")
+                .setStringInitializer("https://repo.metadatacenter.org/template-element-instances/");
+
+        parentCls.addMethod()
+                .setPublic()
+                .setStatic(true)
+                .setReturnType(String.class)
+                .setName("generateId")
+                .setBody("return IRI_PREFIX + UUID.randomUUID();");
+
+        parentCls.addMethod("""
+                                    private static Stream<Artifact> streamArtifacts(Object ... in) {
+                                            return Arrays.stream(in)
+                                                    .flatMap(o -> {
+                                                        if(o instanceof List l) {
+                                                            return l.stream();
+                                                        }
+                                                        else if(o instanceof Artifact) {
+                                                            return Stream.of(o);
+                                                        }
+                                                        else {
+                                                            return Stream.empty();
+                                                        }
+                                                    })
+                                                    .filter(o -> o instanceof Artifact)
+                                                    .map(o -> (Artifact) o);
+                                        }
+                                    """);
     }
 
-    private void generateConstants(CodeGenerationNode rootNode, PrintWriter pw) {
+    private static void generateConstants(CodeGenerationNode rootNode, JavaClassSource parentCls) {
 
         var src = Roaster.create(JavaInterfaceSource.class);
         src.setName("FieldNames");
@@ -207,16 +293,15 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             if(!processed.contains(stripName)) {
                 processed.add(stripName);
                 var field = src.addField();
-                field.setPublic()
-                     .setStatic(true)
-                     .setFinal(true)
-                     .setType(String.class)
+                field.setType(String.class)
                      .setName(toConstantSymbol(element))
                         .setStringInitializer(stripName);
             }
         });
 
-        pw.println(src);
+        parentCls.addNestedType(src);
+
+//        pw.println(src);
     }
 
     private static String toConstantSymbol(CodeGenerationNode node) {
@@ -224,7 +309,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         return stripped.trim().toUpperCase().replaceAll("\s+|-", "_");
     }
 
-    private void collectElements(CodeGenerationNode node, Collection<CodeGenerationNode> elements) {
+    private static void collectElements(CodeGenerationNode node, Collection<CodeGenerationNode> elements) {
         if (!node.root()) {
             elements.add(node);
         }
@@ -232,38 +317,45 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 .forEach(childNode -> collectElements(childNode, elements));
     }
 
-    private void generate(CodeGenerationNode node, PrintWriter pw) {
+    private void generate(CodeGenerationNode node, JavaClassSource parentCls) {
         if (node.field()) {
-            generateFieldDeclaration(node, pw);
+            generateFieldDeclaration(node, parentCls);
         }
         else {
-            generateElementDeclaration(node, pw);
+            generateElementDeclaration(node, parentCls);
         }
 
-        node.childNodes().forEach(cn -> generate(cn, pw));
+        node.childNodes().forEach(cn -> generate(cn, parentCls));
     }
 
-    private static void generateImports(PrintWriter pw) {
-        pw.println("import com.fasterxml.jackson.annotation.JsonInclude;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonProperty;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonView;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonCreator;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonValue;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonAnySetter;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonAnyGetter;");
-        pw.println("import com.fasterxml.jackson.annotation.JsonUnwrapped;");
-        pw.println("import java.time.Instant;");
-        pw.println("import javax.annotation.Nonnull;");
-        pw.println("import javax.annotation.Nullable;");
-        pw.println("import java.util.*;");
+    private static void generateImports(JavaClassSource parentClass) {
+        parentClass.addImport(JsonInclude.class);
+        parentClass.addImport(JsonProperty.class);
+        parentClass.addImport(JsonView.class);
+        parentClass.addImport(JsonCreator.class);
+        parentClass.addImport(JsonValue.class);
+        parentClass.addImport(JsonAnySetter.class);
+        parentClass.addImport(JsonAnyGetter.class);
+        parentClass.addImport(JsonUnwrapped.class);
+        parentClass.addImport(JsonIgnore.class);
+        parentClass.addImport(Instant.class);
+        parentClass.addImport(Nonnull.class);
+        parentClass.addImport(Nullable.class);
+        parentClass.addImport("java.util.*");
+        parentClass.addImport(Stream.class);
     }
 
-    private static void generateViewClassDeclarations(PrintWriter pw) {
-        pw.println();
-        pw.println("public static class CoreView {}");
+    private static void generateViewClassDeclarations(JavaClassSource parentCls) {
+
+        var viewInterface = Roaster.create(JavaInterfaceSource.class);
+        viewInterface.setName("CoreView");
+        parentCls.addNestedType(viewInterface);
+
+//        pw.println();
+//        pw.println("public static class CoreView {}");
     }
 
-    private static void generateFieldDeclaration(CodeGenerationNode node, PrintWriter pw) {
+    private static void generateFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
         var recordName = getRecordName(node);
 
         if(node.isAttributeValueField()) {
@@ -272,29 +364,32 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             return;
         }
         if (node.literalField()) {
-            generateLiteralFieldDeclaration(node, pw, recordName);
+            generateLiteralFieldDeclaration(node, parentCls, recordName);
         }
         else {
-            generateIriFieldDeclaration(pw, recordName);
+            generateIriFieldDeclaration(parentCls, recordName);
         }
     }
 
-    private static void generateIriFieldDeclaration(PrintWriter pw, String recordName) {
+    private static void generateIriFieldDeclaration(JavaClassSource parentCls, String recordName) {
         var decl = IRI_FIELD_TYPE_DECL.replace("${typeName}", recordName);
-        pw.println(decl);
+        parentCls.addNestedType(decl);
     }
 
-    private static void generateLiteralFieldDeclaration(CodeGenerationNode node, PrintWriter pw, String recordName) {
+    private static void generateLiteralFieldDeclaration(CodeGenerationNode node,
+                                                        JavaClassSource parentCls,
+                                                        String recordName) {
         var temporalType = node.getXsdDatatype();
         if (temporalType.isPresent()) {
             var decl = LITERAL_FIELD_TYPE_WITH_DATATYPE_DECL.replace("${typeName}", recordName)
                                                             .replace("${datatype}", temporalType.get());
-            pw.println(decl);
+            parentCls.addNestedType(decl);
         }
         else {
             var decl = LITERAL_FIELD_TYPE_DECL.replace("${typeName}", recordName)
                     .replace("${javadoc}", Objects.requireNonNullElse(node.description(), ""));
-            pw.println(decl);
+
+            parentCls.addNestedType(decl);
         }
     }
 
@@ -359,6 +454,14 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                     return List.of(of());
                 }
                 
+                /**
+                 * Returns the child artifacts as a flat stream.  Lists of children are flattened out.
+                 */
+                @JsonIgnore
+                 public Stream<Artifact> getArtifacts() {
+                     return streamArtifacts(${childNodeArgsList});
+                 }
+                
                 @JsonProperty("@context")
                 public Map<String, Object> context() {
                     ${context}
@@ -381,7 +484,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 }
             """;
 
-    private static void generateElementDeclaration(CodeGenerationNode node, PrintWriter pw) {
+    private static void generateElementDeclaration(CodeGenerationNode node, JavaClassSource parentClass) {
         var idParam = "@JsonProperty(\"@id\") String id,";
 
         var childParamDecls = node.childNodes()
@@ -424,14 +527,14 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         }
 
 
+        var childNodeArgsList = node.childNodes()
+                          .stream()
+                          .map(JavaGenerator::getParameterName)
+                          .collect(Collectors.joining(",\n"));
         var argsList = "id,\n" + rootNodeExtras.stream()
                                                                    .map(s -> "null,\n")
                                                                    .collect(Collectors.joining())
-                + node.childNodes()
-                                                                                                        .stream()
-                                                                                                        .map(JavaGenerator::getParameterName)
-                                                                                                        .collect(Collectors.joining(
-                                                                                                                ",\n"));
+                + childNodeArgsList;
 
         if(containsAttributeValueField(node)) {
             argsList += ",\nnew LinkedHashMap<>()";
@@ -518,8 +621,9 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 .replace("${attributeValueElementExtension}", attributeValueElementExtension)
                                     .replace("${paramDeclarationsList}", paramDeclarationsList)
                                     .replace("${emptyArgumentsList}", emptyArgumentsList)
+                .replace("${childNodeArgsList}", childNodeArgsList)
                                     .replace("${context}", contextBlock.toString());
-        pw.println(decl);
+        parentClass.addNestedType(decl);
     }
 
     private static boolean containsAttributeValueField(CodeGenerationNode node) {
