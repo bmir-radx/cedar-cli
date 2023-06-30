@@ -2,11 +2,9 @@ package org.metadatacenter.cedar.java;
 
 import com.fasterxml.jackson.annotation.*;
 import org.jboss.forge.roaster.Roaster;
-import org.jboss.forge.roaster.model.JavaClass;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.JavaRecordSource;
-import org.jboss.forge.roaster.model.source.MethodSource;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import javax.annotation.Nonnull;
@@ -146,15 +144,17 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private void generateInterfaces(JavaClassSource parentCls) {
 
-//        pw.println(LITERAL_FIELD_IMPL);
-
-
-        var artifactInterface = Roaster.create(JavaInterfaceSource.class);
-        artifactInterface.setName("Artifact")
+        var instanceNodeInterface = Roaster.create(JavaInterfaceSource.class);
+        instanceNodeInterface.setName("InstanceNode")
                 .addMethod()
                 .setReturnType(boolean.class)
                 .setName("isEmpty")
                 .addAnnotation(JsonIgnore.class);
+        parentCls.addNestedType(instanceNodeInterface);
+
+        var artifactInterface = Roaster.create(JavaInterfaceSource.class);
+        artifactInterface.setName("Artifact")
+                .addInterface(instanceNodeInterface);
         parentCls.addNestedType(artifactInterface);
 
         var fieldInterface = Roaster.create(JavaInterfaceSource.class);
@@ -168,15 +168,34 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                         .setName("Element")
                 .addMethod()
                 .setDefault(true)
-                        .setReturnType("boolean")
+                .setReturnType("boolean")
                 .setName("isEmpty")
                 .setBody("return getArtifacts().allMatch(Artifact::isEmpty);")
                 .addAnnotation(Override.class);
+        elementInterface.addMethod()
+                .setName("id")
+                .setReturnType(String.class)
+                .addAnnotation(JsonProperty.class)
+                .setStringValue("@id");
         elementInterface.addMethod()
                 .setName("getArtifacts")
                 .setReturnType("Stream<Artifact>")
                 .addAnnotation(JsonIgnore.class);
         parentCls.addNestedType(elementInterface);
+
+        var artifactListInterface = Roaster.create(JavaInterfaceSource.class);
+        artifactListInterface.setName("ArtifactList")
+                .addInterface(instanceNodeInterface);
+        artifactListInterface.addMethod()
+                .setReturnType("List<Artifact>")
+                .setName("getArtifacts")
+                .addAnnotation(JsonValue.class);
+        artifactListInterface.addMethod()
+                .setDefault(true)
+                .setReturnType(boolean.class)
+                .setName("isEmpty")
+                .setBody("return getArtifacts().stream().allMatch(Artifact::isEmpty);");
+        parentCls.addNestedType(artifactListInterface);
 
         var compactableInterface = Roaster.create(JavaInterfaceSource.class);
         compactableInterface.setPublic()
@@ -230,7 +249,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 .setReturnType(String.class)
                 .setName("label")
                 .addAnnotation(JsonProperty.class)
-                .setStringValue("@rdfs:label");
+                .setStringValue("rdfs:label");
         iriFieldInterface.addMethod()
                 .setDefault(true)
                 .setReturnType(String.class)
@@ -356,8 +375,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
     }
 
     private static void generateFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
-        var recordName = getRecordName(node);
-
+        var recordName = getJavaTypeName(node);
         if(node.isAttributeValueField()) {
             // Nothing to do, because attribute value fields are phantom fields in a sense... they really mutate the
             // parent element and therefore modify the class representing that element, not this field
@@ -369,6 +387,33 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         else {
             generateIriFieldDeclaration(parentCls, recordName);
         }
+        if(node.multiValued()) {
+            generateMultiValuedFieldDeclaration(node, parentCls);
+        }
+    }
+
+    private static void generateMultiValuedFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
+        var recordName = getJavaTypeName(node);
+        var listTypeName = recordName + "List";
+        var listParamName = getParameterName(node);
+        var listCls = Roaster.create(JavaRecordSource.class);
+        listCls.addInterface("ArtifactList");
+        listCls.setPublic()
+                .setName(listTypeName)
+                .addRecordComponent("List<" + recordName + ">", listParamName);
+        listCls.addMethod()
+                .setPublic()
+                .setStatic(true)
+                .setName("of")
+                .setReturnType(listTypeName)
+                .setBody("return new " + listTypeName + "(List.of(" + recordName + ".of()));");
+        listCls.addMethod()
+                .setPublic()
+                .setName("getArtifacts")
+                .setReturnType("List<Artifact>")
+                .setBody("return new ArrayList<>(" + listParamName + ");")
+                .addAnnotation(Override.class);
+        parentCls.addNestedType(listCls);
     }
 
     private static void generateIriFieldDeclaration(JavaClassSource parentCls, String recordName) {
@@ -397,7 +442,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 /**
                  ${javadoc}
                  */
-                public static record ${typeName}(@JsonView(CoreView.class) @JsonProperty("@value") String value) implements LiteralField {
+                public static record ${typeName}(String value) implements LiteralField {
                     
                     public static ${typeName} of() {
                         return new ${typeName}(null);
@@ -410,7 +455,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             """;
 
     private static final String LITERAL_FIELD_TYPE_WITH_DATATYPE_DECL = """
-                public static record ${typeName}(@JsonView(CoreView.class) @JsonProperty("@value") String value) implements LiteralField {
+                public static record ${typeName}(String value) implements LiteralField {
                     
                     public static ${typeName} of() {
                         return new ${typeName}(null);
@@ -430,8 +475,8 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private static final String IRI_FIELD_TYPE_DECL = """
                 @JsonInclude(JsonInclude.Include.NON_EMPTY)
-                public static record ${typeName}(@JsonView(CoreView.class) @JsonProperty("@id") String id,
-                                                 @JsonView(CoreView.class) @JsonProperty("rdfs:label") String label) implements IriField {
+                public static record ${typeName}(String id,
+                                                 String label) implements IriField {
                     
                     public static ${typeName} of() {
                         return new ${typeName}(null, null);
@@ -448,10 +493,6 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             
                 public static ${typeName} of() {
                      return new ${typeName}(${emptyArgumentsList});
-                }
-                
-                public static List<${typeName}> listOf() {
-                    return List.of(of());
                 }
                 
                 /**
@@ -484,13 +525,61 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 }
             """;
 
+    private static void generateMultiValuedElementDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
+
+        var javaTypeName = getJavaTypeName(node);
+        var listJavaTypeName = javaTypeName + "List";
+        var paramName = getParameterName(node);
+        var listParamName = paramName + "List";
+        var listCls = Roaster.create(JavaRecordSource.class);
+        listCls.setPublic()
+               .setName(listJavaTypeName)
+               .addRecordComponent("List<" + javaTypeName + ">", listParamName);
+
+        listCls.addInterface("ArtifactList");
+
+//        listCls.addMethod()
+//                .setPublic()
+//                .setName(listParamName)
+//                .setReturnType("List<" + javaTypeName + ">")
+//                .setBody("return " + listParamName + ";")
+//                .addAnnotation(JsonValue.class);
+        listCls.addMethod()
+               .setPublic()
+               .setStatic(true)
+               .setReturnType(listJavaTypeName)
+               .setName("of")
+               .setBody("return of(" + javaTypeName + ".of());");
+        var creatorMethod = listCls.addMethod();
+        creatorMethod
+               .setPublic()
+               .setStatic(true)
+               .setReturnType(listJavaTypeName)
+               .setName("of")
+               .setBody("return new " + listJavaTypeName + "(" + listParamName + ");")
+               .addParameter("List<" + javaTypeName + ">", listParamName);
+        creatorMethod.addAnnotation(JsonCreator.class);
+        listCls.addMethod()
+               .setPublic()
+               .setStatic(true)
+               .setReturnType(listJavaTypeName)
+               .setName("of")
+               .setBody("return new " + listJavaTypeName + "(List.of(" + paramName +"));")
+               .addParameter(javaTypeName, paramName);
+        listCls.addMethod()
+                .setPublic()
+               .setReturnType("List<Artifact>")
+               .setName("getArtifacts")
+               .setBody("return new ArrayList<>(" + listParamName + ");")
+               .addAnnotation(Override.class);
+        parentCls.addNestedType(listCls);
+    }
+
     private static void generateElementDeclaration(CodeGenerationNode node, JavaClassSource parentClass) {
+
         var idParam = "@JsonProperty(\"@id\") String id,";
 
-        var childParamDecls = node.childNodes()
-                                  .stream()
-                                  .map(JavaGenerator::getParameterDeclaration)
-                                  .collect(Collectors.joining(",\n"));
+        var childParamDecls = getChildArtifactsParameterList(node);
 
         if(containsAttributeValueField(node)) {
             childParamDecls += ",\n@JsonAnyGetter Map<String, LiteralField> attributeValues";
@@ -527,10 +616,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         }
 
 
-        var childNodeArgsList = node.childNodes()
-                          .stream()
-                          .map(JavaGenerator::getParameterName)
-                          .collect(Collectors.joining(",\n"));
+        var childNodeArgsList = getChildArtifactsArgsList(node);
         var argsList = "id,\n" + rootNodeExtras.stream()
                                                                    .map(s -> "null,\n")
                                                                    .collect(Collectors.joining())
@@ -540,7 +626,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             argsList += ",\nnew LinkedHashMap<>()";
         }
 
-        var typeName = getRecordName(node);
+        var typeName = getJavaTypeName(node);
 
         var contextBlock = new StringBuilder();
 
@@ -624,13 +710,31 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 .replace("${childNodeArgsList}", childNodeArgsList)
                                     .replace("${context}", contextBlock.toString());
         parentClass.addNestedType(decl);
+
+        if(node.multiValued()) {
+            generateMultiValuedElementDeclaration(node, parentClass);
+        }
+    }
+
+    private static String getChildArtifactsArgsList(CodeGenerationNode node) {
+        return node.childNodes()
+                   .stream()
+                   .map(JavaGenerator::getParameterName)
+                   .collect(Collectors.joining(",\n"));
+    }
+
+    private static String getChildArtifactsParameterList(CodeGenerationNode node) {
+        return node.childNodes()
+                   .stream()
+                   .map(JavaGenerator::getParameterDeclaration)
+                   .collect(Collectors.joining(",\n"));
     }
 
     private static boolean containsAttributeValueField(CodeGenerationNode node) {
         return node.childNodes().stream().anyMatch(CodeGenerationNode::isAttributeValueField);
     }
 
-    private static String getRecordName(CodeGenerationNode node) {
+    private static String getJavaTypeName(CodeGenerationNode node) {
         var name = node.name();
         name = stripName(name);
         if (name.isBlank()) {
@@ -659,9 +763,9 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         if(node.isAttributeValueField()) {
             return "List.of()";
         }
-        var typeName = getRecordName(node);
+        var typeName = getJavaTypeName(node);
         if (isListType(node)) {
-            return "List.of(" + typeName + ".of())";
+            return typeName + "List.of()";
         }
         else {
             return typeName + ".of()";
@@ -676,8 +780,9 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             paramType = "List<String>";
         }
         else {
-            var typeName = getRecordName(node);
-            paramType = getParamType(node, typeName);
+            var typeName = getJavaTypeName(node);
+            // Accounts for multivalued
+            paramType = getParameterType(node, typeName);
         }
 
         boolean required = isRequired(node);
@@ -693,8 +798,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private static String getParameterName(CodeGenerationNode node) {
         var name = stripName(node.name());
-        var paramName = toCamelCase(name, true);
-        return paramName;
+        return toCamelCase(name, true);
     }
 
     private static boolean isRequired(CodeGenerationNode node) {
@@ -710,9 +814,9 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         }
     }
 
-    private static String getParamType(CodeGenerationNode node, String typeName) {
+    private static String getParameterType(CodeGenerationNode node, String typeName) {
         var listType = isListType(node);
-        return listType ? "List<" + typeName + "> " : typeName;
+        return listType ? typeName + "List" : typeName;
     }
 
     private static boolean isListType(CodeGenerationNode node) {
@@ -723,7 +827,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         if (cn.root()) {
             return "Metadata";
         }
-        return getRecordName(cn);
+        return getJavaTypeName(cn);
     }
 
     private static String toCamelCase(String s, boolean lowerCaseStart) {
