@@ -6,6 +6,7 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.JavaRecordSource;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +21,7 @@ import java.util.stream.Stream;
  * Stanford Center for Biomedical Informatics Research
  * 2023-05-03
  */
+@Component
 public class JavaGenerator {
 
 
@@ -325,7 +327,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private static String toConstantSymbol(CodeGenerationNode node) {
         var stripped = stripName(node.name());
-        return stripped.trim().toUpperCase().replaceAll("\s+|-", "_");
+        return stripped.trim().replaceAll("\s+|-", "_");
     }
 
     private static void collectElements(CodeGenerationNode node, Collection<CodeGenerationNode> elements) {
@@ -388,32 +390,8 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             generateIriFieldDeclaration(parentCls, recordName);
         }
         if(node.multiValued()) {
-            generateMultiValuedFieldDeclaration(node, parentCls);
+            generateArtifactListDeclaration(node, parentCls);
         }
-    }
-
-    private static void generateMultiValuedFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
-        var recordName = getJavaTypeName(node);
-        var listTypeName = recordName + "List";
-        var listParamName = getParameterName(node);
-        var listCls = Roaster.create(JavaRecordSource.class);
-        listCls.addInterface("ArtifactList");
-        listCls.setPublic()
-                .setName(listTypeName)
-                .addRecordComponent("List<" + recordName + ">", listParamName);
-        listCls.addMethod()
-                .setPublic()
-                .setStatic(true)
-                .setName("of")
-                .setReturnType(listTypeName)
-                .setBody("return new " + listTypeName + "(List.of(" + recordName + ".of()));");
-        listCls.addMethod()
-                .setPublic()
-                .setName("getArtifacts")
-                .setReturnType("List<Artifact>")
-                .setBody("return new ArrayList<>(" + listParamName + ");")
-                .addAnnotation(Override.class);
-        parentCls.addNestedType(listCls);
     }
 
     private static void generateIriFieldDeclaration(JavaClassSource parentCls, String recordName) {
@@ -525,40 +503,48 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 }
             """;
 
-    private static void generateMultiValuedElementDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
+    private static void generateArtifactListDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
 
         var javaTypeName = getJavaTypeName(node);
         var listJavaTypeName = javaTypeName + "List";
         var paramName = getParameterName(node);
         var listParamName = paramName + "List";
         var listCls = Roaster.create(JavaRecordSource.class);
+
+        // Record that has a Java list of the node's Java type
         listCls.setPublic()
                .setName(listJavaTypeName)
                .addRecordComponent("List<" + javaTypeName + ">", listParamName);
 
         listCls.addInterface("ArtifactList");
-
-//        listCls.addMethod()
-//                .setPublic()
-//                .setName(listParamName)
-//                .setReturnType("List<" + javaTypeName + ">")
-//                .setBody("return " + listParamName + ";")
-//                .addAnnotation(JsonValue.class);
+        // ArtifactList.of()
         listCls.addMethod()
                .setPublic()
                .setStatic(true)
                .setReturnType(listJavaTypeName)
                .setName("of")
                .setBody("return of(" + javaTypeName + ".of());");
+
+        // Non empty list
+        // ArtifactList.of(List<ArtifactJavaType>)
         var creatorMethod = listCls.addMethod();
         creatorMethod
                .setPublic()
                .setStatic(true)
                .setReturnType(listJavaTypeName)
                .setName("of")
-               .setBody("return new " + listJavaTypeName + "(" + listParamName + ");")
+               .setBody("""
+                            if(listParamName.isEmpty()) {
+                                throw new IllegalArgumentException("Supplied list must not be empty");
+                            }
+                            return new listJavaTypeName(listParamName);
+                        """.replace("listJavaTypeName", listJavaTypeName)
+                                .replace("listParamName", listParamName))
                .addParameter("List<" + javaTypeName + ">", listParamName);
         creatorMethod.addAnnotation(JsonCreator.class);
+
+        // Singleton list
+        // ArtifactList.of(ArtifactJavaType)
         listCls.addMethod()
                .setPublic()
                .setStatic(true)
@@ -566,8 +552,9 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                .setName("of")
                .setBody("return new " + listJavaTypeName + "(List.of(" + paramName +"));")
                .addParameter(javaTypeName, paramName);
+
         listCls.addMethod()
-                .setPublic()
+               .setPublic()
                .setReturnType("List<Artifact>")
                .setName("getArtifacts")
                .setBody("return new ArrayList<>(" + listParamName + ");")
@@ -712,7 +699,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         parentClass.addNestedType(decl);
 
         if(node.multiValued()) {
-            generateMultiValuedElementDeclaration(node, parentClass);
+            generateArtifactListDeclaration(node, parentClass);
         }
     }
 

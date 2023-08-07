@@ -14,24 +14,35 @@
 	<name>csv-pipeline</name>
 	<description>A command line interface for interacting with CEDAR</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>19</java.version>
 	</properties>
 
 
 	<repositories>
+
 		<repository>
 			<id>bmir-nexus-releases</id>
 			<url>https://nexus.bmir.stanford.edu/repository/releases</url>
+			<snapshots><enabled>false</enabled> </snapshots>
+			<releases><enabled>true</enabled></releases>
 		</repository>
+
+		<repository>
+			<id>bmir-nexus-snapshots</id>
+			<url>https://nexus.bmir.stanford.edu/repository/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+			<releases><enabled>false</enabled></releases>
+		</repository>
+
+
 	</repositories>
 
 	<dependencies>
 
-		<dependency>
-			<groupId>org.metadatacenter</groupId>
-			<artifactId>cedar-artifact-library</artifactId>
-			<version>2.6.25-SNAPSHOT</version>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -106,22 +117,11 @@
 			<scope>runtime</scope>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.metadatacenter</groupId>-->
-<!--			<artifactId>cedar-artifact-tools</artifactId>-->
-<!--			<version>2.6.21</version>-->
-<!--&lt;!&ndash;			<exclusions>&ndash;&gt;-->
-<!--&lt;!&ndash;				<exclusion>&ndash;&gt;-->
-<!--&lt;!&ndash;					<groupId>org.metadatacenter</groupId>&ndash;&gt;-->
-<!--&lt;!&ndash;					<artifactId>cedar-server-globals</artifactId>&ndash;&gt;-->
-<!--&lt;!&ndash;				</exclusion>&ndash;&gt;-->
-<!--&lt;!&ndash;			</exclusions>&ndash;&gt;-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.metadatacenter</groupId>-->
-<!--			<artifactId>cedar-server-globals</artifactId>-->
-<!--			<version>2.6.21</version>-->
-<!--		</dependency>-->
+		<dependency>
+			<groupId>org.metadatacenter</groupId>
+			<artifactId>cedar-artifact-library</artifactId>
+			<version>2.6.42-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 
