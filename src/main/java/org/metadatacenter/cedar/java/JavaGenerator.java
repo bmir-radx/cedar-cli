@@ -6,7 +6,6 @@ import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.JavaRecordSource;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,8 +20,19 @@ import java.util.stream.Stream;
  * Stanford Center for Biomedical Informatics Research
  * 2023-05-03
  */
-@Component
 public class JavaGenerator {
+
+    private final boolean suffixTypes;
+
+    private final String packageName;
+
+    private Map<String, String> cedarNames2JavaTypeNames = new HashMap<>();
+
+
+    public JavaGenerator(boolean suffixTypes, String packageName) {
+        this.suffixTypes = suffixTypes;
+        this.packageName = packageName;
+    }
 
 
     public static CodeGenerationNode toCodeGenerationNode(CedarCsvParser.Node node) {
@@ -44,7 +54,6 @@ public class JavaGenerator {
     }
 
     public void generateJava(CodeGenerationNode node,
-                             String packageName,
                              PrintWriter pw) {
 
         var rootCls = Roaster.create(JavaClassSource.class);
@@ -55,7 +64,7 @@ public class JavaGenerator {
         generateInterfaces(rootCls);
         rootCls.addNestedType(LITERAL_FIELD_IMPL);
         generateViewClassDeclarations(rootCls);
-        generate(node, rootCls);
+        generate(node, rootCls, new HashSet<>());
 
         pw.println("// Generated code.  Do not edit by hand.");
         pw.println(rootCls);
@@ -235,6 +244,8 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 .setName("isEmpty")
                 .setBody("return value() == null;")
                              .addAnnotation(JsonIgnore.class);
+        literalFieldInterface.addAnnotation(JsonIgnoreProperties.class)
+                .setLiteralValue("ignoreUnknown", "true");
 
         parentCls.addNestedType(literalFieldInterface);
 
@@ -338,15 +349,17 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 .forEach(childNode -> collectElements(childNode, elements));
     }
 
-    private void generate(CodeGenerationNode node, JavaClassSource parentCls) {
-        if (node.field()) {
-            generateFieldDeclaration(node, parentCls);
-        }
-        else {
-            generateElementDeclaration(node, parentCls);
-        }
+    private void generate(CodeGenerationNode node, JavaClassSource parentCls, Set<String> generateNames) {
+        if(generateNames.add(node.name())) {
+            if (node.field()) {
+                generateFieldDeclaration(node, parentCls);
+            }
+            else {
+                generateElementDeclaration(node, parentCls);
+            }
 
-        node.childNodes().forEach(cn -> generate(cn, parentCls));
+            node.childNodes().forEach(cn -> generate(cn, parentCls, generateNames));
+        }
     }
 
     private static void generateImports(JavaClassSource parentClass) {
@@ -359,6 +372,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         parentClass.addImport(JsonAnyGetter.class);
         parentClass.addImport(JsonUnwrapped.class);
         parentClass.addImport(JsonIgnore.class);
+        parentClass.addImport(JsonIgnoreProperties.class);
         parentClass.addImport(Instant.class);
         parentClass.addImport(Nonnull.class);
         parentClass.addImport(Nullable.class);
@@ -376,7 +390,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 //        pw.println("public static class CoreView {}");
     }
 
-    private static void generateFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
+    private void generateFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
         var recordName = getJavaTypeName(node);
         if(node.isAttributeValueField()) {
             // Nothing to do, because attribute value fields are phantom fields in a sense... they really mutate the
@@ -426,7 +440,8 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                         return new ${typeName}(null);
                     }
                     
-                    public static ${typeName} of(String value) {
+                    @JsonCreator
+                    public static ${typeName} of(@JsonProperty("@value") String value) {
                         return new ${typeName}(value);
                     }
                 }
@@ -439,7 +454,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                         return new ${typeName}(null);
                     }
                     
-                    public static ${typeName} of(String value) {
+                    public static ${typeName} of(@JsonProperty("@value") String value) {
                         return new ${typeName}(value);
                     }
                     
@@ -460,7 +475,8 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                         return new ${typeName}(null, null);
                     }
                     
-                    public static ${typeName} of(String id, String label) {
+                    @JsonCreator
+                    public static ${typeName} of(@JsonProperty("@id") String id, @JsonProperty("rdfs:label") String label) {
                         return new ${typeName}(id, label);
                     }
                 }
@@ -481,7 +497,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                      return streamArtifacts(${childNodeArgsList});
                  }
                 
-                @JsonProperty("@context")
+                @JsonProperty(value = "@context", access = JsonProperty.Access.READ_ONLY)
                 public Map<String, Object> context() {
                     ${context}
                 }
@@ -503,7 +519,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                 }
             """;
 
-    private static void generateArtifactListDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
+    private void generateArtifactListDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
 
         var javaTypeName = getJavaTypeName(node);
         var listJavaTypeName = javaTypeName + "List";
@@ -535,7 +551,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                .setName("of")
                .setBody("""
                             if(listParamName.isEmpty()) {
-                                throw new IllegalArgumentException("Supplied list must not be empty");
+                                // throw new IllegalArgumentException("Supplied list must not be empty");
                             }
                             return new listJavaTypeName(listParamName);
                         """.replace("listJavaTypeName", listJavaTypeName)
@@ -562,7 +578,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         parentCls.addNestedType(listCls);
     }
 
-    private static void generateElementDeclaration(CodeGenerationNode node, JavaClassSource parentClass) {
+    private void generateElementDeclaration(CodeGenerationNode node, JavaClassSource parentClass) {
 
         var idParam = "@JsonProperty(\"@id\") String id,";
 
@@ -584,6 +600,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:createdBy\") String pavCreatedBy");
             rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:lastUpdatedOn\") Instant pavLastUpdatedOn");
             rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"oslc:modifiedBy\") String oslcModifiedBy");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:derivedFrom\") String pavDerivedFrom");
         }
 
         var paramDeclarationsList = idParam + rootNodeExtras.stream()
@@ -594,7 +611,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                                                            .map(s -> "null,\n")
                                                            .collect(Collectors.joining()) + node.childNodes()
                                                                                                 .stream()
-                                                                                                .map(JavaGenerator::getEmptyInstance)
+                                                                                                .map(this::getEmptyInstance)
                                                                                                 .collect(Collectors.joining(
                                                                                                         ",\n"));
 
@@ -617,16 +634,21 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
         var contextBlock = new StringBuilder();
 
-        contextBlock.append("var contextMap = new LinkedHashMap<String, Object>();\n");
-        node.childNodes().forEach(childNode -> {
-            childNode.getPropertyIri().ifPresent(propertyIri -> {
-                contextBlock.append("contextMap.put(FieldNames.");
-                contextBlock.append(toConstantSymbol(childNode));
-                contextBlock.append(", \"");
-                contextBlock.append(propertyIri);
-                contextBlock.append("\");\n");
+        if (!node.field()) {
+            contextBlock.append("var contextMap = new LinkedHashMap<String, Object>();\n");
+            node.childNodes().forEach(childNode -> {
+                childNode.getPropertyIri().ifPresent(propertyIri -> {
+                    contextBlock.append("contextMap.put(FieldNames.");
+                    contextBlock.append(toConstantSymbol(childNode));
+                    contextBlock.append(", \"");
+                    contextBlock.append(propertyIri);
+                    contextBlock.append("\");\n");
+                });
             });
-        });
+        }
+        else {
+            contextBlock.append("var contextMap = Map.of();");
+        }
 
 
         if (node.root()) {
@@ -710,10 +732,10 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                    .collect(Collectors.joining(",\n"));
     }
 
-    private static String getChildArtifactsParameterList(CodeGenerationNode node) {
+    private String getChildArtifactsParameterList(CodeGenerationNode node) {
         return node.childNodes()
                    .stream()
-                   .map(JavaGenerator::getParameterDeclaration)
+                   .map(this::getParameterDeclaration)
                    .collect(Collectors.joining(",\n"));
     }
 
@@ -721,22 +743,39 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         return node.childNodes().stream().anyMatch(CodeGenerationNode::isAttributeValueField);
     }
 
-    private static String getJavaTypeName(CodeGenerationNode node) {
-        var name = node.name();
-        name = stripName(name);
+    private String getJavaTypeName(CodeGenerationNode node) {
+        var name = stripName(node.name());
         if (name.isBlank()) {
             return "MetadataInstance";
         }
-        var camelCaseName = toCamelCase(name, false);
-        if(node.root()) {
-            return camelCaseName + "Instance";
+
+        var cachedTypeName = cedarNames2JavaTypeNames.get(name);
+        if(cachedTypeName != null) {
+            return cachedTypeName;
         }
-        if (node.field()) {
-            return camelCaseName + "Field";
+        // Is there a different case?
+        var countSuffix = cedarNames2JavaTypeNames.keySet()
+                .stream()
+                .filter(n -> n.equalsIgnoreCase(name))
+                .count() + 1;
+
+        var camelCaseName = toCamelCase(name, CamelCaseOption.START_WITH_UPPERCASE);
+        if (suffixTypes) {
+            if(node.root()) {
+                camelCaseName = camelCaseName + "Instance";
+            }
+            if (node.field()) {
+                camelCaseName =  camelCaseName + "Field";
+            }
+            else {
+                camelCaseName =  camelCaseName + "Element";
+            }
+        } if(countSuffix > 1) {
+            camelCaseName = camelCaseName + countSuffix;
         }
-        else {
-            return camelCaseName + "Element";
-        }
+
+        cedarNames2JavaTypeNames.put(name, camelCaseName);
+        return camelCaseName;
     }
 
     private static String stripName(String name) {
@@ -746,7 +785,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         return name;
     }
 
-    private static String getEmptyInstance(CodeGenerationNode node) {
+    private String getEmptyInstance(CodeGenerationNode node) {
         if(node.isAttributeValueField()) {
             return "List.of()";
         }
@@ -759,7 +798,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         }
     }
 
-    private static String getParameterDeclaration(CodeGenerationNode node) {
+    private String getParameterDeclaration(CodeGenerationNode node) {
         String paramType;
         String paramName = getParameterName(node);
         var constantName = toConstantSymbol(node);
@@ -785,7 +824,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private static String getParameterName(CodeGenerationNode node) {
         var name = stripName(node.name());
-        return toCamelCase(name, true);
+        return toCamelCase(name, CamelCaseOption.START_WITH_LOWERCASE);
     }
 
     private static boolean isRequired(CodeGenerationNode node) {
@@ -817,23 +856,45 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         return getJavaTypeName(cn);
     }
 
-    private static String toCamelCase(String s, boolean lowerCaseStart) {
+    private static String toCamelCase(String s, CamelCaseOption caseOption) {
         if (s.isBlank()) {
             return s;
         }
         s = stripName(s);
         var words = s.split("[\\W_]+");
-        var joined = Arrays.stream(words)
-                           .map(String::toLowerCase)
-                           .filter(word -> !word.isBlank())
-                           .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
-                           .collect(Collectors.joining());
-        if (lowerCaseStart) {
+        var joined = joinWords(words);
+        if (caseOption.equals(CamelCaseOption.START_WITH_LOWERCASE)) {
             return Character.toLowerCase(joined.charAt(0)) + joined.substring(1);
+        }
+        else if(caseOption.equals(CamelCaseOption.PRESERVE_CASE)) {
+            if(Character.isLowerCase(s.charAt(0))) {
+                return Character.toLowerCase(joined.charAt(0)) + joined.substring(1);
+            }
+            else {
+                return joined;
+            }
         }
         else {
             return joined;
         }
     }
 
+    private static String joinWords(String[] words) {
+        if(words.length == 1) {
+            var singleWord = words[0];
+            return Character.toUpperCase(singleWord.charAt(0)) + singleWord.substring(1);
+        }
+        var joined = Arrays.stream(words)
+                           .map(String::toLowerCase)
+                           .filter(word -> !word.isBlank())
+                           .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
+                           .collect(Collectors.joining());
+        return joined;
+    }
+
+    private static enum CamelCaseOption {
+        START_WITH_LOWERCASE,
+        START_WITH_UPPERCASE,
+        PRESERVE_CASE
+    }
 }

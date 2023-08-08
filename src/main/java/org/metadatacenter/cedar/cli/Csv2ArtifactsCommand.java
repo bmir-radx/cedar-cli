@@ -20,7 +20,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -211,7 +210,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
             if(generateJava) {
                 var cgn = JavaGenerator.toCodeGenerationNode(rootNode);
-                new JavaGenerator().generateJava(cgn, javaPackageName, new PrintWriter("/tmp/code.java"));
+                new JavaGenerator(true, javaPackageName).generateJava(cgn, new PrintWriter("/tmp/code.java"));
             }
 
             if(templateIdentifier == null) {
