@@ -875,19 +875,15 @@ public class JavaGenerator {
         var words = s.split("[\\W_]+");
         var joined = joinWords(words);
         if (caseOption.equals(CamelCaseOption.START_WITH_LOWERCASE)) {
-            return Character.toLowerCase(joined.charAt(0)) + joined.substring(1);
-        }
-        else if(caseOption.equals(CamelCaseOption.PRESERVE_CASE)) {
-            if(Character.isLowerCase(s.charAt(0))) {
-                return Character.toLowerCase(joined.charAt(0)) + joined.substring(1);
-            }
-            else {
-                return joined;
-            }
+            return lowercaseFirstLetter(joined);
         }
         else {
             return joined;
         }
+    }
+
+    private static String lowercaseFirstLetter(String joined) {
+        return Character.toLowerCase(joined.charAt(0)) + joined.substring(1);
     }
 
     private static String joinWords(String[] words) {
@@ -904,7 +900,6 @@ public class JavaGenerator {
 
     private enum CamelCaseOption {
         START_WITH_LOWERCASE,
-        START_WITH_UPPERCASE,
-        PRESERVE_CASE
+        START_WITH_UPPERCASE
     }
 }
