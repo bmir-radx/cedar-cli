@@ -514,8 +514,8 @@ public class JavaGenerator {
                                                         String recordName) {
         var temporalType = node.getXsdDatatype();
         if (temporalType.isPresent()) {
-            var decl = LITERAL_FIELD_TYPE_WITH_DATATYPE_DECL.replace("${typeName}", recordName)
-                                                            .replace("${datatype}", temporalType.get());
+            var literalFieldTemplate = new LiteralFieldWithDatatypeTemplate();
+            var decl = literalFieldTemplate.fillTemplate(recordName, node.getXsdDatatype().orElse(""), node.getDescription().orElse(""));
             parentCls.addNestedType(decl);
         }
         else {
@@ -524,27 +524,6 @@ public class JavaGenerator {
             parentCls.addNestedType(decl);
         }
     }
-
-
-
-    private static final String LITERAL_FIELD_TYPE_WITH_DATATYPE_DECL = """
-                public static record ${typeName}(String value) implements LiteralField {
-                    
-                    public static ${typeName} of() {
-                        return new ${typeName}(null);
-                    }
-                    
-                    public static ${typeName} of(@JsonProperty("@value") String value) {
-                        return new ${typeName}(value);
-                    }
-                    
-                    @JsonView(CoreView.class)
-                    @JsonProperty("@type")
-                    public String getDatatype() {
-                        return "${datatype}";
-                    }
-                }
-            """;
 
     private static final String IRI_FIELD_TYPE_DECL = """
                 @JsonInclude(JsonInclude.Include.NON_EMPTY)
