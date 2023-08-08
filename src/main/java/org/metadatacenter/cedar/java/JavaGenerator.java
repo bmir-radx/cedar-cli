@@ -893,15 +893,14 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             var singleWord = words[0];
             return Character.toUpperCase(singleWord.charAt(0)) + singleWord.substring(1);
         }
-        var joined = Arrays.stream(words)
-                           .map(String::toLowerCase)
-                           .filter(word -> !word.isBlank())
-                           .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
-                           .collect(Collectors.joining());
-        return joined;
+        return Arrays.stream(words)
+                     .map(String::toLowerCase)
+                     .filter(word -> !word.isBlank())
+                     .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
+                     .collect(Collectors.joining());
     }
 
-    private static enum CamelCaseOption {
+    private enum CamelCaseOption {
         START_WITH_LOWERCASE,
         START_WITH_UPPERCASE,
         PRESERVE_CASE
