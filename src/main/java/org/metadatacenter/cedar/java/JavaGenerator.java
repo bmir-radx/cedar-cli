@@ -27,6 +27,88 @@ import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
  */
 public class JavaGenerator {
 
+    protected static final String LITERAL_FIELD_IMPL = """
+
+            public static record LiteralFieldImpl(@JsonProperty("@value") String value) implements LiteralField, Map<String, String> {
+
+                    @Override
+                    public int size() {
+                        return 1;
+                    }
+
+                    @Override
+                    public boolean isEmpty() {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean containsKey(Object key) {
+                        return "@value".equals(key);
+                    }
+
+                    @Override
+                    public boolean containsValue(Object value) {
+                        return this.value.equals(value);
+                    }
+
+                    @Override
+                    public String get(Object key) {
+                        return value;
+                    }
+
+                    @Override
+                    public String put(String key, String value) {
+                        return value;
+                    }
+
+                    @Override
+                    public String remove(Object key) {
+                        return null;
+                    }
+
+                    @Override
+                    public void putAll(Map<? extends String, ? extends String> m) {
+
+                    }
+
+                    @Override
+                    public void clear() {
+
+                    }
+
+                    @Override
+                    public Set<String> keySet() {
+                        return Collections.singleton("@value");
+                    }
+
+                    @Override
+                    public Collection<String> values() {
+                        return Collections.singleton(value);
+                    }
+
+                    @Override
+                    public Set<Entry<String, String>> entrySet() {
+                        return Collections.singleton(new Entry<String, String>() {
+                            @Override
+                            public String getKey() {
+                                return "@value";
+                            }
+
+                            @Override
+                            public String getValue() {
+                                return value;
+                            }
+
+                            @Override
+                            public String setValue(String value) {
+                                return null;
+                            }
+                        });
+                    }
+                }
+
+            """;
+
     private final String packageName;
 
     private final JavaTypeNamesOracle javaTypeNamesOracle;
@@ -86,87 +168,6 @@ public class JavaGenerator {
         generateImports(rootCls);
         generateConstants(node, rootCls);
         generateInterfaces(rootCls);
-        String LITERAL_FIELD_IMPL = """
-
-                public static record LiteralFieldImpl(@JsonProperty("@value") String value) implements LiteralField, Map<String, String> {
-
-                        @Override
-                        public int size() {
-                            return 1;
-                        }
-
-                        @Override
-                        public boolean isEmpty() {
-                            return false;
-                        }
-
-                        @Override
-                        public boolean containsKey(Object key) {
-                            return "@value".equals(key);
-                        }
-
-                        @Override
-                        public boolean containsValue(Object value) {
-                            return this.value.equals(value);
-                        }
-
-                        @Override
-                        public String get(Object key) {
-                            return value;
-                        }
-
-                        @Override
-                        public String put(String key, String value) {
-                            return value;
-                        }
-
-                        @Override
-                        public String remove(Object key) {
-                            return null;
-                        }
-
-                        @Override
-                        public void putAll(Map<? extends String, ? extends String> m) {
-
-                        }
-
-                        @Override
-                        public void clear() {
-
-                        }
-
-                        @Override
-                        public Set<String> keySet() {
-                            return Collections.singleton("@value");
-                        }
-
-                        @Override
-                        public Collection<String> values() {
-                            return Collections.singleton(value);
-                        }
-
-                        @Override
-                        public Set<Entry<String, String>> entrySet() {
-                            return Collections.singleton(new Entry<String, String>() {
-                                @Override
-                                public String getKey() {
-                                    return "@value";
-                                }
-
-                                @Override
-                                public String getValue() {
-                                    return value;
-                                }
-
-                                @Override
-                                public String setValue(String value) {
-                                    return null;
-                                }
-                            });
-                        }
-                    }
-
-                """;
         rootCls.addNestedType(LITERAL_FIELD_IMPL);
         generateViewClassDeclarations(rootCls);
         generate(node, rootCls, new HashSet<>());
