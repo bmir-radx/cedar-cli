@@ -13,6 +13,14 @@ import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
 public class JavaTypeNamesOracle {
 
 
+    protected static final String INSTANCE_SUFFIX = "Instance";
+
+    protected static final String FIELD_SUFFIX = "Field";
+
+    protected static final String ELEMENT_SUFFIX = "Element";
+
+    protected static final String DEFAULT_TEMPLATE_JAVA_NAME = "MetadataInstance";
+
     private final Map<String, String> cedarNames2JavaTypeNames = new HashMap<>();
 
     private final JavaTypeNameFormat suffixTypes;
@@ -24,7 +32,7 @@ public class JavaTypeNamesOracle {
     public String getJavaTypeName(CodeGenerationNode node) {
         var name = stripName(node.name());
         if (name.isBlank()) {
-            return "MetadataInstance";
+            return DEFAULT_TEMPLATE_JAVA_NAME;
         }
 
         var cachedTypeName = cedarNames2JavaTypeNames.get(name);
@@ -40,13 +48,13 @@ public class JavaTypeNamesOracle {
         var camelCaseName = toCamelCase(name, CamelCase.CamelCaseOption.START_WITH_UPPERCASE);
         if (suffixTypes.equals(JavaTypeNameFormat.SUFFIX_WITH_ARTIFACT_TYPE)) {
             if(node.root()) {
-                camelCaseName = camelCaseName + "Instance";
+                camelCaseName = camelCaseName + INSTANCE_SUFFIX;
             }
             if (node.artifactType().isField()) {
-                camelCaseName =  camelCaseName + "Field";
+                camelCaseName =  camelCaseName + FIELD_SUFFIX;
             }
             else {
-                camelCaseName =  camelCaseName + "Element";
+                camelCaseName =  camelCaseName + ELEMENT_SUFFIX;
             }
         }
 
