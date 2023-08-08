@@ -228,8 +228,6 @@ public class JavaGenerator {
         createAndAddIriFieldInterface(parentCls, fieldInterface, compactableInterface);
 
         parentCls.addNestedType(LITERAL_FIELD_IMPL);
-
-        generateUtils(parentCls);
     }
 
     private static void generateUtils(JavaClassSource parentCls) {
