@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.java;
 
+import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.CedarCsvInputType;
 
 import javax.annotation.Nonnull;
@@ -20,7 +21,7 @@ public record CodeGenerationNode(@Nullable String id,
                                  boolean literalField,
                                  @Nullable String description,
                                  @Nullable String xsdDatatype,
-                                 boolean required,
+                                 Required required,
                                  boolean multiValued,
                                  @Nullable String propertyIri,
                                  CedarCsvInputType inputType) {

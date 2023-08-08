@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.metadatacenter.artifacts.model.core.*;
 import org.metadatacenter.artifacts.model.reader.ArtifactReader;
+import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.CedarCsvInputType;
 import org.metadatacenter.cedar.java.CodeGenerationNode;
 import org.metadatacenter.cedar.java.JavaGenerator;
@@ -82,15 +83,15 @@ public class Template2JavaCommand implements CedarCliCommand {
                     .map(childSchemaArtifact -> toCodeGenerationNode((Artifact) childSchemaArtifact))
                     .toList();
             return new CodeGenerationNode(template.getJsonLdId().map(URI::toString).orElse(""),
-                                   true,
-                                   templateClassName,
-                                   childNodes,
-                                   false,
-                                   false,
-                                   template.getDescription(),
-                                   null,
-                                   false,
-                                   false,
+                                          true,
+                                          templateClassName,
+                                          childNodes,
+                                          false,
+                                          false,
+                                          template.getDescription(),
+                                          null,
+                                          Required.OPTIONAL,
+                                          false,
                                           null,
                                           null);
         }
@@ -108,7 +109,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                                           false,
                                           element.getDescription(),
                                           null,
-                                          false,
+                                          Required.OPTIONAL,
                                           element.isMultiple(),
                                           null,
                                           null);
@@ -124,7 +125,11 @@ public class Template2JavaCommand implements CedarCliCommand {
                     !field.hasIRIValue(),
                     field.getDescription(),
                     null,
-                    field.getValueConstraints().map(valueConstraints -> valueConstraints.isRequiredValue()).orElse(false),
+                    field.getValueConstraints()
+                         .map(ValueConstraints::isRequiredValue)
+                         .filter(required -> required)
+                         .map(required -> Required.REQUIRED)
+                         .orElse(Required.OPTIONAL),
                     field.isMultiple(),
                     null,
                     CedarCsvInputType.TEXTFIELD

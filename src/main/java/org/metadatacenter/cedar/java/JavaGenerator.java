@@ -5,6 +5,7 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.JavaRecordSource;
+import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import javax.annotation.Nonnull;
@@ -47,7 +48,7 @@ public class JavaGenerator {
                 node.isLiteralValueType(),
                 node.getDescription(),
                 node.getXsdDatatype().orElse(null),
-                node.isRequired(),
+                node.isRequired() ? Required.REQUIRED : Required.OPTIONAL,
                 node.isMultiValued(),
                 node.getPropertyIri().orElse(null),
                 inputType);
@@ -829,7 +830,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private static boolean isRequired(CodeGenerationNode node) {
         var required = node.required();
-        if(required) {
+        if(required.equals(Required.REQUIRED)) {
             return true;
         }
         else {
