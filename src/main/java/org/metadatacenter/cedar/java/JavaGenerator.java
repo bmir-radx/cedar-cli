@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
+
 /**
  * Matthew Horridge
  * Stanford Center for Biomedical Informatics Research
@@ -779,7 +781,7 @@ public class JavaGenerator {
                 .filter(n -> n.equalsIgnoreCase(name))
                 .count() + 1;
 
-        var camelCaseName = toCamelCase(name, CamelCaseOption.START_WITH_UPPERCASE);
+        var camelCaseName = toCamelCase(name, CamelCase.CamelCaseOption.START_WITH_UPPERCASE);
         if (suffixTypes) {
             if(node.root()) {
                 camelCaseName = camelCaseName + "Instance";
@@ -846,7 +848,7 @@ public class JavaGenerator {
 
     private static String getParameterName(CodeGenerationNode node) {
         var name = stripName(node.name());
-        return toCamelCase(name, CamelCaseOption.START_WITH_LOWERCASE);
+        return toCamelCase(name, CamelCase.CamelCaseOption.START_WITH_LOWERCASE);
     }
 
     private static boolean isRequired(CodeGenerationNode node) {
@@ -867,39 +869,5 @@ public class JavaGenerator {
         return listType ? typeName + "List" : typeName;
     }
 
-    private static String toCamelCase(String s, CamelCaseOption caseOption) {
-        if (s.isBlank()) {
-            return s;
-        }
-        s = stripName(s);
-        var words = s.split("[\\W_]+");
-        var joined = joinWords(words);
-        if (caseOption.equals(CamelCaseOption.START_WITH_LOWERCASE)) {
-            return lowercaseFirstLetter(joined);
-        }
-        else {
-            return joined;
-        }
-    }
 
-    private static String lowercaseFirstLetter(String joined) {
-        return Character.toLowerCase(joined.charAt(0)) + joined.substring(1);
-    }
-
-    private static String joinWords(String[] words) {
-        if(words.length == 1) {
-            var singleWord = words[0];
-            return Character.toUpperCase(singleWord.charAt(0)) + singleWord.substring(1);
-        }
-        return Arrays.stream(words)
-                     .map(String::toLowerCase)
-                     .filter(word -> !word.isBlank())
-                     .map(word -> Character.toUpperCase(word.charAt(0)) + word.substring(1))
-                     .collect(Collectors.joining());
-    }
-
-    private enum CamelCaseOption {
-        START_WITH_LOWERCASE,
-        START_WITH_UPPERCASE
-    }
 }
