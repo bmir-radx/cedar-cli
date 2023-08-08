@@ -10,6 +10,9 @@ public class JavaElementRecordTemplate {
     private static final String ELEMENT_TYPE_DECL = """
             public static record ${typeName}(${paramDeclarationsList}) implements Element {
             
+                /**
+                 * Gets an empty ${typeName} list.
+                 */
                 public static ${typeName} of() {
                      return new ${typeName}(${emptyArgumentsList});
                 }
@@ -22,6 +25,10 @@ public class JavaElementRecordTemplate {
                      return streamArtifacts(${childNodeArgsList});
                  }
                 
+                /**
+                 * Gets the JSON-LD context for this element.  This is a fixed value and does not depend upon the
+                 * content of child elements/fields.
+                 */
                 @JsonProperty(value = "@context", access = JsonProperty.Access.READ_ONLY)
                 public Map<String, Object> context() {
                     ${context}
