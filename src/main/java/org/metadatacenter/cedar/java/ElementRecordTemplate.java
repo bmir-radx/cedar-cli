@@ -5,7 +5,7 @@ package org.metadatacenter.cedar.java;
  * Stanford Center for Biomedical Informatics Research
  * 2023-08-08
  */
-public class JavaElementRecordTemplate {
+public class ElementRecordTemplate {
 
     private static final String ELEMENT_TYPE_DECL = """
             public static record ${typeName}(${paramDeclarationsList}) implements Element {

@@ -503,7 +503,7 @@ public class JavaGenerator {
     }
 
     private static void generateIriFieldDeclaration(JavaClassSource parentCls, String recordName, String description) {
-        var template = new IriFieldTemplate();
+        var template = new IriFieldRecordTemplate();
         var decl = template.fillTemplate(recordName, description);
         parentCls.addNestedType(decl);
     }
@@ -513,12 +513,12 @@ public class JavaGenerator {
                                                         String recordName) {
         var temporalType = node.getXsdDatatype();
         if (temporalType.isPresent()) {
-            var literalFieldTemplate = new LiteralFieldWithDatatypeTemplate();
+            var literalFieldTemplate = new LiteralFieldWithDatatypeRecordTemplate();
             var decl = literalFieldTemplate.fillTemplate(recordName, node.getXsdDatatype().orElse(""), node.getDescription().orElse(""));
             parentCls.addNestedType(decl);
         }
         else {
-            var literalFieldTemplate = new LiteralFieldTemplate();
+            var literalFieldTemplate = new LiteralFieldRecordTemplate();
             var decl = literalFieldTemplate.fillTemplate(recordName, node.getDescription().orElse(""));
             parentCls.addNestedType(decl);
         }
@@ -714,7 +714,7 @@ public class JavaGenerator {
         }
 
 
-        var elementTemplate = new JavaElementRecordTemplate();
+        var elementTemplate = new ElementRecordTemplate();
         var elementRecordDecl = elementTemplate.fillTemplate(typeName,
                                      attributeValueElementExtension,
                                      paramDeclarationsList,

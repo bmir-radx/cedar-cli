@@ -5,7 +5,7 @@ package org.metadatacenter.cedar.java;
  * Stanford Center for Biomedical Informatics Research
  * 2023-08-08
  */
-public class IriFieldTemplate {
+public class IriFieldRecordTemplate {
 
     private static final String IRI_FIELD_TYPE_DECL = """
                 
