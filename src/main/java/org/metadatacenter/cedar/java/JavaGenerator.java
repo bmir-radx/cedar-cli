@@ -349,10 +349,7 @@ public class JavaGenerator {
                         .setStringInitializer(stripName);
             }
         });
-
         parentCls.addNestedType(src);
-
-//        pw.println(src);
     }
 
     private static String toConstantSymbol(CodeGenerationNode node) {
