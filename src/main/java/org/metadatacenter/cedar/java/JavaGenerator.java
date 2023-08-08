@@ -27,16 +27,19 @@ import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
  */
 public class JavaGenerator {
 
-    private final boolean suffixTypes;
-
     private final String packageName;
 
-    private final Map<String, String> cedarNames2JavaTypeNames = new HashMap<>();
+    private final TypeNamesOracle typeNamesOracle;
 
 
-    public JavaGenerator(boolean suffixTypes, String packageName) {
-        this.suffixTypes = suffixTypes;
+    public JavaGenerator(String packageName, TypeNamesOracle typeNamesOracle) {
         this.packageName = packageName;
+        this.typeNamesOracle = typeNamesOracle;
+    }
+
+    public static JavaGenerator get(String packageName,
+                                    boolean suffixJavaTypeNames) {
+        return new JavaGenerator(packageName, new TypeNamesOracle(suffixJavaTypeNames));
     }
 
 
@@ -403,7 +406,7 @@ public class JavaGenerator {
     }
 
     private void generateFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
-        var recordName = getJavaTypeName(node);
+        var recordName = typeNamesOracle.getJavaTypeName(node);
         if(node.isAttributeValueField()) {
             // Nothing to do, because attribute value fields are phantom fields in a sense... they really mutate the
             // parent element and therefore modify the class representing that element, not this field
@@ -533,7 +536,7 @@ public class JavaGenerator {
 
     private void generateArtifactListDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
 
-        var javaTypeName = getJavaTypeName(node);
+        var javaTypeName = typeNamesOracle.getJavaTypeName(node);
         var listJavaTypeName = javaTypeName + "List";
         var paramName = getParameterName(node);
         var listParamName = paramName + "List";
@@ -629,7 +632,7 @@ public class JavaGenerator {
             argsList += ",\nnew LinkedHashMap<>()";
         }
 
-        var typeName = getJavaTypeName(node);
+        var typeName = typeNamesOracle.getJavaTypeName(node);
 
         var contextBlock = new StringBuilder();
 
@@ -692,8 +695,6 @@ public class JavaGenerator {
                                               "schema:name",
                                               "Map.of(\"@type\", \"xsd:string\")"));
         }
-
-
         contextBlock.append("return contextMap;");
 
         String attributeValueElementExtension;
@@ -762,43 +763,6 @@ public class JavaGenerator {
         return node.childNodes().stream().anyMatch(CodeGenerationNode::isAttributeValueField);
     }
 
-    private String getJavaTypeName(CodeGenerationNode node) {
-        var name = stripName(node.name());
-        if (name.isBlank()) {
-            return "MetadataInstance";
-        }
-
-        var cachedTypeName = cedarNames2JavaTypeNames.get(name);
-        if(cachedTypeName != null) {
-            return cachedTypeName;
-        }
-        // Is there a different case?
-        var countSuffix = cedarNames2JavaTypeNames.keySet()
-                .stream()
-                .filter(n -> n.equalsIgnoreCase(name))
-                .count() + 1;
-
-        var camelCaseName = toCamelCase(name, CamelCase.CamelCaseOption.START_WITH_UPPERCASE);
-        if (suffixTypes) {
-            if(node.root()) {
-                camelCaseName = camelCaseName + "Instance";
-            }
-            if (node.artifactType().isField()) {
-                camelCaseName =  camelCaseName + "Field";
-            }
-            else {
-                camelCaseName =  camelCaseName + "Element";
-            }
-        }
-
-        if(countSuffix > 1) {
-            camelCaseName = camelCaseName + countSuffix;
-        }
-
-        cedarNames2JavaTypeNames.put(name, camelCaseName);
-        return camelCaseName;
-    }
-
     private static String stripName(String name) {
         if (name.startsWith(">")) {
             name = name.substring(1);
@@ -810,7 +774,7 @@ public class JavaGenerator {
         if(node.isAttributeValueField()) {
             return "List.of()";
         }
-        var typeName = getJavaTypeName(node);
+        var typeName = typeNamesOracle.getJavaTypeName(node);
         if (node.isListType()) {
             return typeName + "List.of()";
         }
@@ -827,7 +791,7 @@ public class JavaGenerator {
             paramType = "List<String>";
         }
         else {
-            var typeName = getJavaTypeName(node);
+            var typeName = typeNamesOracle.getJavaTypeName(node);
             // Accounts for multivalued
             paramType = getParameterType(node, typeName);
         }
