@@ -1,6 +1,8 @@
 package org.metadatacenter.cedar.java;
 
+import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
+import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.csv.CedarCsvInputType;
 
 import javax.annotation.Nonnull;
@@ -21,8 +23,8 @@ public record CodeGenerationNode(@Nullable String id,
                                  @Nullable String description,
                                  @Nullable String xsdDatatype,
                                  Required required,
-                                 boolean multiValued,
-                                 @Nullable String propertyIri,
+                                 Cardinality cardinality,
+                                 @Nullable Iri propertyIri,
                                  CedarCsvInputType inputType) {
 
     public Optional<String> getId() {
@@ -33,7 +35,7 @@ public record CodeGenerationNode(@Nullable String id,
         return Optional.ofNullable(xsdDatatype);
     }
 
-    public Optional<String> getPropertyIri() {
+    public Optional<Iri> getPropertyIri() {
         return Optional.ofNullable(propertyIri);
     }
 

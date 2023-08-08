@@ -5,7 +5,9 @@ import org.jboss.forge.roaster.Roaster;
 import org.jboss.forge.roaster.model.source.JavaClassSource;
 import org.jboss.forge.roaster.model.source.JavaInterfaceSource;
 import org.jboss.forge.roaster.model.source.JavaRecordSource;
+import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
+import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import javax.annotation.Nonnull;
@@ -47,8 +49,8 @@ public class JavaGenerator {
                 getArtifactType(node), node.getDescription(),
                 node.getXsdDatatype().orElse(null),
                 node.isRequired() ? Required.REQUIRED : Required.OPTIONAL,
-                node.isMultiValued(),
-                node.getPropertyIri().orElse(null),
+                node.getCardinality(),
+                node.getPropertyIri().map(Iri::new).orElse(null),
                 inputType);
     }
 
@@ -419,7 +421,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
         else {
             generateIriFieldDeclaration(parentCls, recordName);
         }
-        if(node.multiValued()) {
+        if(node.cardinality().equals(Cardinality.MULTIPLE)) {
             generateArtifactListDeclaration(node, parentCls);
         }
     }
@@ -657,7 +659,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                     contextBlock.append("contextMap.put(FieldNames.");
                     contextBlock.append(toConstantSymbol(childNode));
                     contextBlock.append(", \"");
-                    contextBlock.append(propertyIri);
+                    contextBlock.append(propertyIri.lexicalValue());
                     contextBlock.append("\");\n");
                 });
             });
@@ -736,7 +738,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
                                     .replace("${context}", contextBlock.toString());
         parentClass.addNestedType(decl);
 
-        if(node.multiValued()) {
+        if(node.cardinality().equals(Cardinality.MULTIPLE)) {
             generateArtifactListDeclaration(node, parentClass);
         }
     }
@@ -864,7 +866,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
     }
 
     private static boolean isListType(CodeGenerationNode node) {
-        return node.multiValued();
+        return node.cardinality().equals(Cardinality.MULTIPLE);
     }
 
     private String toTypeName(CodeGenerationNode cn) {

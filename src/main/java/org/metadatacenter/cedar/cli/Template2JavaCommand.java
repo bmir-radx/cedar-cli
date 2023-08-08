@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.metadatacenter.artifacts.model.core.*;
 import org.metadatacenter.artifacts.model.reader.ArtifactReader;
 import org.metadatacenter.cedar.api.Required;
+import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.csv.CedarCsvInputType;
 import org.metadatacenter.cedar.java.CodeGenerationNode;
 import org.metadatacenter.cedar.java.JavaGenerator;
@@ -89,7 +90,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                                           CodeGenerationNode.ArtifactType.TEMPLATE, template.getDescription(),
                                           null,
                                           Required.OPTIONAL,
-                                          false,
+                                          Cardinality.SINGLE,
                                           null,
                                           null);
         }
@@ -106,7 +107,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                                           CodeGenerationNode.ArtifactType.ELEMENT, element.getDescription(),
                                           null,
                                           Required.OPTIONAL,
-                                          element.isMultiple(),
+                                          element.isMultiple() ? Cardinality.MULTIPLE : Cardinality.SINGLE,
                                           null,
                                           null);
         }
@@ -125,7 +126,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                          .filter(required -> required)
                          .map(required -> Required.REQUIRED)
                          .orElse(Required.OPTIONAL),
-                    field.isMultiple(),
+                    field.isMultiple() ? Cardinality.MULTIPLE : Cardinality.SINGLE,
                     null,
                     CedarCsvInputType.TEXTFIELD
                     );

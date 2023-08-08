@@ -604,5 +604,12 @@ public class CedarCsvParser {
             }
             return row.getPropertyIri().map(Iri::lexicalValue);
         }
+
+        public Cardinality getCardinality() {
+            if(row == null) {
+                return Cardinality.SINGLE;
+            }
+            return row.getCardinality();
+        }
     }
 }
