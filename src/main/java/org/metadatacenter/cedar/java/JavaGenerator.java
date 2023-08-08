@@ -356,7 +356,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private static String toConstantSymbol(CodeGenerationNode node) {
         var stripped = stripName(node.name());
-        return stripped.trim().replaceAll("\s+|-", "_");
+        return stripped.trim().replaceAll(" +|-", "_");
     }
 
     private static void collectElements(CodeGenerationNode node, Collection<CodeGenerationNode> elements) {
