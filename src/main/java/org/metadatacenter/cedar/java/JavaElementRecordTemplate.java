@@ -39,12 +39,11 @@ public class JavaElementRecordTemplate {
                                   String emptyArgumentsList,
                                   String childNodeArgsList,
                                   String contextBlock) {
-        var decl = ELEMENT_TYPE_DECL.replace("${typeName}", recordName)
-                                    .replace("${attributeValueElementExtension}", attributeValueElementExtension)
-                                    .replace("${paramDeclarationsList}", paramDeclarationsList)
-                                    .replace("${emptyArgumentsList}", emptyArgumentsList)
-                                    .replace("${childNodeArgsList}", childNodeArgsList)
-                                    .replace("${context}", contextBlock);
-        return decl;
+        return ELEMENT_TYPE_DECL.replace("${typeName}", recordName)
+                                .replace("${attributeValueElementExtension}", attributeValueElementExtension)
+                                .replace("${paramDeclarationsList}", paramDeclarationsList)
+                                .replace("${emptyArgumentsList}", emptyArgumentsList)
+                                .replace("${childNodeArgsList}", childNodeArgsList)
+                                .replace("${context}", contextBlock);
     }
 }
