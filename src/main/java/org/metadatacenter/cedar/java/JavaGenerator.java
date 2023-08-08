@@ -495,15 +495,16 @@ public class JavaGenerator {
             generateLiteralFieldDeclaration(node, parentCls, recordName);
         }
         else {
-            generateIriFieldDeclaration(parentCls, recordName);
+            generateIriFieldDeclaration(parentCls, recordName, node.getDescription().orElse(""));
         }
         if(node.cardinality().equals(Cardinality.MULTIPLE)) {
             generateArtifactListDeclaration(node, parentCls);
         }
     }
 
-    private static void generateIriFieldDeclaration(JavaClassSource parentCls, String recordName) {
-        var decl = IRI_FIELD_TYPE_DECL.replace("${typeName}", recordName);
+    private static void generateIriFieldDeclaration(JavaClassSource parentCls, String recordName, String description) {
+        var template = new IriFieldTemplate();
+        var decl = template.fillTemplate(recordName, description);
         parentCls.addNestedType(decl);
     }
 
@@ -522,22 +523,6 @@ public class JavaGenerator {
             parentCls.addNestedType(decl);
         }
     }
-
-    private static final String IRI_FIELD_TYPE_DECL = """
-                @JsonInclude(JsonInclude.Include.NON_EMPTY)
-                public static record ${typeName}(String id,
-                                                 String label) implements IriField {
-                    
-                    public static ${typeName} of() {
-                        return new ${typeName}(null, null);
-                    }
-                    
-                    @JsonCreator
-                    public static ${typeName} of(@JsonProperty("@id") String id, @JsonProperty("rdfs:label") String label) {
-                        return new ${typeName}(id, label);
-                    }
-                }
-            """;
 
     private static final String ATTRIBUTE_VALUE_ELEMENT_EXTENSION = """
                 @JsonCreator
