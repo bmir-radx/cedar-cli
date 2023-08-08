@@ -29,8 +29,6 @@ import java.util.List;
 @Command(name = "template2java", description = "Generated Java code for working with CEDAR instances of a CEDAR template")
 public class Template2JavaCommand implements CedarCliCommand {
 
-    protected static final String JAVA_FILE_EXTENSION = ".java";
-
     private final ObjectMapper objectMapper;
 
     @Option(names = "--in", description = "The path to the CEDAR template")
@@ -63,24 +61,9 @@ public class Template2JavaCommand implements CedarCliCommand {
         var reader = new ArtifactReader();
         var template = reader.readTemplateSchemaArtifact(objectNode);
         var rootNode = toCodeGenerationNode(template);
-
         System.err.println("Read template from " + templatePath);
-
-        var writer = new StringWriter();
-
         var javaGenerator = JavaGenerator.get(pkg, rootClassName, suffixJavaTypes);
-        var code = javaGenerator.generateJava(rootNode);
-
-        var javaFileName = rootClassName + JAVA_FILE_EXTENSION;
-        var packagePath = Path.of(pkg.replace(".", "/"));
-        var packageDirectory = out.resolve(packagePath);
-
-        if (!Files.exists(packageDirectory)) {
-            Files.createDirectories(packageDirectory);
-        }
-        var javaFilePath = packageDirectory.resolve(javaFileName);
-        Files.write(javaFilePath, code.getBytes());
-
+        javaGenerator.writeJavaFile(rootNode, out);
         return 0;
     }
 

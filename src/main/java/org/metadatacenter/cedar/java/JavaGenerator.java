@@ -12,8 +12,11 @@ import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,6 +30,9 @@ import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
  * 2023-05-03
  */
 public class JavaGenerator {
+
+
+    protected static final String JAVA_FILE_EXTENSION = ".java";
 
     protected static final String LITERAL_FIELD_IMPL = """
 
@@ -183,6 +189,18 @@ public class JavaGenerator {
         pw.flush();
         var code = sw.toString();
         return tidyCode(code);
+    }
+
+    public void writeJavaFile(CodeGenerationNode node, Path outputDirectory) throws IOException {
+        var javaFileName = rootClassName + JAVA_FILE_EXTENSION;
+        var packagePath = Path.of(packageName.replace(".", "/"));
+        var packageDirectory = outputDirectory.resolve(packagePath);
+        if (!Files.exists(packageDirectory)) {
+            Files.createDirectories(packageDirectory);
+        }
+        var javaFilePath = packageDirectory.resolve(javaFileName);
+        var code = generateJava(node);
+        Files.write(javaFilePath, code.getBytes());
     }
 
 
