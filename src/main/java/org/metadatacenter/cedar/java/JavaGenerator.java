@@ -29,7 +29,7 @@ public class JavaGenerator {
 
     private final String packageName;
 
-    private Map<String, String> cedarNames2JavaTypeNames = new HashMap<>();
+    private final Map<String, String> cedarNames2JavaTypeNames = new HashMap<>();
 
 
     public JavaGenerator(boolean suffixTypes, String packageName) {
@@ -820,7 +820,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private String getParameterDeclaration(CodeGenerationNode node) {
         String paramType;
-        String paramName = getParameterName(node);
+        var paramName = getParameterName(node);
         var constantName = toConstantSymbol(node);
         if(node.isAttributeValueField()) {
             paramType = "List<String>";
@@ -831,7 +831,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             paramType = getParameterType(node, typeName);
         }
 
-        boolean required = isRequired(node);
+        var required = isRequired(node);
         var requiredAnnotation = "";
         if(required) {
             requiredAnnotation = "@Nonnull";
