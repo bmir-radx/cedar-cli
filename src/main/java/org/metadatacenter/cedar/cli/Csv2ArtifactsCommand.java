@@ -213,7 +213,8 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
             if(generateJava) {
                 var cgn = JavaGenerator.toCodeGenerationNode(rootNode);
-                JavaGenerator.get(javaPackageName, rootClassName, true).generateJava(cgn, new PrintWriter("/tmp/code.java"));
+                var code = JavaGenerator.get(javaPackageName, rootClassName, true).generateJava(cgn);
+                Files.write(Path.of("/tmp/code.java"), code.getBytes());
             }
 
             if(templateIdentifier == null) {
