@@ -171,7 +171,6 @@ public class JavaGenerator {
     }
 
     public String generateJava(CodeGenerationNode node) {
-
         var rootCls = Roaster.create(JavaClassSource.class);
         rootCls.setPackage(packageName);
         rootCls.setName(rootClassName);
@@ -181,7 +180,10 @@ public class JavaGenerator {
         rootCls.addNestedType(LITERAL_FIELD_IMPL);
         generateViewClassDeclarations(rootCls);
         generate(node, rootCls, new HashSet<>());
+        return tidyAndPrintCode(rootCls);
+    }
 
+    private static String tidyAndPrintCode(JavaClassSource rootCls) {
         var sw = new StringWriter();
         var pw = new PrintWriter(sw);
         pw.println("// Generated code.  Do not edit by hand.");
