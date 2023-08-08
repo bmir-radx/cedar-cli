@@ -810,7 +810,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             return "List.of()";
         }
         var typeName = getJavaTypeName(node);
-        if (isListType(node)) {
+        if (node.isListType()) {
             return typeName + "List.of()";
         }
         else {
@@ -861,19 +861,8 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
     }
 
     private static String getParameterType(CodeGenerationNode node, String typeName) {
-        var listType = isListType(node);
+        var listType = node.isListType();
         return listType ? typeName + "List" : typeName;
-    }
-
-    private static boolean isListType(CodeGenerationNode node) {
-        return node.cardinality().equals(Cardinality.MULTIPLE);
-    }
-
-    private String toTypeName(CodeGenerationNode cn) {
-        if (cn.root()) {
-            return "Metadata";
-        }
-        return getJavaTypeName(cn);
     }
 
     private static String toCamelCase(String s, CamelCaseOption caseOption) {

@@ -47,6 +47,10 @@ public record CodeGenerationNode(@Nullable String id,
         return CedarCsvInputType.ATTRIBUTE_VALUE.equals(inputType());
     }
 
+    public boolean isListType() {
+        return this.cardinality().equals(Cardinality.MULTIPLE);
+    }
+
 
     public enum ArtifactType {
         ELEMENT,
