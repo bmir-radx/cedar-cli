@@ -122,6 +122,9 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
     @Option(names = "--java-package-name", description = "If the generate-java option is specified then this option allows the package name for the generated Java code to be set", defaultValue = "")
     private String javaPackageName;
 
+    @Option(names = "--root-class-name", description = "The name of the Java class that other generated classes that represent CEDAR artifacts will be inner classes of", defaultValue = "Cedar", showDefaultValue = CommandLine.Help.Visibility.ALWAYS)
+    private String rootClassName;
+
     @ArgGroup(exclusive = false)
     public PostToCedarOptions pushToCedar;
 
@@ -210,7 +213,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
             if(generateJava) {
                 var cgn = JavaGenerator.toCodeGenerationNode(rootNode);
-                JavaGenerator.get(javaPackageName, true).generateJava(cgn, new PrintWriter("/tmp/code.java"));
+                JavaGenerator.get(javaPackageName, rootClassName, true).generateJava(cgn, new PrintWriter("/tmp/code.java"));
             }
 
             if(templateIdentifier == null) {

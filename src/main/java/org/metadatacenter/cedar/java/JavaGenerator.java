@@ -113,16 +113,20 @@ public class JavaGenerator {
 
     private final JavaTypeNamesOracle javaTypeNamesOracle;
 
+    private final String rootClassName;
 
-    public JavaGenerator(String packageName, JavaTypeNamesOracle javaTypeNamesOracle) {
+
+    public JavaGenerator(String packageName, String rootClassName, JavaTypeNamesOracle javaTypeNamesOracle) {
         this.packageName = packageName;
+        this.rootClassName = rootClassName;
         this.javaTypeNamesOracle = javaTypeNamesOracle;
     }
 
     public static JavaGenerator get(String packageName,
+                                    String rootClassName,
                                     boolean suffixJavaTypeNames) {
         var typeNameFormat = suffixJavaTypeNames ? JavaTypeNameFormat.SUFFIX_WITH_ARTIFACT_TYPE : JavaTypeNameFormat.DO_NOT_SUFFIX_WITH_ARTIFACT_TYPE;
-        return new JavaGenerator(packageName, new JavaTypeNamesOracle(typeNameFormat));
+        return new JavaGenerator(packageName, rootClassName, new JavaTypeNamesOracle(typeNameFormat));
     }
 
 
@@ -164,7 +168,7 @@ public class JavaGenerator {
 
         var rootCls = Roaster.create(JavaClassSource.class);
         rootCls.setPackage(packageName);
-        rootCls.setName("Cedar");
+        rootCls.setName(rootClassName);
         generateImports(rootCls);
         generateConstants(node, rootCls);
         generateInterfaces(rootCls);
