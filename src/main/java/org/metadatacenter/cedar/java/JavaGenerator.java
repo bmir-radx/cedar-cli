@@ -601,17 +601,7 @@ public class JavaGenerator {
             childParamDecls += ",\n@JsonAnyGetter Map<String, LiteralField> attributeValues";
         }
 
-        var rootNodeExtras = new ArrayList<String>();
-        if (node.root()) {
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"schema:name\") String schemaName");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"schema:description\") String schemaDescription");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"schema:isBasedOn\") String isBasedOn");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:createdOn\") Instant pavCreatedOn");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:createdBy\") String pavCreatedBy");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:lastUpdatedOn\") Instant pavLastUpdatedOn");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"oslc:modifiedBy\") String oslcModifiedBy");
-            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:derivedFrom\") String pavDerivedFrom");
-        }
+        var rootNodeExtras = getRootNodeExtras(node);
 
         var paramDeclarationsList = idParam + rootNodeExtras.stream()
                                                             .map(s -> s + ",\n")
@@ -733,6 +723,26 @@ public class JavaGenerator {
         if(node.cardinality().equals(Cardinality.MULTIPLE)) {
             generateArtifactListDeclaration(node, parentClass);
         }
+    }
+
+    /**
+     * Get root node extra parameters
+     * @param node The root node
+     * @return A list of parameter declarations for the root node
+     */
+    private static ArrayList<String> getRootNodeExtras(CodeGenerationNode node) {
+        var rootNodeExtras = new ArrayList<String>();
+        if (node.root()) {
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"schema:name\") String schemaName");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"schema:description\") String schemaDescription");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"schema:isBasedOn\") String isBasedOn");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:createdOn\") Instant pavCreatedOn");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:createdBy\") String pavCreatedBy");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:lastUpdatedOn\") Instant pavLastUpdatedOn");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"oslc:modifiedBy\") String oslcModifiedBy");
+            rootNodeExtras.add("@JsonView(CoreView.class) @JsonProperty(\"pav:derivedFrom\") String pavDerivedFrom");
+        }
+        return rootNodeExtras;
     }
 
     private static String getChildArtifactsArgsList(CodeGenerationNode node) {
