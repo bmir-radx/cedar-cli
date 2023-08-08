@@ -519,29 +519,13 @@ public class JavaGenerator {
             parentCls.addNestedType(decl);
         }
         else {
-            var decl = LITERAL_FIELD_TYPE_DECL.replace("${typeName}", recordName)
-                    .replace("${javadoc}", Objects.requireNonNullElse(node.description(), ""));
-
+            var literalFieldTemplate = new LiteralFieldTemplate();
+            var decl = literalFieldTemplate.fillTemplate(recordName, node.getDescription().orElse(""));
             parentCls.addNestedType(decl);
         }
     }
 
-    private static final String LITERAL_FIELD_TYPE_DECL = """
-                /**
-                 ${javadoc}
-                 */
-                public static record ${typeName}(String value) implements LiteralField {
-                    
-                    public static ${typeName} of() {
-                        return new ${typeName}(null);
-                    }
-                    
-                    @JsonCreator
-                    public static ${typeName} of(@JsonProperty("@value") String value) {
-                        return new ${typeName}(value);
-                    }
-                }
-            """;
+
 
     private static final String LITERAL_FIELD_TYPE_WITH_DATATYPE_DECL = """
                 public static record ${typeName}(String value) implements LiteralField {
