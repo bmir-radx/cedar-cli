@@ -176,10 +176,10 @@ public class JavaGenerator {
         rootCls.setName(rootClassName);
         generateImports(rootCls);
         generateConstants(node, rootCls);
-        generateInterfaces(rootCls);
-        rootCls.addNestedType(LITERAL_FIELD_IMPL);
+        generateBaseInterfaces(rootCls);
         generateViewClassDeclarations(rootCls);
-        generate(node, rootCls, new HashSet<>());
+        generateUtils(rootCls);
+        generateArtifactRecords(node, rootCls, new HashSet<>());
         return tidyAndPrintCode(rootCls);
     }
 
@@ -214,70 +214,95 @@ public class JavaGenerator {
         return tidiedCode;
     }
 
-    private void generateInterfaces(JavaClassSource parentCls) {
+    private void generateBaseInterfaces(JavaClassSource parentCls) {
 
-        var instanceNodeInterface = Roaster.create(JavaInterfaceSource.class);
-        instanceNodeInterface.setName("InstanceNode")
-                .addMethod()
-                .setReturnType(boolean.class)
-                .setName("isEmpty")
-                .addAnnotation(JsonIgnore.class);
-        parentCls.addNestedType(instanceNodeInterface);
+        var instanceNodeInterface = createAndAddInstanceNodeInterface(parentCls);
+        var artifactInterface = createAndAddArtifactInterface(parentCls, instanceNodeInterface);
+        var fieldInterface = createAndAddFieldInterface(parentCls, artifactInterface);
 
-        var artifactInterface = Roaster.create(JavaInterfaceSource.class);
-        artifactInterface.setName("Artifact")
-                .addInterface(instanceNodeInterface);
-        parentCls.addNestedType(artifactInterface);
+        createAndAddElementInterface(parentCls, artifactInterface);
+        createAndAddArtifactListInterface(parentCls, instanceNodeInterface);
 
-        var fieldInterface = Roaster.create(JavaInterfaceSource.class);
-        fieldInterface.setName("Field")
-                .addInterface(artifactInterface);
-        parentCls.addNestedType(fieldInterface);
+        var compactableInterface = createAndAddCompactableInterface(parentCls);
+        createAndAddLiteralFieldInterface(parentCls, fieldInterface, compactableInterface);
+        createAndAddIriFieldInterface(parentCls, fieldInterface, compactableInterface);
 
-        var elementInterface = Roaster.create(JavaInterfaceSource.class);
-        elementInterface.setPublic()
-                .addInterface(artifactInterface)
-                        .setName("Element")
-                .addMethod()
-                .setDefault(true)
-                .setReturnType("boolean")
-                .setName("isEmpty")
-                .setBody("return getArtifacts().allMatch(Artifact::isEmpty);")
-                .addAnnotation(Override.class);
-        elementInterface.addMethod()
-                .setName("id")
+        parentCls.addNestedType(LITERAL_FIELD_IMPL);
+
+        generateUtils(parentCls);
+    }
+
+    private static void generateUtils(JavaClassSource parentCls) {
+        parentCls.addField()
+                 .setPublic()
+                 .setStatic(true)
+                 .setFinal(true)
+                 .setType(String.class)
+                 .setName("IRI_PREFIX")
+                 .setStringInitializer("https://repo.metadatacenter.org/template-element-instances/");
+
+        parentCls.addMethod()
+                 .setPublic()
+                 .setStatic(true)
+                 .setReturnType(String.class)
+                 .setName("generateId")
+                 .setBody("return IRI_PREFIX + UUID.randomUUID();");
+
+        parentCls.addMethod("""
+                                    private static Stream<Artifact> streamArtifacts(Object ... in) {
+                                            return Arrays.stream(in)
+                                                    .flatMap(o -> {
+                                                        if(o instanceof List l) {
+                                                            return l.stream();
+                                                        }
+                                                        else if(o instanceof Artifact) {
+                                                            return Stream.of(o);
+                                                        }
+                                                        else {
+                                                            return Stream.empty();
+                                                        }
+                                                    })
+                                                    .filter(o -> o instanceof Artifact)
+                                                    .map(o -> (Artifact) o);
+                                        }
+                                    """);
+    }
+
+    private static void createAndAddIriFieldInterface(JavaClassSource parentCls,
+                                  JavaInterfaceSource fieldInterface,
+                                  JavaInterfaceSource compactableInterface) {
+        var iriFieldInterface = Roaster.create(JavaInterfaceSource.class);
+        iriFieldInterface.setName("IriField");
+        iriFieldInterface.addInterface(fieldInterface);
+        iriFieldInterface.addInterface(compactableInterface);
+        iriFieldInterface.addMethod()
                 .setReturnType(String.class)
+                .setName("id")
                 .addAnnotation(JsonProperty.class)
                 .setStringValue("@id");
-        elementInterface.addMethod()
-                .setName("getArtifacts")
-                .setReturnType("Stream<Artifact>")
-                .addAnnotation(JsonIgnore.class);
-        parentCls.addNestedType(elementInterface);
-
-        var artifactListInterface = Roaster.create(JavaInterfaceSource.class);
-        artifactListInterface.setName("ArtifactList")
-                .addInterface(instanceNodeInterface);
-        artifactListInterface.addMethod()
-                .setReturnType("List<Artifact>")
-                .setName("getArtifacts")
-                .addAnnotation(JsonValue.class);
-        artifactListInterface.addMethod()
+        iriFieldInterface.addMethod()
+                .setReturnType(String.class)
+                .setName("label")
+                .addAnnotation(JsonProperty.class)
+                .setStringValue("rdfs:label");
+        iriFieldInterface.addMethod()
                 .setDefault(true)
-                .setReturnType(boolean.class)
-                .setName("isEmpty")
-                .setBody("return getArtifacts().stream().allMatch(Artifact::isEmpty);");
-        parentCls.addNestedType(artifactListInterface);
+                .setReturnType(String.class)
+                .setName("compact")
+                .setBody("return this.id();");
+        iriFieldInterface.addMethod()
+                             .setDefault(true)
+                             .setReturnType(boolean.class)
+                             .setName("isEmpty")
+                             .setBody("return id() == null;")
+                             .addAnnotation(JsonIgnore.class);
 
-        var compactableInterface = Roaster.create(JavaInterfaceSource.class);
-        compactableInterface.setPublic()
-                            .setName("Compactable")
-                            .addMethod()
-                            .setName("compact")
-                            .setReturnType(String.class);
-        parentCls.addNestedType(compactableInterface);
+        parentCls.addNestedType(iriFieldInterface);
+    }
 
-
+    private static void createAndAddLiteralFieldInterface(JavaClassSource parentCls,
+                                  JavaInterfaceSource fieldInterface,
+                                  JavaInterfaceSource compactableInterface) {
         var literalFieldInterface = Roaster.create(JavaInterfaceSource.class);
         literalFieldInterface.setName("LiteralField");
         literalFieldInterface.addInterface(fieldInterface);
@@ -309,68 +334,85 @@ public class JavaGenerator {
                 .setLiteralValue("ignoreUnknown", "true");
 
         parentCls.addNestedType(literalFieldInterface);
+    }
 
-      var iriFieldInterface = Roaster.create(JavaInterfaceSource.class);
-        iriFieldInterface.setName("IriField");
-        iriFieldInterface.addInterface(fieldInterface);
-        iriFieldInterface.addInterface(compactableInterface);
-        iriFieldInterface.addMethod()
-                .setReturnType(String.class)
+    private static JavaInterfaceSource createAndAddCompactableInterface(JavaClassSource parentCls) {
+        var compactableInterface = Roaster.create(JavaInterfaceSource.class);
+        compactableInterface.setPublic()
+                            .setName("Compactable")
+                            .addMethod()
+                            .setName("compact")
+                            .setReturnType(String.class);
+        parentCls.addNestedType(compactableInterface);
+        return compactableInterface;
+    }
+
+    private static void createAndAddArtifactListInterface(JavaClassSource parentCls, JavaInterfaceSource instanceNodeInterface) {
+        var artifactListInterface = Roaster.create(JavaInterfaceSource.class);
+        artifactListInterface.setName("ArtifactList")
+                .addInterface(instanceNodeInterface);
+        artifactListInterface.addMethod()
+                .setReturnType("List<Artifact>")
+                .setName("getArtifacts")
+                .addAnnotation(JsonValue.class);
+        artifactListInterface.addMethod()
+                .setDefault(true)
+                .setReturnType(boolean.class)
+                .setName("isEmpty")
+                .setBody("return getArtifacts().stream().allMatch(Artifact::isEmpty);");
+        parentCls.addNestedType(artifactListInterface);
+    }
+
+    private static void createAndAddElementInterface(JavaClassSource parentCls, JavaInterfaceSource artifactInterface) {
+        var elementInterface = Roaster.create(JavaInterfaceSource.class);
+        elementInterface.setPublic()
+                .addInterface(artifactInterface)
+                        .setName("Element")
+                .addMethod()
+                .setDefault(true)
+                .setReturnType("boolean")
+                .setName("isEmpty")
+                .setBody("return getArtifacts().allMatch(Artifact::isEmpty);")
+                .addAnnotation(Override.class);
+        elementInterface.addMethod()
                 .setName("id")
+                .setReturnType(String.class)
                 .addAnnotation(JsonProperty.class)
                 .setStringValue("@id");
-        iriFieldInterface.addMethod()
-                .setReturnType(String.class)
-                .setName("label")
-                .addAnnotation(JsonProperty.class)
-                .setStringValue("rdfs:label");
-        iriFieldInterface.addMethod()
-                .setDefault(true)
-                .setReturnType(String.class)
-                .setName("compact")
-                .setBody("return this.id();");
-        iriFieldInterface.addMethod()
-                             .setDefault(true)
-                             .setReturnType(boolean.class)
-                             .setName("isEmpty")
-                             .setBody("return id() == null;")
-                             .addAnnotation(JsonIgnore.class);
+        elementInterface.addMethod()
+                .setName("getArtifacts")
+                .setReturnType("Stream<Artifact>")
+                .addAnnotation(JsonIgnore.class);
+        parentCls.addNestedType(elementInterface);
+    }
 
-        parentCls.addNestedType(iriFieldInterface);
+    private static JavaInterfaceSource createAndAddFieldInterface(JavaClassSource parentCls,
+                                                              JavaInterfaceSource artifactInterface) {
+        var fieldInterface = Roaster.create(JavaInterfaceSource.class);
+        fieldInterface.setName("Field")
+                .addInterface(artifactInterface);
+        parentCls.addNestedType(fieldInterface);
+        return fieldInterface;
+    }
 
-        parentCls.addField()
-                .setPublic()
-                .setStatic(true)
-                .setFinal(true)
-                .setType(String.class)
-                .setName("IRI_PREFIX")
-                .setStringInitializer("https://repo.metadatacenter.org/template-element-instances/");
+    private static JavaInterfaceSource createAndAddArtifactInterface(JavaClassSource parentCls,
+                                                              JavaInterfaceSource instanceNodeInterface) {
+        var artifactInterface = Roaster.create(JavaInterfaceSource.class);
+        artifactInterface.setName("Artifact")
+                .addInterface(instanceNodeInterface);
+        parentCls.addNestedType(artifactInterface);
+        return artifactInterface;
+    }
 
-        parentCls.addMethod()
-                .setPublic()
-                .setStatic(true)
-                .setReturnType(String.class)
-                .setName("generateId")
-                .setBody("return IRI_PREFIX + UUID.randomUUID();");
-
-        parentCls.addMethod("""
-                                    private static Stream<Artifact> streamArtifacts(Object ... in) {
-                                            return Arrays.stream(in)
-                                                    .flatMap(o -> {
-                                                        if(o instanceof List l) {
-                                                            return l.stream();
-                                                        }
-                                                        else if(o instanceof Artifact) {
-                                                            return Stream.of(o);
-                                                        }
-                                                        else {
-                                                            return Stream.empty();
-                                                        }
-                                                    })
-                                                    .filter(o -> o instanceof Artifact)
-                                                    .map(o -> (Artifact) o);
-                                        }
-                                    """);
+    private static JavaInterfaceSource createAndAddInstanceNodeInterface(JavaClassSource parentCls) {
+        var instanceNodeInterface = Roaster.create(JavaInterfaceSource.class);
+        instanceNodeInterface.setName("InstanceNode")
+                .addMethod()
+                .setReturnType(boolean.class)
+                .setName("isEmpty")
+                .addAnnotation(JsonIgnore.class);
+        parentCls.addNestedType(instanceNodeInterface);
+        return instanceNodeInterface;
     }
 
     private static void generateConstants(CodeGenerationNode rootNode, JavaClassSource parentCls) {
@@ -407,7 +449,7 @@ public class JavaGenerator {
                 .forEach(childNode -> collectElements(childNode, elements));
     }
 
-    private void generate(CodeGenerationNode node, JavaClassSource parentCls, Set<String> generateNames) {
+    private void generateArtifactRecords(CodeGenerationNode node, JavaClassSource parentCls, Set<String> generateNames) {
         if(generateNames.add(node.name())) {
             if (node.artifactType().isField()) {
                 generateFieldDeclaration(node, parentCls);
@@ -416,7 +458,7 @@ public class JavaGenerator {
                 generateElementDeclaration(node, parentCls);
             }
 
-            node.childNodes().forEach(cn -> generate(cn, parentCls, generateNames));
+            node.childNodes().forEach(cn -> generateArtifactRecords(cn, parentCls, generateNames));
         }
     }
 
