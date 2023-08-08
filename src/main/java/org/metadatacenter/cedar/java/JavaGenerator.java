@@ -29,17 +29,18 @@ public class JavaGenerator {
 
     private final String packageName;
 
-    private final TypeNamesOracle typeNamesOracle;
+    private final JavaTypeNamesOracle javaTypeNamesOracle;
 
 
-    public JavaGenerator(String packageName, TypeNamesOracle typeNamesOracle) {
+    public JavaGenerator(String packageName, JavaTypeNamesOracle javaTypeNamesOracle) {
         this.packageName = packageName;
-        this.typeNamesOracle = typeNamesOracle;
+        this.javaTypeNamesOracle = javaTypeNamesOracle;
     }
 
     public static JavaGenerator get(String packageName,
                                     boolean suffixJavaTypeNames) {
-        return new JavaGenerator(packageName, new TypeNamesOracle(suffixJavaTypeNames));
+        var typeNameFormat = suffixJavaTypeNames ? JavaTypeNameFormat.SUFFIX_WITH_ARTIFACT_TYPE : JavaTypeNameFormat.DO_NOT_SUFFIX_WITH_ARTIFACT_TYPE;
+        return new JavaGenerator(packageName, new JavaTypeNamesOracle(typeNameFormat));
     }
 
 
@@ -406,7 +407,7 @@ public class JavaGenerator {
     }
 
     private void generateFieldDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
-        var recordName = typeNamesOracle.getJavaTypeName(node);
+        var recordName = javaTypeNamesOracle.getJavaTypeName(node);
         if(node.isAttributeValueField()) {
             // Nothing to do, because attribute value fields are phantom fields in a sense... they really mutate the
             // parent element and therefore modify the class representing that element, not this field
@@ -536,7 +537,7 @@ public class JavaGenerator {
 
     private void generateArtifactListDeclaration(CodeGenerationNode node, JavaClassSource parentCls) {
 
-        var javaTypeName = typeNamesOracle.getJavaTypeName(node);
+        var javaTypeName = javaTypeNamesOracle.getJavaTypeName(node);
         var listJavaTypeName = javaTypeName + "List";
         var paramName = getParameterName(node);
         var listParamName = paramName + "List";
@@ -632,7 +633,7 @@ public class JavaGenerator {
             argsList += ",\nnew LinkedHashMap<>()";
         }
 
-        var typeName = typeNamesOracle.getJavaTypeName(node);
+        var typeName = javaTypeNamesOracle.getJavaTypeName(node);
 
         var contextBlock = new StringBuilder();
 
@@ -774,7 +775,7 @@ public class JavaGenerator {
         if(node.isAttributeValueField()) {
             return "List.of()";
         }
-        var typeName = typeNamesOracle.getJavaTypeName(node);
+        var typeName = javaTypeNamesOracle.getJavaTypeName(node);
         if (node.isListType()) {
             return typeName + "List.of()";
         }
@@ -791,7 +792,7 @@ public class JavaGenerator {
             paramType = "List<String>";
         }
         else {
-            var typeName = typeNamesOracle.getJavaTypeName(node);
+            var typeName = javaTypeNamesOracle.getJavaTypeName(node);
             // Accounts for multivalued
             paramType = getParameterType(node, typeName);
         }

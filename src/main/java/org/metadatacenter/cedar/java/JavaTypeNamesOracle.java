@@ -10,14 +10,14 @@ import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
  * Stanford Center for Biomedical Informatics Research
  * 2023-08-08
  */
-public class TypeNamesOracle {
+public class JavaTypeNamesOracle {
 
 
     private final Map<String, String> cedarNames2JavaTypeNames = new HashMap<>();
 
-    private final boolean suffixTypes;
+    private final JavaTypeNameFormat suffixTypes;
 
-    public TypeNamesOracle(boolean suffixTypes) {
+    public JavaTypeNamesOracle(JavaTypeNameFormat suffixTypes) {
         this.suffixTypes = suffixTypes;
     }
 
@@ -38,7 +38,7 @@ public class TypeNamesOracle {
                                                   .count() + 1;
 
         var camelCaseName = toCamelCase(name, CamelCase.CamelCaseOption.START_WITH_UPPERCASE);
-        if (suffixTypes) {
+        if (suffixTypes.equals(JavaTypeNameFormat.SUFFIX_WITH_ARTIFACT_TYPE)) {
             if(node.root()) {
                 camelCaseName = camelCaseName + "Instance";
             }
