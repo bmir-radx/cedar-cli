@@ -44,14 +44,29 @@ public class JavaGenerator {
                 node.isRoot(),
                 node.getName(),
                 node.getChildNodes().stream().map(JavaGenerator::toCodeGenerationNode).toList(),
-                node.isField(),
-                node.isLiteralValueType(),
-                node.getDescription(),
+                getArtifactType(node), node.getDescription(),
                 node.getXsdDatatype().orElse(null),
                 node.isRequired() ? Required.REQUIRED : Required.OPTIONAL,
                 node.isMultiValued(),
                 node.getPropertyIri().orElse(null),
                 inputType);
+    }
+
+    private static CodeGenerationNode.ArtifactType getArtifactType(CedarCsvParser.Node node) {
+        if(node.isField()) {
+            if(node.isLiteralValueType()) {
+                return CodeGenerationNode.ArtifactType.LITERAL_FIELD;
+            }
+            else {
+                return CodeGenerationNode.ArtifactType.IRI_FIELD;
+            }
+        }
+        else if(node.isElement()) {
+            return CodeGenerationNode.ArtifactType.ELEMENT;
+        }
+        else {
+            return CodeGenerationNode.ArtifactType.TEMPLATE;
+        }
     }
 
     public void generateJava(CodeGenerationNode node,
@@ -352,7 +367,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
     private void generate(CodeGenerationNode node, JavaClassSource parentCls, Set<String> generateNames) {
         if(generateNames.add(node.name())) {
-            if (node.field()) {
+            if (node.artifactType().isField()) {
                 generateFieldDeclaration(node, parentCls);
             }
             else {
@@ -398,7 +413,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             // parent element and therefore modify the class representing that element, not this field
             return;
         }
-        if (node.literalField()) {
+        if (node.artifactType().equals(CodeGenerationNode.ArtifactType.LITERAL_FIELD)) {
             generateLiteralFieldDeclaration(node, parentCls, recordName);
         }
         else {
@@ -635,7 +650,7 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
 
         var contextBlock = new StringBuilder();
 
-        if (!node.field()) {
+        if (!node.artifactType().isField()) {
             contextBlock.append("var contextMap = new LinkedHashMap<String, Object>();\n");
             node.childNodes().forEach(childNode -> {
                 childNode.getPropertyIri().ifPresent(propertyIri -> {
@@ -765,13 +780,15 @@ public static record LiteralFieldImpl(@JsonProperty("@value") String value) impl
             if(node.root()) {
                 camelCaseName = camelCaseName + "Instance";
             }
-            if (node.field()) {
+            if (node.artifactType().isField()) {
                 camelCaseName =  camelCaseName + "Field";
             }
             else {
                 camelCaseName =  camelCaseName + "Element";
             }
-        } if(countSuffix > 1) {
+        }
+
+        if(countSuffix > 1) {
             camelCaseName = camelCaseName + countSuffix;
         }
 

@@ -17,8 +17,7 @@ public record CodeGenerationNode(@Nullable String id,
                                  boolean root,
                                  @Nonnull String name,
                                  List<CodeGenerationNode> childNodes,
-                                 boolean field,
-                                 boolean literalField,
+                                 ArtifactType artifactType,
                                  @Nullable String description,
                                  @Nullable String xsdDatatype,
                                  Required required,
@@ -45,4 +44,18 @@ public record CodeGenerationNode(@Nullable String id,
     public boolean isAttributeValueField() {
         return CedarCsvInputType.ATTRIBUTE_VALUE.equals(inputType());
     }
+
+
+    public enum ArtifactType {
+        ELEMENT,
+        LITERAL_FIELD,
+        IRI_FIELD,
+        TEMPLATE;
+
+        public boolean isField() {
+            return this.equals(ArtifactType.IRI_FIELD) || this.equals(ArtifactType.LITERAL_FIELD);
+        }
+    }
+
+
 }
