@@ -567,10 +567,7 @@ public class JavaGenerator {
                .setReturnType(listJavaTypeName)
                .setName("of")
                .setBody("""
-                            if(listParamName.isEmpty()) {
-                                // throw new IllegalArgumentException("Supplied list must not be empty");
-                            }
-                            return new listJavaTypeName(listParamName);
+                         return new listJavaTypeName(listParamName);
                         """.replace("listJavaTypeName", listJavaTypeName)
                                 .replace("listParamName", listParamName))
                .addParameter("List<" + javaTypeName + ">", listParamName);
