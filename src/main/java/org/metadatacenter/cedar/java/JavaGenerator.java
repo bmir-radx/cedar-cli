@@ -551,12 +551,18 @@ public class JavaGenerator {
 
         listCls.addInterface("ArtifactList");
         // ArtifactList.of()
-        listCls.addMethod()
+        var ofMethod = listCls.addMethod()
                .setPublic()
                .setStatic(true)
                .setReturnType(listJavaTypeName)
-               .setName("of")
-               .setBody("return of(" + javaTypeName + ".of());");
+               .setName("of");
+        if (node.required().equals(Required.REQUIRED)) {
+            ofMethod
+                   .setBody("return of(" + javaTypeName + ".of());");
+        }
+        else {
+            ofMethod.setBody("return new ${listJavaTypeName}(List.of());".replace("${listJavaTypeName}", listJavaTypeName));
+        }
 
         // Non empty list
         // ArtifactList.of(List<ArtifactJavaType>)
@@ -567,9 +573,9 @@ public class JavaGenerator {
                .setReturnType(listJavaTypeName)
                .setName("of")
                .setBody("""
-                         return new listJavaTypeName(listParamName);
-                        """.replace("listJavaTypeName", listJavaTypeName)
-                                .replace("listParamName", listParamName))
+                         return new ${listJavaTypeName}(${listParamName});
+                        """.replace("${listJavaTypeName}", listJavaTypeName)
+                                .replace("${listParamName}", listParamName))
                .addParameter("List<" + javaTypeName + ">", listParamName);
         creatorMethod.addAnnotation(JsonCreator.class);
 
