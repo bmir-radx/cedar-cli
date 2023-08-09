@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.metadatacenter.artifacts.model.core.*;
 import org.metadatacenter.artifacts.model.reader.ArtifactReader;
+import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.csv.CedarCsvInputType;
@@ -19,6 +20,7 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Matthew Horridge
@@ -67,11 +69,21 @@ public class Template2JavaCommand implements CedarCliCommand {
         return 0;
     }
 
+    private Optional<Iri> getPropertyIri(Artifact artifact) {
+        if(artifact instanceof ChildSchemaArtifact childSchemaArtifact) {
+            return childSchemaArtifact.getPropertyURI()
+                    .map(uri -> new Iri(uri.toString()));
+        }
+        return Optional.empty();
+    }
+
     private CodeGenerationNode toCodeGenerationNode(Artifact artifact) {
         if(artifact instanceof TemplateSchemaArtifact template) {
             var childNodes = template.getChildSchemas()
                     .stream()
-                    .map(childSchemaArtifact -> toCodeGenerationNode((Artifact) childSchemaArtifact))
+                    .map(childSchemaArtifact -> {
+                        return toCodeGenerationNode((Artifact) childSchemaArtifact);
+                    })
                     .toList();
             return new CodeGenerationNode(template.getJsonLdId().map(URI::toString).orElse(""),
                                           true,
@@ -81,7 +93,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                                           null,
                                           Required.OPTIONAL,
                                           Cardinality.SINGLE,
-                                          null,
+                                          getPropertyIri(artifact).orElse(null),
                                           null);
         }
         else if(artifact instanceof ElementSchemaArtifact element) {
@@ -98,7 +110,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                                           null,
                                           Required.OPTIONAL,
                                           element.isMultiple() ? Cardinality.MULTIPLE : Cardinality.SINGLE,
-                                          null,
+                                          getPropertyIri(artifact).orElse(null),
                                           null);
         }
         else if(artifact instanceof FieldSchemaArtifact field) {
@@ -117,7 +129,7 @@ public class Template2JavaCommand implements CedarCliCommand {
                          .map(required -> Required.REQUIRED)
                          .orElse(Required.OPTIONAL),
                     field.isMultiple() ? Cardinality.MULTIPLE : Cardinality.SINGLE,
-                    null,
+                    getPropertyIri(artifact).orElse(null),
                     CedarCsvInputType.TEXTFIELD
                     );
         }
