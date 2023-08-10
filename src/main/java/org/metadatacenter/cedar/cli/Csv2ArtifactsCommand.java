@@ -9,7 +9,7 @@ import org.metadatacenter.cedar.csv.*;
 import org.metadatacenter.cedar.docs.DocsGenerator;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
-import org.metadatacenter.cedar.java.JavaGenerator;
+import org.metadatacenter.cedar.codegen.JavaGenerator;
 import org.metadatacenter.cedar.ts.TypeScriptGenerator;
 import org.metadatacenter.cedar.util.StripInstance;
 import org.metadatacenter.cedar.util.StrippingOperations;
@@ -21,7 +21,6 @@ import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;

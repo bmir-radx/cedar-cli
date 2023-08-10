@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.java;
+package org.metadatacenter.cedar.codegen;
 
 /**
  * Matthew Horridge

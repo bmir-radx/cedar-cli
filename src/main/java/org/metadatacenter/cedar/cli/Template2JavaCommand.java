@@ -8,16 +8,13 @@ import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
 import org.metadatacenter.cedar.csv.Cardinality;
 import org.metadatacenter.cedar.csv.CedarCsvInputType;
-import org.metadatacenter.cedar.java.CodeGenerationNode;
-import org.metadatacenter.cedar.java.JavaGenerator;
+import org.metadatacenter.cedar.codegen.CodeGenerationNode;
+import org.metadatacenter.cedar.codegen.JavaGenerator;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;

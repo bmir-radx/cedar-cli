@@ -1,9 +1,9 @@
-package org.metadatacenter.cedar.java;
+package org.metadatacenter.cedar.codegen;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
+import static org.metadatacenter.cedar.codegen.CamelCase.toCamelCase;
 
 /**
  * Matthew Horridge

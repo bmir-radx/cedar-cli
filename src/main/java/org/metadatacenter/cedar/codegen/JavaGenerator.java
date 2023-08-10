@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.java;
+package org.metadatacenter.cedar.codegen;
 
 import com.fasterxml.jackson.annotation.*;
 import org.jboss.forge.roaster.Roaster;
@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.metadatacenter.cedar.java.CamelCase.toCamelCase;
+import static org.metadatacenter.cedar.codegen.CamelCase.toCamelCase;
 
 /**
  * Matthew Horridge

@@ -1,4 +1,4 @@
-package org.metadatacenter.cedar.java;
+package org.metadatacenter.cedar.codegen;
 
 import org.metadatacenter.cedar.api.Iri;
 import org.metadatacenter.cedar.api.Required;
