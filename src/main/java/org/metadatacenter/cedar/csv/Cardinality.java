@@ -1,5 +1,7 @@
 package org.metadatacenter.cedar.csv;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.annotation.Nullable;
 import java.util.Optional;
 
@@ -20,10 +22,12 @@ public enum Cardinality {
 
     private final Integer multiplicityUpperBound;
 
+    @JsonIgnore
     Cardinality(@Nullable Integer multiplicityUpperBound) {
         this.multiplicityUpperBound = multiplicityUpperBound;
     }
 
+    @JsonIgnore
     public Optional<Integer> getMultiplicityUpperBound() {
         return Optional.ofNullable(multiplicityUpperBound);
     }

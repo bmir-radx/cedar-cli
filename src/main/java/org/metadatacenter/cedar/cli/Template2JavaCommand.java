@@ -2,22 +2,15 @@ package org.metadatacenter.cedar.cli;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.metadatacenter.artifacts.model.core.*;
 import org.metadatacenter.artifacts.model.reader.ArtifactReader;
-import org.metadatacenter.cedar.api.Iri;
-import org.metadatacenter.cedar.api.Required;
-import org.metadatacenter.cedar.csv.Cardinality;
-import org.metadatacenter.cedar.csv.CedarCsvInputType;
-import org.metadatacenter.cedar.codegen.CodeGenerationNode;
+import org.metadatacenter.artifacts.model.reader.JsonSchemaArtifactReader;
+import org.metadatacenter.cedar.codegen.TemplateTranslator;
 import org.metadatacenter.cedar.codegen.JavaGenerator;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.net.URI;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Matthew Horridge
@@ -57,81 +50,14 @@ public class Template2JavaCommand implements CedarCliCommand {
     public Integer call() throws Exception {
         var objectNode = (ObjectNode) objectMapper.createParser(templatePath.toFile())
                                                  .readValueAsTree();
-        var reader = new ArtifactReader();
+        var reader = new JsonSchemaArtifactReader();
         var template = reader.readTemplateSchemaArtifact(objectNode);
-        var rootNode = toCodeGenerationNode(template);
+        var translator = new TemplateTranslator(rootClassName);
+        var rootNode = translator.translateTemplate(template);
+        System.err.println(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(rootNode));
         System.err.println("Read template from " + templatePath);
         var javaGenerator = JavaGenerator.get(pkg, rootClassName, suffixJavaTypes);
         javaGenerator.writeJavaFile(rootNode, out);
         return 0;
-    }
-
-    private Optional<Iri> getPropertyIri(Artifact artifact) {
-        if(artifact instanceof ChildSchemaArtifact childSchemaArtifact) {
-            return childSchemaArtifact.getPropertyURI()
-                    .map(uri -> new Iri(uri.toString()));
-        }
-        return Optional.empty();
-    }
-
-    private CodeGenerationNode toCodeGenerationNode(Artifact artifact) {
-        if(artifact instanceof TemplateSchemaArtifact template) {
-            var childNodes = template.getChildSchemas()
-                    .stream()
-                    .map(childSchemaArtifact -> {
-                        return toCodeGenerationNode((Artifact) childSchemaArtifact);
-                    })
-                    .toList();
-            return new CodeGenerationNode(template.getJsonLdId().map(URI::toString).orElse(""),
-                                          true,
-                                          templateClassName,
-                                          childNodes,
-                                          CodeGenerationNode.ArtifactType.TEMPLATE, template.getDescription(),
-                                          null,
-                                          Required.OPTIONAL,
-                                          Cardinality.SINGLE,
-                                          getPropertyIri(artifact).orElse(null),
-                                          null);
-        }
-        else if(artifact instanceof ElementSchemaArtifact element) {
-            System.err.println("Element: " + element.getName() + " (multiple=" + element.isMultiple() + ")");
-            var childNodes = element.getChildSchemas()
-                                     .stream()
-                                     .map(childSchemaArtifact -> toCodeGenerationNode((Artifact) childSchemaArtifact))
-                                     .toList();
-            return new CodeGenerationNode(element.getJsonLdId().map(URI::toString).orElse(""),
-                                          false,
-                                          element.getName(),
-                                          childNodes,
-                                          CodeGenerationNode.ArtifactType.ELEMENT, element.getDescription(),
-                                          null,
-                                          Required.OPTIONAL,
-                                          element.isMultiple() ? Cardinality.MULTIPLE : Cardinality.SINGLE,
-                                          getPropertyIri(artifact).orElse(null),
-                                          null);
-        }
-        else if(artifact instanceof FieldSchemaArtifact field) {
-            System.err.println("    Field: " + field.getName() + " (multiple=" + field.isMultiple() + ")");
-            return new CodeGenerationNode(
-                    field.getJsonLdId().map(URI::toString).orElse(""),
-                    false,
-                    field.getName(),
-                    List.of(),
-                    field.hasIRIValue() ? CodeGenerationNode.ArtifactType.IRI_FIELD : CodeGenerationNode.ArtifactType.LITERAL_FIELD,
-                    field.getDescription(),
-                    null,
-                    field.getValueConstraints()
-                         .map(ValueConstraints::isRequiredValue)
-                         .filter(required -> required)
-                         .map(required -> Required.REQUIRED)
-                         .orElse(Required.OPTIONAL),
-                    field.isMultiple() ? Cardinality.MULTIPLE : Cardinality.SINGLE,
-                    getPropertyIri(artifact).orElse(null),
-                    CedarCsvInputType.TEXTFIELD
-                    );
-        }
-        else {
-            return null;
-        }
     }
 }

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.codegen.CodeGenerationNode;
+import org.metadatacenter.cedar.codegen.CodeGenerationNodeRecord;
 import org.metadatacenter.cedar.csv.*;
 import org.metadatacenter.cedar.docs.DocsGenerator;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
@@ -211,10 +213,10 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
             }
 
             if(generateJava) {
-                var cgn = JavaGenerator.toCodeGenerationNode(rootNode);
+                var codeGenerationNode = toCodeGenerationNode(rootNode);
                 var codeOutputDirectory = outputDirectory.resolve("code");
                 JavaGenerator.get(javaPackageName, rootClassName, true)
-                                        .writeJavaFile(cgn, codeOutputDirectory);
+                                        .writeJavaFile(codeGenerationNode, codeOutputDirectory);
             }
 
             if(templateIdentifier == null) {
@@ -325,6 +327,39 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                                                       .collect(Collectors.joining(" > "))+ "\033[0m");
         }
         return 0;
+    }
+
+    public static CodeGenerationNode toCodeGenerationNode(CedarCsvParser.Node node) {
+        var row = node.getRow();
+        var inputType = row != null ? row.inputType().getCedarInputType().equals(InputType.ATTRIBUTE_VALUE) : false;
+        return new CodeGenerationNodeRecord(
+                null,
+                node.isRoot(),
+                node.getName(),
+                node.getChildNodes().stream().map(Csv2ArtifactsCommand::toCodeGenerationNode).toList(),
+                getArtifactType(node), node.getDescription(),
+                node.getXsdDatatype().orElse(null),
+                node.isRequired() ? CodeGenerationNode.Required.REQUIRED : CodeGenerationNode.Required.OPTIONAL,
+                node.getCardinality().equals(Cardinality.SINGLE) ? CodeGenerationNode.Cardinality.getZeroOrOne() : CodeGenerationNode.Cardinality.getZeroOrMore(),
+                node.getPropertyIri().map(Object::toString).orElse(null),
+                Optional.ofNullable(node.getRow()).flatMap(CedarCsvRow::getInputType).map(it -> it.getCedarInputType().getFieldInputType()).orElse(null));
+    }
+
+    private static CodeGenerationNode.ArtifactType getArtifactType(CedarCsvParser.Node node) {
+        if(node.isField()) {
+            if(node.isLiteralValueType()) {
+                return CodeGenerationNode.ArtifactType.LITERAL_FIELD;
+            }
+            else {
+                return CodeGenerationNode.ArtifactType.IRI_FIELD;
+            }
+        }
+        else if(node.isElement()) {
+            return CodeGenerationNode.ArtifactType.ELEMENT;
+        }
+        else {
+            return CodeGenerationNode.ArtifactType.TEMPLATE;
+        }
     }
 
     private CedarId getTemplateId(CedarTemplate template) {
