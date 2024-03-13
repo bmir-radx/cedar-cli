@@ -55,7 +55,6 @@ public class TemplateInstanceGenerator {
     }
 
     public Optional<CedarInstanceNode> toCedarInstanceJsonNode(Node node, TemplateInstanceGenerationMode mode) {
-
         if(node.isField()) {
             // No context
             return Optional.of(toFieldNodeValue(node, mode));

@@ -6,6 +6,7 @@ import org.metadatacenter.cedar.webapi.CedarWebClientFactory;
 import org.metadatacenter.cedar.webapi.FailedValidationErrorResponse;
 import org.metadatacenter.cedar.webapi.ValidationError;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -13,10 +14,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -74,10 +75,11 @@ public class CedarArtifactPoster {
             }
             return Optional.empty();
         } catch (WebClientResponseException e) {
-                System.err.printf("Posted %s to CEDAR Server and received an error response of %s (%s)\n",
+                System.err.printf("Posted %s to CEDAR Server and received an error response of %s (%s) %s\n",
                                   artifact.toCompactString(),
                                   e.getStatusCode().value(),
-                                  e.getStatusCode().getReasonPhrase());
+                                  e.getStatusCode().getReasonPhrase(),
+                                  Optional.ofNullable(e.getRequest()).map(HttpRequest::getURI).map(Objects::toString).orElse(""));
                 if(e.getCause() != null) {
                     System.err.printf("    Cause: %s\n", e.getCause().getMessage());
                 }

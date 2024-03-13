@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import org.metadatacenter.artifacts.model.core.FieldInputType;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.codegen.CodeGenerationNode;
 import org.metadatacenter.cedar.codegen.CodeGenerationNodeRecord;
@@ -331,7 +332,13 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
 
     public static CodeGenerationNode toCodeGenerationNode(CedarCsvParser.Node node) {
         var row = node.getRow();
-        var inputType = row != null ? row.inputType().getCedarInputType().equals(InputType.ATTRIBUTE_VALUE) : false;
+        FieldInputType inputType;
+        if(row == null) {
+            inputType = null;
+        }
+        else {
+            inputType = row.getInputType().map(CedarCsvInputType::getCedarInputType).map(InputType::getFieldInputType).orElse(null);
+        }
         return new CodeGenerationNodeRecord(
                 null,
                 node.isRoot(),
@@ -342,7 +349,7 @@ public class Csv2ArtifactsCommand implements CedarCliCommand {
                 node.isRequired() ? CodeGenerationNode.Required.REQUIRED : CodeGenerationNode.Required.OPTIONAL,
                 node.getCardinality().equals(Cardinality.SINGLE) ? CodeGenerationNode.Cardinality.getZeroOrOne() : CodeGenerationNode.Cardinality.getZeroOrMore(),
                 node.getPropertyIri().map(Object::toString).orElse(null),
-                Optional.ofNullable(node.getRow()).flatMap(CedarCsvRow::getInputType).map(it -> it.getCedarInputType().getFieldInputType()).orElse(null));
+                inputType);
     }
 
     private static CodeGenerationNode.ArtifactType getArtifactType(CedarCsvParser.Node node) {

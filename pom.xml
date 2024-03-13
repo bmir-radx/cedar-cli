@@ -55,7 +55,7 @@
 
 		<dependency>
 			<groupId>org.metadatacenter</groupId>
-			<artifactId>codegen</artifactId>
+			<artifactId>cedar-codegen-java</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 
