@@ -1,7 +1,7 @@
 package org.metadatacenter.cedar.api;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.metadatacenter.artifacts.model.core.FieldInputType;
+import org.metadatacenter.artifacts.model.core.fields.FieldInputType;
 import org.metadatacenter.cedar.io.CedarFieldValueType;
 
 import java.util.Optional;

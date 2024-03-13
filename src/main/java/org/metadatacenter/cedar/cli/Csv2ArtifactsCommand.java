@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import org.metadatacenter.artifacts.model.core.FieldInputType;
+import org.metadatacenter.artifacts.model.core.fields.FieldInputType;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.codegen.CodeGenerationNode;
 import org.metadatacenter.cedar.codegen.CodeGenerationNodeRecord;
