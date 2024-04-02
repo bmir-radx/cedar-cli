@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.google.common.base.Strings;
+import org.apache.poi.sl.draw.geom.GuideIf;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.text.TextContentRenderer;
 import org.metadatacenter.cedar.api.*;
@@ -604,6 +605,41 @@ public class CedarCsvParser {
                 return Cardinality.SINGLE;
             }
             return row.getCardinality();
+        }
+
+        public Optional<CedarCsvInputType> getInputType(){
+            if(row == null){
+                return Optional.empty();
+            }
+            return row.getInputType();
+        }
+
+        public Optional<EnumerationValueConstraints> getOntologyTermsConstraints(){
+            if(row == null){
+                return Optional.empty();
+            }
+            return Optional.of(CedarCsvParser.getOntologyTermsConstaints(row));
+        }
+
+        public Optional<String> getFieldIdentifier(){
+            if(row == null){
+                return Optional.empty();
+            }
+            return Optional.of(CedarCsvParser.getFieldIdentifier(row));
+        }
+
+        public boolean isHidden(){
+            if(row == null){
+                return false;
+            }
+            return row.visibility().isHidden();
+        }
+
+        public Optional<String> getDefaultValue(){
+            if(row == null){
+                return Optional.empty();
+            }
+            return Optional.of(row.defaultValue().trim());
         }
     }
 }
