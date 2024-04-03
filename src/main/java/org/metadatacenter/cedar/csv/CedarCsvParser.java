@@ -364,7 +364,7 @@ public class CedarCsvParser {
         if(!theLookupSpec.getTermSpecList().isEmpty()) {
             return theLookupSpec.getTermSpecList()
                     .stream()
-                    .map(ts -> new SpecificOntologyClassSpecification(ts.iri(), ts.label(), "ENUM", false))
+                    .map(ts -> new SpecificOntologyClassSpecification(ts.iri(), ts.label(), "GDMT", false))
                     .map(s -> (OntologyTermsSpecification) s)
                                 .toList();
         }
