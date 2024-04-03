@@ -31,6 +31,7 @@ public class TemplateGenerator {
 
     for(var child : rootnode.getChildNodes()){
       if(child.isElement() && child.getName().equals(elementName)){
+//      if(child.isElement()){
         var elementSchemaArtifact = elementGenerator.generateElementSchemaArtifact(child);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
       } else if (child.isField()) {

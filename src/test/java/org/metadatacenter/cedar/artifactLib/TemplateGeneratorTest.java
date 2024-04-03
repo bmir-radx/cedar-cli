@@ -42,7 +42,7 @@ public class TemplateGeneratorTest {
     String preVersion = "0.0.1";
     var status = "bibo:draft";
     String input = "RADxMetadataSpecification.csv";
-    String elementName = "Data File Titles";
+    String elementName = "Data File Funding Sources";
 
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream(input);
     var cedarCsvParser = cedarCsvParserFactory.createParser(ArtifactStatus.DRAFT, "0.0.2", "0.0.1");
@@ -51,7 +51,8 @@ public class TemplateGeneratorTest {
     assertThat(templateSchema.name().equals(templateName));
 
     var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
-    var fileName = elementName.replace(" ", "_") + "_Template_3.json";
+    var fileName = elementName.replace(" ", "_") + "_Template.json";
+//    var fileName = input.replace(".csv", "Template.json");
     var file = new File("../outputTemplates", fileName);
     mapper.writeValue(file, templateJson);
   }
