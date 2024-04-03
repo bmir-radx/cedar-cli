@@ -37,6 +37,7 @@ public class ElementGenerator {
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
         .withIsMultiple(node.isMultiValued())
+        .withMinItems(0)
         .build();
   }
 
