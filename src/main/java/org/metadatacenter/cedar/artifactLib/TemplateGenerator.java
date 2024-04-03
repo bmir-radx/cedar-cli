@@ -4,6 +4,7 @@ import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.Status;
 import org.metadatacenter.artifacts.model.core.TemplateSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.Version;
+import org.metadatacenter.cedar.api.ArtifactStatus;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.springframework.stereotype.Component;
 
@@ -24,11 +25,12 @@ public class TemplateGenerator {
                                                                String templateName,
                                                                String version,
                                                                String previousVersion,
-                                                               String artifactStatus){
+                                                               String artifactStatus,
+                                                               String elementName){
     var templateSchemaArtifactBuilder = TemplateSchemaArtifact.builder();
 
     for(var child : rootnode.getChildNodes()){
-      if(child.isElement()){
+      if(child.isElement() && child.getName().equals(elementName)){
         var elementSchemaArtifact = elementGenerator.generateElementSchemaArtifact(child);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
       } else if (child.isField()) {
@@ -37,7 +39,7 @@ public class TemplateGenerator {
       }
     }
 
-    //TODO Add id, title, description and others
+    //TODO add id!
     return templateSchemaArtifactBuilder
         .withSchemaOrgIdentifier(templateId)
         .withName(templateName)
