@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.cli;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.metadatacenter.cedar.api.CedarArtifact;
 import org.metadatacenter.cedar.io.CedarArtifactWriter;
 import org.springframework.stereotype.Component;
@@ -30,5 +31,13 @@ public class CliCedarArtifactWriter {
         var outputStream = Files.newOutputStream(outputFile);
         cedarArtifactWriter.writeCedarArtifact(cedarArtifact,
                                                jsonSchemaDescription, outputStream);
+    }
+
+    public void writeCedarArtifact(ObjectNode cedarArtifact,
+                                   String fileName,
+                                   Path outputDirectory) throws IOException {
+        var outputFile = outputDirectory.resolve(fileName);
+        var outputStream = Files.newOutputStream(outputFile);
+        cedarArtifactWriter.writeCedarArtifact(cedarArtifact, outputStream);
     }
 }

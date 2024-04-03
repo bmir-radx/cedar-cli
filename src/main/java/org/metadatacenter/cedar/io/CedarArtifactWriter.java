@@ -1,6 +1,8 @@
 package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.metadatacenter.artifacts.model.core.SchemaArtifact;
 import org.metadatacenter.cedar.api.*;
 
 import java.io.IOException;
@@ -33,5 +35,11 @@ public class CedarArtifactWriter {
             jsonMapper.writerWithDefaultPrettyPrinter()
                     .writeValue(outputStream, cedarArtifact);
         }
+    }
+
+    public void writeCedarArtifact(ObjectNode cedarArtifact,
+                                   OutputStream outputStream) throws IOException {
+        jsonMapper.writerWithDefaultPrettyPrinter()
+            .writeValue(outputStream, cedarArtifact);
     }
 }
