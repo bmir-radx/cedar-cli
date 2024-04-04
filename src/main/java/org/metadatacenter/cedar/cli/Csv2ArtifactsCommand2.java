@@ -237,21 +237,21 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                 templateIdentifier = templateName.trim().toLowerCase().replace(" ", "-");
             }
 
-            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString(),"");
+//            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString(),"");
+            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString());
+            //TODO validate the template
             var templateReporter = new TemplateSchemaReporter(template);
-            // Write artifacts in a depth first manner
+            writeArtifacts(Collections.singletonList(template));
 
             if (generateFields) {
                 var fields = templateReporter.getFieldSchemas();
-                writeArtifacts(fields, ArtifactSimpleTypeName.FIELD);
+                writeArtifacts(fields);
             }
 
             if (generateElements) {
                 var elements = templateReporter.getElementSchemas();
-                writeArtifacts(elements, ArtifactSimpleTypeName.ELEMENT);
+                writeArtifacts(elements);
             }
-
-            writeArtifacts(Collections.singletonList(template), ArtifactSimpleTypeName.TEMPLATE);
 
 //            if (generateUmbrellaElement) {
 //                var umbrellaElement = template.asElement(umbrellaElementName,
@@ -368,44 +368,35 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
         }
     }
 
-    private void writeArtifacts(Collection<? extends SchemaArtifact> artifacts, ArtifactSimpleTypeName type) {
+    private void writeArtifacts(Collection<? extends SchemaArtifact> artifacts) {
         var counter = new AtomicInteger();
         if(shouldPushToCedar()) {
             artifacts.forEach(artifact -> {
-//                try {
-//                    var initialId = artifact.id();
-//                    var artifactWithReplacedIds = artifact.replaceIds(artifact2GeneratedIdMap);
-//                    var artifactWithNullId = artifactWithReplacedIds.withId(null);
-//                    var posted = postArtifactToCedar(artifactWithNullId);
-//                    counter.incrementAndGet();
-//                    posted.ifPresent(r -> {
-//                        System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.getSimpleTypeName().getName(), counter.get(), artifacts.size());
-//                        System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
-//                        if (initialId != null) {
-//                            artifact2GeneratedIdMap.put(initialId, r.cedarId());
-//                            var postedArtifact = artifactWithReplacedIds.withId(r.cedarId());
-//                            writeCedarArtifact(postedArtifact);
-//                        }
-//                    });
-//                } catch (IOException | InterruptedException e) {
-//                    System.err.println(e.getMessage());
-//                }
-                //TODO push to cedar
-                writeSchemaArtifact(artifact);
+                try {
+                    //TODO: replace id with null?
+                    var posted = postArtifactToCedar(artifact);
+                    counter.incrementAndGet();
+                    posted.ifPresent(r -> {
+                        System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.name(), counter.get(), artifacts.size());
+                        System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
+                        writeCedarArtifact(artifact);
+                    });
+                } catch (IOException | InterruptedException e) {
+                    System.err.println(e.getMessage());
+                }
             });
         }
         else {
-            artifacts.forEach(this::writeSchemaArtifact);
+            artifacts.forEach(this::writeCedarArtifact);
         }
     }
 
 
-    private Optional<PostedArtifactResponse> postArtifactToCedar(CedarArtifact artifact) throws IOException, InterruptedException {
+    private Optional<PostedArtifactResponse> postArtifactToCedar(SchemaArtifact artifact) throws IOException, InterruptedException {
         var cedarFolderId = getFolderId();
         // The ID must be null.  This is because CEDAR mints it
         return importer.postToCedar(artifact, cedarFolderId,
-                                    pushToCedar.getCedarApiKey(),
-                                    artifact.toCompactString(), jsonSchemaDescription);
+                                    pushToCedar.getCedarApiKey());
     }
 
     private CedarId getFolderId() {
@@ -416,28 +407,12 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
         return pushToCedar != null && pushToCedar.postToCedar;
     }
 
-    private void writeSchemaArtifact(SchemaArtifact artifact) {
-        ObjectNode json;
-        if (artifact instanceof TemplateSchemaArtifact templateArtifact) {
-            json = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateArtifact);
-        } else if (artifact instanceof ElementSchemaArtifact elementArtifact) {
-            json = jsonSchemaArtifactRenderer.renderElementSchemaArtifact(elementArtifact);
-        } else if (artifact instanceof FieldSchemaArtifact fieldArtifact) {
-            json = jsonSchemaArtifactRenderer.renderFieldSchemaArtifact(fieldArtifact);
-        } else {
-            throw new IllegalArgumentException("Unsupported artifact type: " + artifact.getClass().getName());
-        }
-
-        String fileName = artifact.name().replace(" ", "_") + ".json";
-        writeCedarArtifact(json, fileName);
-    }
-
-
-    private void writeCedarArtifact(ObjectNode f, String fileName) {
+    private void writeCedarArtifact(SchemaArtifact artifact) {
         try {
-            writer.writeCedarArtifact(f, fileName, outputDirectory);
+            String fileName = artifact.name().replace(" ", "_") + ".json";
+            writer.writeCedarArtifact(artifact, fileName, outputDirectory);
         } catch (IOException e) {
-            System.err.println("Could not write " + fileName + ": " + e.getMessage());
+            System.err.println("Could not write " + artifact.name() + ": " + e.getMessage());
         }
     }
 }

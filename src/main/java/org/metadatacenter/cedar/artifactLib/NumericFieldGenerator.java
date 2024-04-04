@@ -28,15 +28,16 @@ public class NumericFieldGenerator implements FieldGenerator {
     var numericType = getNumericType(node.getXsdDatatype());
     buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithDefaultValue(builder, node.getDefaultValue(), numericType);
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel(), numericType);
 
     return builder
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withNumericType(numericType)
-        .withHidden(node.isHidden())
+        .withHidden(node.getRow().visibility().isHidden())
         .build();
   }
 
@@ -45,20 +46,19 @@ public class NumericFieldGenerator implements FieldGenerator {
         .orElse(XsdNumericDatatype.DECIMAL);
   }
 
-  private void buildWithDefaultValue(NumericFieldBuilder builder, Optional<String> defaultValue, XsdNumericDatatype type){
-    if (defaultValue.isPresent() && !defaultValue.get().equals("")){
-      var valueStr = defaultValue.get();
+  private void buildWithDefaultValue(NumericFieldBuilder builder, String defaultValue, XsdNumericDatatype type){
+    if (!defaultValue.equals("")){
       try {
         switch (type) {
-          case DECIMAL -> builder.withDefaultValue(new BigDecimal(valueStr));
-          case INT -> builder.withDefaultValue(Integer.valueOf(valueStr));
-          case DOUBLE -> builder.withDefaultValue(Double.valueOf(valueStr));
-          case LONG -> builder.withDefaultValue(Long.valueOf(valueStr));
-          case FLOAT -> builder.withDefaultValue(Float.valueOf(valueStr));
+          case DECIMAL -> builder.withDefaultValue(new BigDecimal(defaultValue));
+          case INT -> builder.withDefaultValue(Integer.valueOf(defaultValue));
+          case DOUBLE -> builder.withDefaultValue(Double.valueOf(defaultValue));
+          case LONG -> builder.withDefaultValue(Long.valueOf(defaultValue));
+          case FLOAT -> builder.withDefaultValue(Float.valueOf(defaultValue));
           default -> throw new IllegalArgumentException("Unsupported numeric type: " + type);
         }
       } catch (NumberFormatException e) {
-        throw new RuntimeException("Error transform " + valueStr + " to " + type.getText());
+        throw new RuntimeException("Error transform " + defaultValue + " to " + type.getText());
       }
     }
   }

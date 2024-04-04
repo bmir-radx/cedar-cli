@@ -40,7 +40,7 @@ public class FieldGeneratorFactory {
   }
 
   public FieldSchemaArtifact generateFieldSchemaArtifact(CedarCsvParser.Node node){
-    var inputType = node.getInputType().orElse(CedarCsvInputType.getDefaultInputType());
+    var inputType = node.getRow().getInputType().orElse(CedarCsvInputType.getDefaultInputType());
     var generator = fieldSchemaArtifactGenerators.get(inputType);
     return generator.generateFieldArtifactSchema(node);
   }

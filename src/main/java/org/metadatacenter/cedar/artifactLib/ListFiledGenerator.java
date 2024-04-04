@@ -22,8 +22,8 @@ public class ListFiledGenerator implements FieldGenerator {
     var builder = FieldSchemaArtifact.listFieldBuilder();
     buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithDefaultValue(builder, node.getDefaultValue());
-    if(node.getInputType().isPresent() && node.getInputType().get().getConstraintsType().equals(LANGUAGE_TAG)){
+
+    if(node.getRow().getInputType().isPresent() && node.getRow().getInputType().get().getConstraintsType().equals(LANGUAGE_TAG)){
       buildWithLangCode(builder, node, languageCodes);
     }
 
@@ -32,18 +32,16 @@ public class ListFiledGenerator implements FieldGenerator {
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
-        .withHidden(node.isHidden())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withHidden(node.getRow().visibility().isHidden())
+        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .build();
   }
 
-  private void buildWithDefaultValue(ListFieldBuilder builder, Optional<String> defaultValue){
-    defaultValue.ifPresent(builder::withDefaultValue);
-  }
 
-  //TODO add lang code
   private void buildWithLangCode(ListFieldBuilder builder, CedarCsvParser.Node node, List<LanguageCode> languageCodes){
     for(var lc: languageCodes){
-      builder.withOption(lc.code(), lc.code().equals(node.getDefaultValue().get()));
+      builder.withOption(lc.code(), lc.code().equals(node.getRow().defaultValue()));
     }
   }
 }

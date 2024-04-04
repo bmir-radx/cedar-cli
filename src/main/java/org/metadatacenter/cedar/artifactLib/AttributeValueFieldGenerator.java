@@ -9,12 +9,13 @@ public class AttributeValueFieldGenerator implements FieldGenerator {
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.attributeValueFieldBuilder();
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithIdentifier(builder, node.getDefaultValue());
+//    buildWithIdentifier(builder, node.getDefaultValue());
 
     return builder
         .withIsMultiple(node.isMultiValued())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .build();
   }
 }

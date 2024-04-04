@@ -10,20 +10,17 @@ public class RadioFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.radioFieldBuilder();
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithDefaultValue(builder, node.getDefaultValue());
 
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
-        .withHidden(node.isHidden())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withHidden(node.getRow().visibility().isHidden())
+        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .build();
-  }
-
-  private void buildWithDefaultValue(RadioFieldBuilder builder, Optional<String> defaultValue){
-    defaultValue.ifPresent(builder::withDefaultValue);
   }
 }

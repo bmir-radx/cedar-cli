@@ -26,9 +26,8 @@ public class TemporalFieldGenerator implements FieldGenerator {
     var builder = FieldSchemaArtifact.temporalFieldBuilder();
     var temporalGranularity = getTemporalGranularity(temporalType);
 
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithDefaultValue(builder, node.getDefaultValue(), temporalType);
 
     return builder
         .withName(node.getName())
@@ -37,17 +36,14 @@ public class TemporalFieldGenerator implements FieldGenerator {
         .withRequiredValue(node.isRequired())
         .withTemporalType(temporalType)
         .withTemporalGranularity(temporalGranularity)
-        .withHidden(node.isHidden())
+        .withHidden(node.getRow().visibility().isHidden())
+        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .build();
   }
 
   private XsdTemporalDatatype getTemporalType(Optional<String> temporalType){
     return temporalType.map(tt -> TEMPORAL_DATATYPE_MAP.getOrDefault(tt, XsdTemporalDatatype.DATETIME))
         .orElse(XsdTemporalDatatype.DATETIME);
-  }
-
-  private void buildWithDefaultValue(TemporalFieldBuilder builder, Optional<String> defaultValue, XsdTemporalDatatype type){
-    defaultValue.ifPresent(builder::withDefaultValue);
   }
 
   private TemporalGranularity getTemporalGranularity(XsdTemporalDatatype type){

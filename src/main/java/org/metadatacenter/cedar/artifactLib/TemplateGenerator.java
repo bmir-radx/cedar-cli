@@ -25,13 +25,12 @@ public class TemplateGenerator {
                                                                String templateName,
                                                                String version,
                                                                String previousVersion,
-                                                               String artifactStatus,
-                                                               String elementName){
+                                                               String artifactStatus){
     var templateSchemaArtifactBuilder = TemplateSchemaArtifact.builder();
 
     for(var child : rootnode.getChildNodes()){
-      if(child.isElement() && child.getName().equals(elementName)){
-//      if(child.isElement()){
+//      if(child.isElement() && child.getName().equals(elementName)){
+      if(child.isElement()){
         var elementSchemaArtifact = elementGenerator.generateElementSchemaArtifact(child);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
       } else if (child.isField()) {

@@ -12,20 +12,17 @@ public class LinkFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.linkFieldBuilder();
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithDefaultValue(builder, node.getDefaultValue());
 
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
-        .withHidden(node.isHidden())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withHidden(node.getRow().visibility().isHidden())
+        .withDefaultValue(URI.create(node.getRow().getDefaultValue().getLabel()))
         .build();
-  }
-
-  private void buildWithDefaultValue(LinkFieldBuilder builder, Optional<String> defaultValue){
-    defaultValue.ifPresent(s -> builder.withDefaultValue(URI.create(s)));
   }
 }

@@ -11,20 +11,17 @@ public class EmailFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.emailFieldBuilder();
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    buildWithDefaultValue(builder, node.getDefaultValue());
 
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
-        .withHidden(node.isHidden())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
+        .withHidden(node.getRow().visibility().isHidden())
         .build();
-  }
-
-  private void buildWithDefaultValue(EmailFieldBuilder builder, Optional<String> defaultValue){
-    defaultValue.ifPresent(builder::withDefaultValue);
   }
 }

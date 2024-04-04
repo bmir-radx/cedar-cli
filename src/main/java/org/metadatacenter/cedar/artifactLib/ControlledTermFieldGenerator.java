@@ -14,20 +14,21 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.controlledTermFieldBuilder();
     var constraints = node.getOntologyTermsConstraints();
-    updateWithOntologies(builder, constraints);
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+    buildWithOntologies(builder, constraints);
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
-    //TODO default value?
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getIri(), node.getRow().getDefaultValue().getLabel());
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
-        .withHidden(node.isHidden())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withHidden(node.getRow().visibility().isHidden())
         .build();
   }
 
-  private void updateWithOntologies(ControlledTermFieldBuilder builder, Optional<EnumerationValueConstraints> constraints){
+  private void buildWithOntologies(ControlledTermFieldBuilder builder, Optional<EnumerationValueConstraints> constraints){
     if(constraints.isPresent()){
       var branches = constraints.get().branches();
       var ontologies = constraints.get().ontologies();
@@ -48,5 +49,9 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
         builder.withClassValueConstraint(URI.create(c.iri()), c.source(), c.label(), c.getPrefLabel(), ValueType.ONTOLOGY_CLASS);
       }
     }
+  }
+
+  private void buildWithDefaultValue(ControlledTermFieldBuilder builder, Optional<String> iri, String label){
+    iri.ifPresent(s -> builder.withDefaultValue(URI.create(s), label));
   }
 }

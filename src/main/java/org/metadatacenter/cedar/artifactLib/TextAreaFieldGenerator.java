@@ -8,7 +8,7 @@ public class TextAreaFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.textAreaFieldBuilder();
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
 
     return builder
@@ -16,7 +16,8 @@ public class TextAreaFieldGenerator implements FieldGenerator {
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
-        .withHidden(node.isHidden())
+        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withHidden(node.getRow().visibility().isHidden())
         .build();
   }
 }
