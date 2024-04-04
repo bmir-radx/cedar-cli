@@ -3,21 +3,26 @@ package org.metadatacenter.cedar.artifactLib;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.builders.ControlledTermFieldBuilder;
 import org.metadatacenter.artifacts.model.core.fields.constraints.ValueType;
+import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.constraints.EnumerationValueConstraints;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import java.net.URI;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ControlledTermFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.controlledTermFieldBuilder();
     var constraints = node.getOntologyTermsConstraints();
+    var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
+
     buildWithOntologies(builder, constraints);
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
     buildWithDefaultValue(builder, node.getRow().getDefaultValue().getIri(), node.getRow().getDefaultValue().getLabel());
+
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
@@ -25,6 +30,7 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
+        .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 

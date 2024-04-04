@@ -4,12 +4,15 @@ import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.builders.TemporalFieldBuilder;
 import org.metadatacenter.artifacts.model.core.fields.TemporalGranularity;
 import org.metadatacenter.artifacts.model.core.fields.XsdTemporalDatatype;
+import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.CedarTemporalType;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class TemporalFieldGenerator implements FieldGenerator {
 
@@ -25,6 +28,7 @@ public class TemporalFieldGenerator implements FieldGenerator {
     var temporalType = getTemporalType(node.getXsdDatatype());
     var builder = FieldSchemaArtifact.temporalFieldBuilder();
     var temporalGranularity = getTemporalGranularity(temporalType);
+    var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
@@ -38,6 +42,7 @@ public class TemporalFieldGenerator implements FieldGenerator {
         .withTemporalGranularity(temporalGranularity)
         .withHidden(node.getRow().visibility().isHidden())
         .withDefaultValue(node.getRow().getDefaultValue().getLabel())
+        .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 

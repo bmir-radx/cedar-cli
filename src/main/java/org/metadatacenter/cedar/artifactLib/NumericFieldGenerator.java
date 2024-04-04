@@ -3,13 +3,16 @@ package org.metadatacenter.cedar.artifactLib;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.builders.NumericFieldBuilder;
 import org.metadatacenter.artifacts.model.core.fields.XsdNumericDatatype;
+import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.NumberType;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class NumericFieldGenerator implements FieldGenerator {
   private static final Map<String, XsdNumericDatatype> NUMERIC_TYPE_MAP = new HashMap<>();
@@ -26,6 +29,7 @@ public class NumericFieldGenerator implements FieldGenerator {
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var builder = FieldSchemaArtifact.numericFieldBuilder();
     var numericType = getNumericType(node.getXsdDatatype());
+    var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
     buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
     buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel(), numericType);
@@ -38,6 +42,7 @@ public class NumericFieldGenerator implements FieldGenerator {
         .withRequiredValue(node.isRequired())
         .withNumericType(numericType)
         .withHidden(node.getRow().visibility().isHidden())
+        .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 
