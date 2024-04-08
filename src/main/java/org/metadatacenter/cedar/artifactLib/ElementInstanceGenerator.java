@@ -46,7 +46,6 @@ public class ElementInstanceGenerator {
 
     ContextGenerator.generateElementInstanceContext(elementSchemaArtifact, builder);
 
-    //TODO: give an id for an element?
-    return builder.withJsonLdId(URI.create("https://example.com")).build();
+    return builder.withJsonLdId(URI.create("")).build();
   }
 }
