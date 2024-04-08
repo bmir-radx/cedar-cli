@@ -23,6 +23,8 @@ import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -117,8 +119,6 @@ public class DocsGeneratorCAL {
           childElementInstance = singleInstanceElementMap.get(childName);
         }
         printElementArtifact(child, childElementInstance, propertyIri, bioPortalApiKey, pw);
-      } else if (child.getRow().getInputType().isPresent() && child.getRow().getInputType().get().equals(CedarCsvInputType.ATTRIBUTE_VALUE)){
-        //TODO  print AV field
       } else if (child.isField()) {
         FieldInstanceArtifact fieldInstanceArtifact;
         if(child.isMultiValued()){
@@ -230,10 +230,15 @@ public class DocsGeneratorCAL {
     }
 
     var prunedFieldInstanceBuilder = ElementInstanceArtifact.builder();
-    if(node.isMultiValued()){
-      prunedFieldInstanceBuilder.withMultiInstanceFieldInstances(name, List.of(field));
-    } else {
-      prunedFieldInstanceBuilder.withSingleInstanceFieldInstance(name, field);
+    //Build attribute-value field
+    if(node.getRow().getInputType().isPresent() && node.getRow().getInputType().get().equals(CedarCsvInputType.ATTRIBUTE_VALUE)){
+      prunedFieldInstanceBuilder.withAttributeValueFieldGroup(name, Collections.emptyMap());
+    } else{
+      if(node.isMultiValued()){
+        prunedFieldInstanceBuilder.withMultiInstanceFieldInstances(name, List.of(field));
+      } else {
+        prunedFieldInstanceBuilder.withSingleInstanceFieldInstance(name, field);
+      }
     }
 
     var prunedFieldInstance = prunedFieldInstanceBuilder
