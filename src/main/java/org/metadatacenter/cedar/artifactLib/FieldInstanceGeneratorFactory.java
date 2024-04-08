@@ -39,7 +39,7 @@ public class FieldInstanceGeneratorFactory {
 
   public FieldInstanceArtifact generateFieldInstance(CedarCsvParser.Node node, TemplateInstanceGenerationMode mode){
     var inputType = node.getRow().getInputType().orElse(CedarCsvInputType.getDefaultInputType());
-    System.out.println(node.getName() + " : " + inputType.getCedarInputType());
+//    System.out.println(node.getName() + " : " + inputType.getCedarInputType());
     var generator = fieldInstanceGenerators.get(inputType);
     return generator.generateFieldInstance(node, mode);
   }

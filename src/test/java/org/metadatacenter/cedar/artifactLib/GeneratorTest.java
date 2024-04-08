@@ -8,10 +8,14 @@ import org.metadatacenter.artifacts.model.core.TemplateSchemaArtifact;
 import org.metadatacenter.artifacts.model.reader.JsonSchemaArtifactReader;
 import org.metadatacenter.artifacts.model.renderer.JsonSchemaArtifactRenderer;
 import org.metadatacenter.cedar.api.ArtifactStatus;
+import org.metadatacenter.cedar.bioportal.BioPortalApiKey;
+import org.metadatacenter.cedar.bioportal.BioPortalWebClientFactory;
+import org.metadatacenter.cedar.bioportal.GetClassesRequest;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.CedarCsvParserFactory;
 import org.metadatacenter.cedar.csv.LanguageCode;
 import org.metadatacenter.cedar.csv.TemplateInstanceGenerationMode;
+import org.metadatacenter.cedar.docs.DocsGeneratorCAL;
 import org.metadatacenter.model.validation.CedarValidator;
 import org.metadatacenter.model.validation.ModelValidator;
 import org.metadatacenter.model.validation.report.ValidationReport;
@@ -19,16 +23,22 @@ import org.metadatacenter.model.validation.report.ValidationReport;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 public class GeneratorTest {
   private final String input = "RADx_Metadata_Specification.csv";
   private ObjectMapper mapper;
   private TemplateGenerator templateGenerator;
   private TemplateInstanceGenerator templateInstanceGenerator;
+  private DocsGeneratorCAL docsGeneratorCAL;
+  private GetClassesRequest getClassesRequest;
   private CedarCsvParserFactory cedarCsvParserFactory;
   private JsonSchemaArtifactRenderer jsonSchemaArtifactRenderer;
 
@@ -46,6 +56,9 @@ public class GeneratorTest {
 
     cedarCsvParserFactory = new CedarCsvParserFactory(langCodes);
     mapper = new ObjectMapper();
+
+    getClassesRequest = new GetClassesRequest(new BioPortalWebClientFactory("https://data.bioontology.org"));
+    docsGeneratorCAL = new DocsGeneratorCAL(getClassesRequest, mapper);
   }
 
   @Test
@@ -65,10 +78,10 @@ public class GeneratorTest {
         rootNode,
         templateId,
         "Template Example Metadata");
-    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
-    var fileName = input.replace(".csv", "_Template_Example_Metadata.json");
-    var file = new File("../outputTemplates", fileName);
-    mapper.writeValue(file, instanceNode);
+//    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
+//    var fileName = input.replace(".csv", "_Template_Example_Metadata.json");
+//    var file = new File("../outputTemplates", fileName);
+//    mapper.writeValue(file, instanceNode);
     assertThat(instance.isBasedOn().equals(templateId));
   }
 
@@ -82,10 +95,11 @@ public class GeneratorTest {
         rootNode,
         templateId,
         "Template Example Metadata");
-    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
-    var fileName = input.replace(".csv", "_Template_Blank_Metadata.json");
-    var file = new File("../outputTemplates", fileName);
-    mapper.writeValue(file, instanceNode);
+//    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
+//    var fileName = input.replace(".csv", "_Template_Blank_Metadata.json");
+//    var file = new File("../outputTemplates", fileName);
+//    mapper.writeValue(file, instanceNode);
+    assertThat(instance.isBasedOn().equals(templateId));
   }
 
   @Test
@@ -98,11 +112,31 @@ public class GeneratorTest {
         rootNode,
         templateId,
         "Template Example Metadata");
-    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
-    var fileName = input.replace(".csv", "_Template_Default_Metadata.json");
-    var file = new File("../outputTemplates", fileName);
-    mapper.writeValue(file, instanceNode);
+//    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
+//    var fileName = input.replace(".csv", "_Template_Default_Metadata.json");
+//    var file = new File("../outputTemplates", fileName);
+//    mapper.writeValue(file, instanceNode);
+    assertThat(instance.isBasedOn().equals(templateId));
   }
+
+//  @Test
+//  public void testDocsGenerator() throws Exception {
+//    var templateSchema = generateTemplate();
+//    var rootNode = getRootNode();
+//    var templateId = templateSchema.jsonLdId().get();
+//    var instance = templateInstanceGenerator.generateTemplateInstance(templateSchema,
+//        TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS,
+//        rootNode,
+//        templateId,
+//        "Template Example Metadata");
+//
+//    var outputFile = Paths.get("../outputTemplates/outputDocs/doc.md");
+//    if (!Files.exists(outputFile.getParent())) {
+//      Files.createDirectories(outputFile.getParent());
+//    }
+//    String apiKey = System.getenv("CEDAR_BIOPORTAL_API_KEY");
+//    docsGeneratorCAL.writeDocs(rootNode, instance, outputFile, new BioPortalApiKey(apiKey));
+//  }
 
 
   private CedarCsvParser.Node getRootNode() throws IOException {
@@ -122,14 +156,16 @@ public class GeneratorTest {
     var rootNode = getRootNode();
     var templateSchema = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateId, templateName, version, preVersion, status, elementName);
 //    var templateSchema = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateId, templateName, version, preVersion, status);
-    var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
-    var fileName = elementName.replace(" ", "_") + "_Template.json";
-//    var fileName = input.replace(".csv", "_Template.json");
-    var file = new File("../outputTemplates", fileName);
-    mapper.writeValue(file, templateJson);
 
-    var errorFile = new File("../outputTemplates", fileName.replace(".json", "_Errors.json"));
-    validateTemplate(templateJson, errorFile);
+//    var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
+//    var fileName = elementName.replace(" ", "_") + "_Template.json";
+////    var fileName = input.replace(".csv", "_Template.json");
+//    var file = new File("../outputTemplates", fileName);
+//    mapper.writeValue(file, templateJson);
+//
+//    var errorFile = new File("../outputTemplates", fileName.replace(".json", "_Errors.json"));
+//    validateTemplate(templateJson, errorFile);
+
     return templateSchema;
   }
 

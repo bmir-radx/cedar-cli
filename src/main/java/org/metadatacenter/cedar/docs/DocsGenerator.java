@@ -92,6 +92,7 @@ public class DocsGenerator {
         pw.println(list);
     }
 
+
     private void printArtifact(EmbeddedCedarArtifact artifact, BioPortalApiKey bioPortalApiKey, PrintWriter pw) {
         var embeddedArtifact = artifact.artifact();
         if(embeddedArtifact instanceof CedarTemplateElement element) {

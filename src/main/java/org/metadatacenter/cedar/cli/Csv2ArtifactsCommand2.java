@@ -17,6 +17,7 @@ import org.metadatacenter.cedar.codegen.CodeGenerationNodeRecord;
 import org.metadatacenter.cedar.codegen.JavaGenerator;
 import org.metadatacenter.cedar.csv.*;
 import org.metadatacenter.cedar.docs.DocsGenerator;
+import org.metadatacenter.cedar.docs.DocsGeneratorCAL;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.ts.TypeScriptGenerator;
@@ -140,7 +141,7 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
     private final CedarCsvParserFactory cedarCsvParserFactory;
     private final CliCedarArtifactWriter writer;
     private final Map<URI, URI> artifact2GeneratedIdMap = new HashMap<>();
-    private final DocsGenerator docsGenerator;
+    private final DocsGeneratorCAL docsGenerator;
     private final TemplateGenerator templateGenerator;
     private final TemplateInstanceGenerator templateInstanceGenerator;
     private final StripInstance stripInstance;
@@ -150,7 +151,7 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                                  CedarArtifactPoster importer,
                                  CedarCsvParserFactory cedarCsvParserFactory,
                                  CliCedarArtifactWriter writer,
-                                 DocsGenerator docsGenerator,
+                                 DocsGeneratorCAL docsGenerator,
                                  TemplateInstanceGenerator templateInstanceGenerator,
                                  StripInstance stripInstance, ObjectMapper objectMapper) {
         this.templateGenerator = templateGenerator;
@@ -284,7 +285,13 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                     Files.createDirectories(docsPath.getParent());
                 }
                 System.err.println("Generating documentation in " + docsPath);
-//                docsGenerator.writeDocs(template,  docsPath, bioportalApiKey.getApiKey());
+                var templateId = getTemplateId(template);
+                var exampleInstance = templateInstanceGenerator.generateTemplateInstance(template,
+                    TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS,
+                    rootNode,
+                    templateId,
+                    templateName);
+                docsGenerator.writeDocs(rootNode, exampleInstance, docsPath, bioportalApiKey.getApiKey());
             }
         } catch (CedarCsvParseException e) {
             System.err.println("\033[31;1mERROR: " + e.getMessage() + "\033[0m");
