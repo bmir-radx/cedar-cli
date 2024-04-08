@@ -1,4 +1,4 @@
-﻿Section,Element,Cardinality,Required,Field Title,Description,Derived,Visibility,Example,Lookup,Property,Type,Default Value,Controlled Terms
+Section,Element,Cardinality,Required,Field Title,Description,Derived,Visibility,Example,Lookup,Property,Type,Default Value,Controlled Terms
 ,Data File Titles,MULTIPLE,,,A list of names or titles of the Data File being described. At least one Data File Title is required.  Mutliple values may be specified to provide titles in different languages.,,,,,http://purl.org/radx-terms/metadata-terms/titleDescriptor,,,
 ,,,Required,Title,"A title or descriptive name by which the Data File being described is known. This is a presentation name (i.e. title case with appropriate spacing) and is typically different from the actual file name of the data file.
 
@@ -171,3 +171,111 @@ This is typically the NIH Institute that awarded the grant.",,,Eunice Kennedy Sh
 ,,,Optional,Distribution Size,Total size of data file distribution (in bytes).,,,,,http://purl.org/radx-terms/metadata-terms/distributionSizeInBytes,,,
 ,,,Optional,Distribution Access Protocol,The protocol used to access the data file distribution.,,,,,http://purl.org/radx-terms/metadata-terms/distributionAccessProtocol,,,
 ,,,Optional,Distribution Access Configuration,The access protocol configuration for querying the data file distribution.,,,,,http://purl.org/radx-terms/metadata-terms/distributionAccessConfiguration,,,
+,,,Optional,Distribution Query Statement,Technical statement(s) for querying the data file distribution.,,,,,http://purl.org/radx-terms/metadata-terms/distributionQueryStatement,,,
+,>Data File Publication Date,SINGLE,,,Publication date of this distribution the data file.,,,,,http://purl.org/radx-terms/metadata-terms/distributionPublicationDescriptor,,,
+,,,Optional,Data File Publication Date,Date on which this distribution of the data file was published,,,,,http://purl.org/radx-terms/metadata-terms/distributionPublicationDate,date,,
+,,,Optional,Publication Date Type,Type of the date ('Published') with respect to the data file.  The value of this field is always [Published](http://vocab.fairdatacollective.org/gdmt/Published).,The value of this field is a fixed type and is automatically inserted.,HIDDEN,,,http://purl.org/radx-terms/metadata-terms/distributionPublicationDateType,,[Published](http://vocab.fairdatacollective.org/gdmt/Published),[Published](http://vocab.fairdatacollective.org/gdmt/Published)
+,Data Characteristics Summary,SINGLE,,,"Characteristics of the data within the data file, particularly of the cohorts in the data file. This section provides multiple ways to enter such information; it is only necessary to enter the information in one of these formats.",,,,,http://purl.org/radx-terms/metadata-terms/dataCharacteristicsDescriptor,,,
+,,,Optional,Data Characteristics Table in HTML,Formatted HTML code for a table of summary statistics.,,,,,http://purl.org/radx-terms/metadata-terms/dataCharacteristicsTableInHtml,textarea,,
+,,,Optional,Data Characteristics Table in CSV,Enter comma-separated values containing summary statistics characterizing this data file.,,,,,http://purl.org/radx-terms/metadata-terms/dataCharacteristicsTableInCsv,textarea,,
+,,,Optional,Data Characteristics Table in TSV,Enter tab-separated values containing summary statistics characterizing this data file.,,,,,http://purl.org/radx-terms/metadata-terms/dataCharacteristicsTableInTsv,,,
+,,,Optional,Data Characteristics Table in Key-Value Pairs,"Enter the name of the characteristic being described in the first (key) field, and the value for that characteristic in the second (value) field. Note this is a repeating field and so can support multiple key-value pairs.",,,,,http://purl.org/radx-terms/metadata-terms/dataCharacteristicsTableInKeyValuePairs,attribute-value,,
+Provenance,,,,,,,,,,,,,
+,Data Sources,MULTIPLE,,,"A list of physical or conceptual entities (agents) that create the data streams that make up the described data file. A data source may or may not be associated with a fixed location; for example, a series of discrete sensors deployed over time, either to a single location or to a series of locations, may be considered a single data source in some systems.",,,,,http://purl.org/radx-terms/metadata-terms/dataSourceDescriptor,,,
+,,,Optional,Data Source Name,Human readable name of data source from which the variable(s) in the data stream(s) originate.,,,,,http://purl.org/radx-terms/metadata-terms/dataSourceName,,,
+,,,Optional,Data Source Identifier,"Globally unique string that identifies the data source (e.g., PID of an instrument). This is a required field if you plan to describe the original source of a given Data Stream.",,,,,http://purl.org/radx-terms/metadata-terms/dataSourceIdentifier,,,
+,,,Optional,Data Source Identifier Scheme,The name of the scheme or authority used for the Data Source Identifier.,,,,https://bioportal.bioontology.org/ontologies/FDC-GDMT/?p=classes&conceptid=http://vocab.fairdatacollective.org/gdmt/IdentifierType,http://purl.org/radx-terms/metadata-terms/dataSourceIdentifierScheme,,,"ARK, arXiv, bibcode, DOI, EAN13, EISSN, Handle, IGSN, IRI, ISBN, ISSN, ISTC, LISSN, LSID, PMID, PURL, UPC, URI, URL, URN, w3id"
+,Data Streams,MULTIPLE,,,"A list of one or more variable records that contribute to this data file. Each data stream originates from a single data source (e.g., sensor, process, or person). A data stream can grow over time. ",,,,,http://purl.org/radx-terms/metadata-terms/dataStreamDescriptor,,,
+,,,Optional,Data Stream Name,"Human readable name of collection of records coming from a data source. A data stream is a collection of one or more variable records originating from a single data source (e.g., sensor, process, or person). A data stream can grow over time.",,,,,http://purl.org/radx-terms/metadata-terms/dataStreamName,,,
+,,,Optional,Data Stream Identifier,Globally unique string that identifies the collection of records coming from a data source.,,,,,http://purl.org/radx-terms/metadata-terms/dataStreamIdentifier,,,
+,,,Optional,Data Stream Identifier Scheme,The name of the scheme or authority used for the Data Stream Identifier.,,,,https://bioportal.bioontology.org/ontologies/FDC-GDMT/?p=classes&conceptid=http://vocab.fairdatacollective.org/gdmt/IdentifierType,http://purl.org/radx-terms/metadata-terms/dataStreamIdentifierScheme,,,"ARK, arXiv, bibcode, DOI, EAN13, EISSN, Handle, IGSN, IRI, ISBN, ISSN, ISTC, LISSN, LSID, PMID, PURL, UPC, URI, URL, URN, w3id"
+,,MULTIPLE,Optional,Data Stream Variable Names,The local names of variables contained in the data stream.,,,,,http://purl.org/radx-terms/metadata-terms/dataStreamVariableName,,,
+,,,Optional,Data Stream Data Source Identifier,"Globally unique string that identifies the data source (e.g., PID of an instrument) that generated this Data Stream.",,,,,http://purl.org/radx-terms/metadata-terms/dataStreamDataSourceIdentifier,,,
+,Data File Creation Processes,MULTIPLE,,,A list of processes (activities) used to make the data file.,,,,,http://purl.org/radx-terms/metadata-terms/dataFileCreationProcessDescriptor,,,
+,,,Optional,Process Name,Full name of the process that operates to make the data file or product.,,,,,http://purl.org/radx-terms/metadata-terms/creationProcessName,,,
+,,,Optional,Process IRI,Unique identifier (IRI) for the process used to make the data file or product (preferably a resolvable and persistent identifier). ,,,,,http://purl.org/radx-terms/metadata-terms/creationProcessIri,,,
+,,,Optional,Process Version,"Version of the process used to make this data file, typically a string (e.g., '3.0.3'). It may be a software release tag, e.g., in GitHub.",,,,,http://purl.org/radx-terms/metadata-terms/creationProcessVersion,,,
+,,,Optional,Process Execution Identifier,"Identification of the particular run of the process used to make this data file. 
+
+This is a deterministic string; in software, typically it is either a timestamp combined with the machine on which the software was executed; or a unique identifier generated by the controlling software for each run of the process.",,,,,http://purl.org/radx-terms/metadata-terms/creationProcessExecutionIdentifier,,,
+Spatiotemporal Coverage,,,,,,,,,,,,,
+,Data File Temporal Coverage,MULTIPLE,,,A list of temporal descriptions that specify the temporal coverage of the data contained within the data file associated with this metadata.,,,,,http://purl.org/radx-terms/metadata-terms/temporalCoverageDescriptor,,,
+,,,Optional,Temporal Extent Minimum Value,"The start date (and optionally time) of the data.
+
+Note that dates must be specified in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) format. This format specifies date/times in a locale neutral way with temporal components ordered largest to smallest, for example year, month, day. Note that times are in 24 hour clock (military time) format, thus 13:43 is 1:43pm. When times are specified a time zone must also be specified (Z or +00:00 indicates Greenwich Mean Time).
+
+The date time 2022-11-23T01:23:45.678-07:00 specifies November 23, 2022 at just past 1:23am Pacific Daylight Time. Hyphens and colons are optional.
+
+The date 2022-09-23 specifies September 23, 2022 (without a time stamp). Dates are assumed GMT if no time zone is specified.",,,2022-06-01,,http://purl.org/radx-terms/metadata-terms/temporalExtentMinimumValue,date,,
+,,,Optional,Temporal Extent Maximum Value,"The end date (and optionally time) of the data.
+
+Note that dates must be specified in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) format. This format specifies date/times in a locale neutral way with temporal components ordered largest to smallest, for example year, month, day. Note that times are in 24 hour clock (military time) format, thus 13:43 is 1:43pm. When times are specified a time zone must also be specified (Z or +00:00 indicates Greenwich Mean Time).
+
+The date time 2022-11-23T01:23:45.678-07:00 specifies November 23, 2022 at just past 1:23am Pacific Daylight Time. Hyphens and colons are optional.
+
+The date 2022-09-23 specifies September 23, 2022 (without a time stamp). Dates are assumed GMT if no time zone is specified.",,,2022-06-29,,http://purl.org/radx-terms/metadata-terms/temporalExtentMaximumValue,date,,
+,,,Optional,Temporal Resolution,"The nominal time interval between the measurement time of one data record and that of the following data record, in seconds. Measurement time can be considered as the beginning, end, or other known point in the measurement process.
+
+Most repeating measurement processes have some variation in the interval between measurements. If there is no planned schedule for the measurements, this value can be set to 0.",,,3600,,http://purl.org/radx-terms/metadata-terms/temporalResolution,,,
+,,,Optional,Duration,"The total duration of data temporal coverage, specified in in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) duration format.
+
+P is the duration designator (for period) placed at the start of the duration representation.
+- Y is the year designator that follows the value for the number of calendar years.
+- M is the month designator that follows the value for the number of calendar months.
+- W is the week designator that follows the value for the number of weeks.
+- D is the day designator that follows the value for the number of calendar days.
+T is the time designator that precedes the time components of the representation.
+- H is the hour designator that follows the value for the number of hours.
+- M is the minute designator that follows the value for the number of minutes.
+- S is the second designator that follows the value for the number of seconds.
+
+The duration format must begin with P, and include at least one designator and value; other designators may be dropped. The smallest designator may include a decimal fraction. For example, P8DT1.5H indicates a duration of 8 calendar days + 1.5 hours.","The value of this field is computed from the difference between the _Temporal Extent Minimum Value_ and _Temporal Extent Maximum Value_ fields, if both those fields are available.",,P8DT1.5H,,http://purl.org/radx-terms/metadata-terms/temporalCoverageDuration,,,
+,Data File Spatial Coverage,MULTIPLE,,,A list of geospatial descriptions that specify the geographical coverage of the data contained within the data file associated with this metadata.,,,,,http://purl.org/radx-terms/metadata-terms/spatialCoverageDescriptor,,,
+,>Bounding Boxes,MULTIPLE,,,A list of geographical bounding boxes that specifies the geographical coverage of the data contained within the data file associated with this metadata.,,,,,http://purl.org/radx-terms/metadata-terms/boundingBoxDescriptor,,,
+,,,Optional,Maximum Latitude,"Location of the maximum, or northernmost, data point in this data file, expressed in decimal degrees (southern latitudes are negative).
+
+37.5 specifies 37.5 degrees North (37 degrees and 30 minutes North)
+
+-5.5  specifies 5.5 degrees South (5 degrees and 30 minutes South)",,,-121.208178,,http://purl.org/radx-terms/metadata-terms/maxLatitude,,,
+,,,Optional,Minimum Latitude,"Location of the minimum, or southernmost, data point in this data file, expressed in decimal degrees (southern latitudes are negative).
+
+37.5 specifies 37.5 degrees North (37 degrees and 30 minutes North)
+
+-5.5  specifies 5.5 degrees South (5 degrees and 30 minutes South)",,,-122.202653,,http://purl.org/radx-terms/metadata-terms/minLatitude,,,
+,,,Optional,Minimum Longitude,"Location of the minimum, or westernmost, data point in this data file, expressed in decimal degrees (western longitudes are negative)
+
+150.0 specifies 150 degrees East
+
+-122.0 specifies 122 degrees West",,,36.892976,,http://purl.org/radx-terms/metadata-terms/minLongitude,,,
+,,,Optional,Maximum Longitude,"Location of the maximum, or easternmost, data point in this data file, expressed in decimal degrees (western longitudes are negative)
+
+150.0 specifies 150 degrees East
+
+-122.0 specifies 122 degrees West",,,37.484637,,http://purl.org/radx-terms/metadata-terms/maxLongitude,,,
+,>Bounding Shapes,MULTIPLE,,,A list of geographical coordinates that specifies the external bounday of the polygon that describes the coverage of the data contained within the data file being described.,,,,,http://purl.org/radx-terms/metadata-terms/boundingShapeDescriptor,,,
+,,,Optional,Point Number,Monotonically increasing identifier of the point in the shape being defined (defined in clockwise order and containing the right side of the closed shape). The last point must be the same as the first point.,,,1,,http://purl.org/radx-terms/metadata-terms/pointNumber,integer,,
+,,,Optional,Latitude,"Location of this point in north latitude decimal degrees (southern latitudes are negative)
+
+37.5 specifies 37.5 degrees North (37 degrees and 30 minutes North)
+
+-5.5  specifies 5.5 degrees South (5 degrees and 30 minutes South)",,,10,,http://purl.org/radx-terms/metadata-terms/latitude,float,,
+,,,Optional,Longitude,"Location of this point in east longitude decimal degrees (western longitudes are negative)
+
+150.0 specifies 150 degrees East
+
+-122.0 specifies 122 degrees West",,,150,,http://purl.org/radx-terms/metadata-terms/longitude,float,,
+,>Data File Geopolitical Coverage,MULTIPLE,,,A list of regions specified by the totality of one or more place names,,,,,http://purl.org/radx-terms/metadata-terms/geopoliticalCoverageDescriptor,,,
+,,MULTIPLE,Optional,Geopolitical region ,Place name depicting a geopolitical region. Recommended practice is to use [Geonames](http://www.geonames.org/search.html) to find an identifier matching any particular place.,,,[New York City](https://www.geonames.org/5128581),,http://purl.org/radx-terms/metadata-terms/geographicalPlaceName,,,
+,Data File Elevation Coverage,MULTIPLE,,,A list of elevation ranges encompassed by the data within the data file being described.,,,,,http://purl.org/radx-terms/metadata-terms/elevationCoverageDescriptor,,,
+,,,Optional,Vertical Extent Minimum Value,"The minimum vertical extent of the data file collection, specified in meters. 
+
+In case of depth, this is the maximum depth of data file collection (that is, it is a negative number of greater absolute magnitude than the Vertical Extent Maximum Value if that is also a depth). ",,,-1223,,http://purl.org/radx-terms/metadata-terms/minElevation,float,,
+,,,Optional,Vertical Extent Maximum Value,"The maximum vertical extent of the collected, specified in meters. 
+
+In case of depth, this is the minimum depth of data file collection (that is, it is a negative number of lesser absolute magnitude than the Vertical Extent Minimum Value). ",,,-2.5,,http://purl.org/radx-terms/metadata-terms/maxElevation,float,,
+,,,Optional,Vertical Extent Datum,The name of the Datum (reference frame) used for the Vertical Extent values.,,,WGS84,,http://purl.org/radx-terms/metadata-terms/elevationReferenceFrame,,,
+,,,Optional,Vertical Extent Datum IRI,The IRI (Internationalized Resource Identifier) of the Datum (reference frame) used for the Vertical Extent values.,,,https://epsg.io/4326,,http://purl.org/radx-terms/metadata-terms/elevationReferenceFrameIri,IRI,,
+Additional Information,,,,,,,,,,,,,
+,Auxiliary Metadata,,,,Information about the data file or metadata submission that does not fit into the other categories,,,,,http://purl.org/radx-terms/metadata-terms/auxiliaryMetadataDescriptor,,,
+,,,Optional,Data File Descriptive Key-Value Pairs,"This field supports entry of both the metadata attribute name (in the first field), and the value for that attribute (in the second field). Note this is a repeating field and so can support multiple key-value pairs.",,,,,http://purl.org/radx-terms/metadata-terms/auxiliaryMetadataKeyValuePair,Attribute-Value,,
+,,MULTIPLE,Optional,Additional Commentary,This text field can contain additional information about the data file or provided metadata. Multiple Additional Commentary fields may be filled out to address different topics.,,,,,http://purl.org/radx-terms/metadata-terms/auxiliaryMetadataCommentary,textarea,,

@@ -16,18 +16,12 @@ import java.util.UUID;
 
 public class TemporalFieldGenerator implements FieldGenerator {
 
-  private static final Map<String, XsdTemporalDatatype> TEMPORAL_DATATYPE_MAP = new HashMap<>();
 
-  static {
-    TEMPORAL_DATATYPE_MAP.put(CedarTemporalType.DATE.getName(), XsdTemporalDatatype.DATE);
-    TEMPORAL_DATATYPE_MAP.put(CedarTemporalType.DATE_TIME.getName(), XsdTemporalDatatype.DATETIME);
-    TEMPORAL_DATATYPE_MAP.put(CedarTemporalType.TIME.getName(), XsdTemporalDatatype.TIME);
-  }
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
-    var temporalType = getTemporalType(node.getXsdDatatype());
+    var temporalType = TemporalTypeTransformer.getTemporalType(node.getXsdDatatype());
     var builder = FieldSchemaArtifact.temporalFieldBuilder();
-    var temporalGranularity = getTemporalGranularity(temporalType);
+    var temporalGranularity = TemporalTypeTransformer.getTemporalGranularity(temporalType);
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
@@ -44,18 +38,5 @@ public class TemporalFieldGenerator implements FieldGenerator {
         .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
-  }
-
-  private XsdTemporalDatatype getTemporalType(Optional<String> temporalType){
-    return temporalType.map(tt -> TEMPORAL_DATATYPE_MAP.getOrDefault(tt, XsdTemporalDatatype.DATETIME))
-        .orElse(XsdTemporalDatatype.DATETIME);
-  }
-
-  private TemporalGranularity getTemporalGranularity(XsdTemporalDatatype type){
-    if(type.equals(XsdTemporalDatatype.DATE)){
-      return TemporalGranularity.DAY;
-    } else{
-      return TemporalGranularity.MINUTE;
-    }
   }
 }

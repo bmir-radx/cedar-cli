@@ -8,15 +8,14 @@ import org.metadatacenter.cedar.csv.LanguageCode;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 import static org.metadatacenter.cedar.csv.CedarConstraintsType.LANGUAGE_TAG;
 
-public class ListFiledGenerator implements FieldGenerator {
+public class ListFieldGenerator implements FieldGenerator {
   private List<LanguageCode> languageCodes;
 
-  public ListFiledGenerator(List<LanguageCode> languageCodes) {
+  public ListFieldGenerator(List<LanguageCode> languageCodes) {
     this.languageCodes = languageCodes;
   }
 

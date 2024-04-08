@@ -27,11 +27,13 @@ public class TemplateGenerator {
                                                                String templateName,
                                                                String version,
                                                                String previousVersion,
-                                                               String artifactStatus){
+                                                               String artifactStatus,
+                                                               String elementName){
     var templateSchemaArtifactBuilder = TemplateSchemaArtifact.builder();
     var jsonLdId = CedarId.resolveTemplateId(UUID.randomUUID().toString());
 
     for(var child : rootnode.getChildNodes()){
+//      if(child.isElement() && child.getSchemaName().equals(elementName)){
       if(child.isElement()){
         var elementSchemaArtifact = elementGenerator.generateElementSchemaArtifact(child);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);

@@ -1,19 +1,17 @@
 package org.metadatacenter.cedar.cli;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
-import org.metadatacenter.artifacts.model.core.ElementSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.SchemaArtifact;
-import org.metadatacenter.artifacts.model.core.TemplateSchemaArtifact;
+import org.metadatacenter.artifacts.model.core.*;
 import org.metadatacenter.artifacts.model.core.fields.FieldInputType;
+import org.metadatacenter.artifacts.model.reader.JsonSchemaArtifactReader;
 import org.metadatacenter.artifacts.model.renderer.JsonSchemaArtifactRenderer;
 import org.metadatacenter.cedar.api.*;
-import org.metadatacenter.cedar.artifactLib.TemplateGenerator;
-import org.metadatacenter.cedar.artifactLib.TemplateSchemaReporter;
+//import org.metadatacenter.cedar.artifactLib.ArtifactRenderer;
+import org.metadatacenter.cedar.artifactLib.*;
+//import org.metadatacenter.cedar.artifactLib.TemplateGenerator;
+//import org.metadatacenter.cedar.artifactLib.TemplateSchemaReporter;
+import org.metadatacenter.cedar.artifactLib.TemplateInstanceGenerator;
 import org.metadatacenter.cedar.codegen.CodeGenerationNode;
 import org.metadatacenter.cedar.codegen.CodeGenerationNodeRecord;
 import org.metadatacenter.cedar.codegen.JavaGenerator;
@@ -23,7 +21,6 @@ import org.metadatacenter.cedar.io.CedarArtifactPoster;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.ts.TypeScriptGenerator;
 import org.metadatacenter.cedar.util.StripInstance;
-import org.metadatacenter.cedar.util.StrippingOperations;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -38,7 +35,6 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -139,22 +135,15 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
     @ArgGroup(exclusive = false)
     public PostToCedarOptions pushToCedar;
 
-    private final TemplateGenerator templateGenerator;
     private final JsonSchemaArtifactRenderer jsonSchemaArtifactRenderer = new JsonSchemaArtifactRenderer();
     private final CedarArtifactPoster importer;
-
     private final CedarCsvParserFactory cedarCsvParserFactory;
-
     private final CliCedarArtifactWriter writer;
-
     private final Map<URI, URI> artifact2GeneratedIdMap = new HashMap<>();
-
     private final DocsGenerator docsGenerator;
-
+    private final TemplateGenerator templateGenerator;
     private final TemplateInstanceGenerator templateInstanceGenerator;
-
     private final StripInstance stripInstance;
-
     private final ObjectMapper objectMapper;
 
     public Csv2ArtifactsCommand2(TemplateGenerator templateGenerator,
@@ -237,8 +226,8 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                 templateIdentifier = templateName.trim().toLowerCase().replace(" ", "-");
             }
 
-//            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString(),"");
-            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString());
+            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString(),"");
+//            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString());
             //TODO validate the template
             var templateReporter = new TemplateSchemaReporter(template);
             writeArtifacts(Collections.singletonList(template));
@@ -270,7 +259,23 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                     Files.createDirectories(exampleInstancePath.getParent());
                 }
                 var templateId = getTemplateId(template);
-                //TODO generate instance
+                System.err.println("Generating example template instance in " + exampleInstancePath);
+                var exampleInstance = templateInstanceGenerator.generateTemplateInstance(template,
+                    TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS,
+                    rootNode,
+                    templateId,
+                    templateName);
+                writeTemplateInstance(exampleInstance, exampleInstancePath);
+
+                var examplesDirectory = outputDirectory.resolve("examples");
+                var blankInstancePath = examplesDirectory.resolve("blank.json");
+                System.err.println("Generating blank instance in " + blankInstancePath);
+                var blankInstance = templateInstanceGenerator.generateTemplateInstance(template,
+                    TemplateInstanceGenerationMode.WITH_DEFAULTS,
+                    rootNode,
+                    templateId,
+                    templateName);
+                writeTemplateInstance(blankInstance, blankInstancePath);
             }
 
             if(generateDocs) {
@@ -373,13 +378,20 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
         if(shouldPushToCedar()) {
             artifacts.forEach(artifact -> {
                 try {
-                    //TODO: replace id with null?
-                    var posted = postArtifactToCedar(artifact);
+
+                    var initialId = artifact.jsonLdId();
+                    var artifactWithNullId = replaceId(artifact, null);
+                    var posted = postArtifactToCedar(artifactWithNullId);
                     counter.incrementAndGet();
                     posted.ifPresent(r -> {
                         System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.name(), counter.get(), artifacts.size());
                         System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
-                        writeCedarArtifact(artifact);
+                        if(initialId.isPresent()){
+                            artifact2GeneratedIdMap.put(initialId.get(), URI.create(r.cedarId().value()));
+                            var postedArtifact = replaceId(artifact, r.cedarId().value());
+                            writeCedarArtifact(postedArtifact);
+                        }
+
                     });
                 } catch (IOException | InterruptedException e) {
                     System.err.println(e.getMessage());
@@ -413,6 +425,32 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
             writer.writeCedarArtifact(artifact, fileName, outputDirectory);
         } catch (IOException e) {
             System.err.println("Could not write " + artifact.name() + ": " + e.getMessage());
+        }
+    }
+
+    private void writeTemplateInstance(TemplateInstanceArtifact instance, Path path) throws IOException {
+        var templateInstanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
+        var templateInstanceJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(templateInstanceNode);
+        Files.writeString(path, templateInstanceJson);
+    }
+
+    private SchemaArtifact replaceId(SchemaArtifact artifact, String id){
+        var artifactNode = ArtifactRenderer.renderSchemaArtifact(artifact);
+        if (id == null) {
+            artifactNode.putNull("@id");
+        } else{
+            artifactNode.put("@id", id);
+        }
+
+        var reader = new JsonSchemaArtifactReader();
+        if(artifact instanceof TemplateSchemaArtifact){
+            return reader.readTemplateSchemaArtifact(artifactNode);
+        } else if (artifact instanceof ElementSchemaArtifact) {
+            return reader.readElementSchemaArtifact(artifactNode);
+        } else if (artifact instanceof FieldSchemaArtifact) {
+            return reader.readFieldSchemaArtifact(artifactNode);
+        } else{
+            throw new IllegalArgumentException("Unsupported artifact type: " + artifact.getClass().getName());
         }
     }
 }

@@ -30,13 +30,11 @@ public class ElementGenerator {
         var fieldSchemaArtifact = fieldGeneratorFactory.generateFieldSchemaArtifact(child);
         builder.withFieldSchema(fieldSchemaArtifact);
       }
-
     }
 
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
 
-    //TODO Add title, description, multi,...
     return builder
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())

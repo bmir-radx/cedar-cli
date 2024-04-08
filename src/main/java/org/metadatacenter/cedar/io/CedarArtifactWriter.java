@@ -1,17 +1,12 @@
 package org.metadatacenter.cedar.io;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.metadatacenter.artifacts.model.core.ElementSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.SchemaArtifact;
-import org.metadatacenter.artifacts.model.core.TemplateSchemaArtifact;
-import org.metadatacenter.artifacts.model.renderer.JsonSchemaArtifactRenderer;
 import org.metadatacenter.cedar.api.*;
+import org.metadatacenter.cedar.artifactLib.ArtifactRenderer;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 /**
  * Matthew Horridge
@@ -43,19 +38,10 @@ public class CedarArtifactWriter {
 
     public void writeCedarArtifact(SchemaArtifact artifact,
                                      OutputStream outputStream) throws IOException {
-        var jsonSchemaArtifactRenderer = new JsonSchemaArtifactRenderer();
-        ObjectNode artifactNode;
-        if (artifact instanceof TemplateSchemaArtifact templateArtifact) {
-            artifactNode = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateArtifact);
-        } else if (artifact instanceof ElementSchemaArtifact elementArtifact) {
-            artifactNode = jsonSchemaArtifactRenderer.renderElementSchemaArtifact(elementArtifact);
-        } else if (artifact instanceof FieldSchemaArtifact fieldArtifact) {
-            artifactNode = jsonSchemaArtifactRenderer.renderFieldSchemaArtifact(fieldArtifact);
-        } else {
-            throw new IllegalArgumentException("Unsupported artifact type: " + artifact.getClass().getName());
-        }
-
+        var artifactNode = ArtifactRenderer.renderSchemaArtifact(artifact);
         jsonMapper.writerWithDefaultPrettyPrinter()
             .writeValue(outputStream, artifactNode);
     }
+
+
 }
