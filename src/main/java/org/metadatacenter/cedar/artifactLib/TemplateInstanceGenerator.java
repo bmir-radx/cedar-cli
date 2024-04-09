@@ -13,7 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@Component
+@Component("TemplateInstanceGeneratorCAL")
 public class TemplateInstanceGenerator {
   private final FieldInstanceGeneratorFactory fieldInstanceGeneratorFactory;
   private final ElementInstanceGenerator elementInstanceGenerator;

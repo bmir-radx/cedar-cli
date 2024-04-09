@@ -20,6 +20,7 @@ import org.metadatacenter.cedar.io.CedarArtifactPoster;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
 import org.metadatacenter.cedar.ts.TypeScriptGenerator;
 import org.metadatacenter.cedar.util.StripInstance;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine;
 import picocli.CommandLine.ArgGroup;
@@ -43,7 +44,7 @@ import java.util.stream.Collectors;
  */
 @Component
 @Command(name = "csv2artifactsCAL",
-        description = "Generate CEDAR artifacts from a Comma Separated Values (CSV) file.  Artifacts are generated as CEDAR JSON-LD and are output as a set of JSON files.  Artifacts can also pushed directly into CEDAR.")
+        description = "Using cedar-artifact-library to generate CEDAR artifacts from a Comma Separated Values (CSV) file.  Artifacts are generated as CEDAR JSON-LD and are output as a set of JSON files.  Artifacts can also pushed directly into CEDAR.")
 public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
 
     @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format.")
@@ -151,8 +152,10 @@ public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
                                    CedarCsvParserFactory cedarCsvParserFactory,
                                    CliCedarArtifactWriter writer,
                                    DocsGeneratorCAL docsGenerator,
-                                   ElementGenerator elementGenerator, TemplateInstanceGenerator templateInstanceGenerator,
-                                   StripInstance stripInstance, ObjectMapper objectMapper) {
+                                   ElementGenerator elementGenerator,
+                                   @Qualifier("TemplateInstanceGeneratorCAL")TemplateInstanceGenerator templateInstanceGenerator,
+                                   StripInstance stripInstance,
+                                   ObjectMapper objectMapper) {
         this.templateGenerator = templateGenerator;
         this.importer = importer;
         this.cedarCsvParserFactory = cedarCsvParserFactory;
@@ -244,7 +247,7 @@ public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
             }
 
             if (generateUmbrellaElement) {
-                var umbrellaElement = elementGenerator.generateElementSchemaArtifact(rootNode, null, null);
+                var umbrellaElement = elementGenerator.generateElementSchemaArtifact(rootNode, umbrellaElementName, umbrellaElementDescription);
                 writeArtifacts(List.of(umbrellaElement));
             }
 
