@@ -17,7 +17,6 @@ public class AttributeValueFieldGenerator implements FieldGenerator {
 //    buildWithIdentifier(builder, node.getDefaultValue());
 
     return builder
-        .withIsMultiple(node.isMultiValued())
         .withName(node.getSchemaName())
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
