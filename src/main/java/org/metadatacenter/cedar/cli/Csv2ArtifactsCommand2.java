@@ -1,6 +1,5 @@
 package org.metadatacenter.cedar.cli;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.metadatacenter.artifacts.model.core.*;
 import org.metadatacenter.artifacts.model.core.fields.FieldInputType;
@@ -16,7 +15,6 @@ import org.metadatacenter.cedar.codegen.CodeGenerationNode;
 import org.metadatacenter.cedar.codegen.CodeGenerationNodeRecord;
 import org.metadatacenter.cedar.codegen.JavaGenerator;
 import org.metadatacenter.cedar.csv.*;
-import org.metadatacenter.cedar.docs.DocsGenerator;
 import org.metadatacenter.cedar.docs.DocsGeneratorCAL;
 import org.metadatacenter.cedar.io.CedarArtifactPoster;
 import org.metadatacenter.cedar.io.PostedArtifactResponse;
@@ -143,6 +141,7 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
     private final Map<URI, URI> artifact2GeneratedIdMap = new HashMap<>();
     private final DocsGeneratorCAL docsGenerator;
     private final TemplateGenerator templateGenerator;
+    private final ElementGenerator elementGenerator;
     private final TemplateInstanceGenerator templateInstanceGenerator;
     private final StripInstance stripInstance;
     private final ObjectMapper objectMapper;
@@ -152,13 +151,14 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                                  CedarCsvParserFactory cedarCsvParserFactory,
                                  CliCedarArtifactWriter writer,
                                  DocsGeneratorCAL docsGenerator,
-                                 TemplateInstanceGenerator templateInstanceGenerator,
+                                 ElementGenerator elementGenerator, TemplateInstanceGenerator templateInstanceGenerator,
                                  StripInstance stripInstance, ObjectMapper objectMapper) {
         this.templateGenerator = templateGenerator;
         this.importer = importer;
         this.cedarCsvParserFactory = cedarCsvParserFactory;
         this.writer = writer;
         this.docsGenerator = docsGenerator;
+        this.elementGenerator = elementGenerator;
         this.templateInstanceGenerator = templateInstanceGenerator;
         this.stripInstance = stripInstance;
         this.objectMapper = objectMapper;
@@ -228,10 +228,10 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
             }
 
             var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString(),"");
-//            var template = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateIdentifier, templateName, version, previousVersion, artifactStatus.toString());
+
             //TODO validate the template
             var templateReporter = new TemplateSchemaReporter(template);
-            writeArtifacts(Collections.singletonList(template));
+            writeArtifacts(List.of(template));
 
             if (generateFields) {
                 var fields = templateReporter.getFieldSchemas();
@@ -243,16 +243,10 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                 writeArtifacts(elements);
             }
 
-//            if (generateUmbrellaElement) {
-//                var umbrellaElement = template.asElement(umbrellaElementName,
-//                                                         umbrellaElementDescription,
-//                                                         version,
-//                                                         artifactStatus,
-//                                                         previousVersion);
-//                writeArtifacts(List.of(umbrellaElement));
-//
-//
-//            }
+            if (generateUmbrellaElement) {
+                var umbrellaElement = elementGenerator.generateElementSchemaArtifact(rootNode, null, null);
+                writeArtifacts(List.of(umbrellaElement));
+            }
 
             if(generateExampleTemplateInstance) {
                 var exampleInstancePath = getExampleTemplateInstanceFileName();
