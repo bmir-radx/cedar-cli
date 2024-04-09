@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
  * 2022-07-29
  */
 @Component
-@Command(name = "csv2artifacts",
+@Command(name = "csv2artifactsCAL",
         description = "Generate CEDAR artifacts from a Comma Separated Values (CSV) file.  Artifacts are generated as CEDAR JSON-LD and are output as a set of JSON files.  Artifacts can also pushed directly into CEDAR.")
-public class Csv2ArtifactsCommand2 implements CedarCliCommand {
+public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
 
     @Option(names = "--in", required = true, description = "A path to a CSV file that conforms to the CEDAR CSV format.")
     String input;
@@ -146,13 +146,13 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
     private final StripInstance stripInstance;
     private final ObjectMapper objectMapper;
 
-    public Csv2ArtifactsCommand2(TemplateGenerator templateGenerator,
-                                 CedarArtifactPoster importer,
-                                 CedarCsvParserFactory cedarCsvParserFactory,
-                                 CliCedarArtifactWriter writer,
-                                 DocsGeneratorCAL docsGenerator,
-                                 ElementGenerator elementGenerator, TemplateInstanceGenerator templateInstanceGenerator,
-                                 StripInstance stripInstance, ObjectMapper objectMapper) {
+    public Csv2ArtifactsCommandCAL(TemplateGenerator templateGenerator,
+                                   CedarArtifactPoster importer,
+                                   CedarCsvParserFactory cedarCsvParserFactory,
+                                   CliCedarArtifactWriter writer,
+                                   DocsGeneratorCAL docsGenerator,
+                                   ElementGenerator elementGenerator, TemplateInstanceGenerator templateInstanceGenerator,
+                                   StripInstance stripInstance, ObjectMapper objectMapper) {
         this.templateGenerator = templateGenerator;
         this.importer = importer;
         this.cedarCsvParserFactory = cedarCsvParserFactory;
@@ -309,7 +309,7 @@ public class Csv2ArtifactsCommand2 implements CedarCliCommand {
                 null,
                 node.isRoot(),
                 node.getName(),
-                node.getChildNodes().stream().map(Csv2ArtifactsCommand2::toCodeGenerationNode).toList(),
+                node.getChildNodes().stream().map(Csv2ArtifactsCommandCAL::toCodeGenerationNode).toList(),
                 getArtifactType(node), node.getDescription(),
                 node.getXsdDatatype().orElse(null),
                 node.isRequired() ? CodeGenerationNode.Required.REQUIRED : CodeGenerationNode.Required.OPTIONAL,
