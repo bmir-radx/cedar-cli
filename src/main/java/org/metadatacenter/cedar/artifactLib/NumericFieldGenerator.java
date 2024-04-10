@@ -23,6 +23,9 @@ public class NumericFieldGenerator implements FieldGenerator {
     var numericType = NumericTypeTransformer.getNumericType(node.getXsdDatatype());
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
     var defaultValue = NumericTypeTransformer.getTypedDefaultValue(node.getRow().getDefaultValue().getLabel(), numericType);
+    if(defaultValue != null){
+      builder.withDefaultValue(defaultValue);
+    }
     buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
 
@@ -35,7 +38,6 @@ public class NumericFieldGenerator implements FieldGenerator {
         .withNumericType(numericType)
         .withHidden(node.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
-        .withDefaultValue(defaultValue)
         .build();
   }
 }
