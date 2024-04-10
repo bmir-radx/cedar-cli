@@ -46,6 +46,6 @@ public class ElementInstanceGenerator {
 
     ContextGenerator.generateElementInstanceContext(elementSchemaArtifact, builder);
 
-    return builder.withJsonLdId(URI.create("")).build();
+    return builder.build();
   }
 }
