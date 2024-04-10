@@ -36,6 +36,7 @@ public class GeneratorTest {
   private final String input = "RADx_Metadata_Specification.csv";
   private ObjectMapper mapper;
   private TemplateGenerator templateGenerator;
+  private ElementGenerator elementGenerator;
   private TemplateInstanceGenerator templateInstanceGenerator;
   private DocsGeneratorCAL docsGeneratorCAL;
   private GetClassesRequest getClassesRequest;
@@ -47,7 +48,7 @@ public class GeneratorTest {
     jsonSchemaArtifactRenderer = new JsonSchemaArtifactRenderer();
     List<LanguageCode> langCodes = List.of(new LanguageCode("en", "en"), new LanguageCode("cn", "cn"));
     FieldGeneratorFactory fieldGeneratorFactory = new FieldGeneratorFactory(langCodes);
-    ElementGenerator elementGenerator = new ElementGenerator(fieldGeneratorFactory);
+    elementGenerator = new ElementGenerator(fieldGeneratorFactory);
     templateGenerator = new TemplateGenerator(fieldGeneratorFactory, elementGenerator);
 
     FieldInstanceGeneratorFactory fieldInstanceGeneratorFactory = new FieldInstanceGeneratorFactory();
@@ -65,6 +66,21 @@ public class GeneratorTest {
   public void testGenerateTemplateSchemaArtifact() throws Exception {
     var templateSchema = generateTemplate();
     assertThat(templateSchema.name().equals("Test Template"));
+  }
+
+  @Test
+  public void testGenerateUmbrellaElement() throws Exception {
+    var rootNode = getRootNode();
+    String name = "Umbrella Element";
+    String description = "This is an umbrella element";
+    var umbrellaElement = elementGenerator.generateElementSchemaArtifact(rootNode, name, description);
+
+//    var elementJson = jsonSchemaArtifactRenderer.renderElementSchemaArtifact(umbrellaElement);
+//    var fileName = "Umbrella_Element.json";
+//    var file = new File("../outputTemplates", fileName);
+//    mapper.writeValue(file, elementJson);
+
+    assertThat(umbrellaElement.name().equals(name));
   }
 
   @Test
@@ -119,25 +135,24 @@ public class GeneratorTest {
     assertThat(instance.isBasedOn().equals(templateId));
   }
 
-//  @Test
-//  public void testDocsGenerator() throws Exception {
-//    var templateSchema = generateTemplate();
-//    var rootNode = getRootNode();
-//    var templateId = templateSchema.jsonLdId().get();
-//    var instance = templateInstanceGenerator.generateTemplateInstance(templateSchema,
-//        TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS,
-//        rootNode,
-//        templateId,
-//        "Template Example Metadata");
-//
+  @Test
+  public void testDocsGenerator() throws Exception {
+    var templateSchema = generateTemplate();
+    var rootNode = getRootNode();
+    var templateId = templateSchema.jsonLdId().get();
+    var instance = templateInstanceGenerator.generateTemplateInstance(templateSchema,
+        TemplateInstanceGenerationMode.WITH_EXAMPLES_AND_DEFAULTS,
+        rootNode,
+        templateId,
+        "Template Example Metadata");
+
 //    var outputFile = Paths.get("../outputTemplates/outputDocs/doc.md");
 //    if (!Files.exists(outputFile.getParent())) {
 //      Files.createDirectories(outputFile.getParent());
 //    }
 //    String apiKey = System.getenv("CEDAR_BIOPORTAL_API_KEY");
 //    docsGeneratorCAL.writeDocs(rootNode, instance, outputFile, new BioPortalApiKey(apiKey));
-//  }
-
+  }
 
   private CedarCsvParser.Node getRootNode() throws IOException {
     InputStream inputStream = getClass().getClassLoader().getResourceAsStream(input);
@@ -151,15 +166,14 @@ public class GeneratorTest {
     String version = "0.0.2";
     String preVersion = "0.0.1";
     var status = "bibo:draft";
-    String elementName = "Data File Elevation Coverage";
+    String elementName = "Data File Spatial Coverage";
 
     var rootNode = getRootNode();
     var templateSchema = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateId, templateName, version, preVersion, status, elementName);
-//    var templateSchema = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateId, templateName, version, preVersion, status);
 
 //    var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
-//    var fileName = elementName.replace(" ", "_") + "_Template.json";
-////    var fileName = input.replace(".csv", "_Template.json");
+////    var fileName = elementName.replace(" ", "_") + "_Template_4.json";
+//    var fileName = input.replace(".csv", "_Template_Validated.json");
 //    var file = new File("../outputTemplates", fileName);
 //    mapper.writeValue(file, templateJson);
 //
