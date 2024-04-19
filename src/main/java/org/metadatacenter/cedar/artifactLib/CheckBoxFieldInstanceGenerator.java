@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.CheckboxFieldInstance;
 import org.metadatacenter.artifacts.model.core.FieldInstanceArtifact;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.TemplateInstanceGenerationMode;
@@ -7,7 +8,7 @@ import org.metadatacenter.cedar.csv.TemplateInstanceGenerationMode;
 public class CheckBoxFieldInstanceGenerator implements FieldInstanceGenerator{
   @Override
   public FieldInstanceArtifact generateFieldInstance(CedarCsvParser.Node node, TemplateInstanceGenerationMode mode) {
-    var builder = FieldInstanceArtifact.checkboxFieldInstanceBuilder();
+    var builder = CheckboxFieldInstance.builder();
     var value = getExampleOrDefault(node, mode);
     FieldInstanceArtifact fieldInstanceArtifact;
     if(value != null && !value.equals("")){

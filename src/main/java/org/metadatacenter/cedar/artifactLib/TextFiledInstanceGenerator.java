@@ -1,6 +1,7 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.FieldInstanceArtifact;
+import org.metadatacenter.artifacts.model.core.TextFieldInstance;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.TemplateInstanceGenerationMode;
 
@@ -8,7 +9,7 @@ public class TextFiledInstanceGenerator implements FieldInstanceGenerator {
   @Override
   public FieldInstanceArtifact generateFieldInstance(CedarCsvParser.Node node, TemplateInstanceGenerationMode mode) {
     var value = getExampleOrDefault(node, mode);
-    var builder = FieldInstanceArtifact.textFieldInstanceBuilder();
+    var builder = TextFieldInstance.builder();
 
     //Add lang tag
     if(node.getRow().hasLangTag()){

@@ -1,7 +1,8 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.ControlledTermField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.builders.LinkFieldBuilder;
+import org.metadatacenter.artifacts.model.core.LinkField;
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
@@ -13,9 +14,8 @@ public class LinkFieldGenerator implements FieldGenerator {
 
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
-    var builder = FieldSchemaArtifact.linkFieldBuilder();
+    var builder = LinkField.builder();
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
-//    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
 
     return builder
@@ -28,5 +28,9 @@ public class LinkFieldGenerator implements FieldGenerator {
         .withDefaultValue(URI.create(node.getRow().getDefaultValue().getLabel()))
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
+  }
+
+  private void buildWithPropertyIri(LinkField.LinkFieldBuilder builder, Optional<String> propertyIri){
+    propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
   }
 }

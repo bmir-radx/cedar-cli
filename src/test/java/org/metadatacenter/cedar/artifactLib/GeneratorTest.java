@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.in;
 
 public class GeneratorTest {
-  private final String input = "RADx_Metadata_Specification.csv";
+  private final String input = "RADx_Metadata_Specification_2.0.csv";
   private ObjectMapper mapper;
   private TemplateGenerator templateGenerator;
   private ElementGenerator elementGenerator;
@@ -94,10 +94,10 @@ public class GeneratorTest {
         rootNode,
         templateId,
         "Template Example Metadata");
-//    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
-//    var fileName = input.replace(".csv", "_Template_Example_Metadata.json");
-//    var file = new File("../outputTemplates", fileName);
-//    mapper.writeValue(file, instanceNode);
+    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
+    var fileName = input.replace(".csv", "_Template_Example_Metadata_2.0.json");
+    var file = new File("../outputTemplates", fileName);
+    mapper.writeValue(file, instanceNode);
     assertThat(instance.isBasedOn().equals(templateId));
   }
 
@@ -128,10 +128,10 @@ public class GeneratorTest {
         rootNode,
         templateId,
         "Template Example Metadata");
-//    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
-//    var fileName = input.replace(".csv", "_Template_Default_Metadata.json");
-//    var file = new File("../outputTemplates", fileName);
-//    mapper.writeValue(file, instanceNode);
+    var instanceNode = jsonSchemaArtifactRenderer.renderTemplateInstanceArtifact(instance);
+    var fileName = input.replace(".csv", "_Template_Default_Metadata.json");
+    var file = new File("../outputTemplates", fileName);
+    mapper.writeValue(file, instanceNode);
     assertThat(instance.isBasedOn().equals(templateId));
   }
 
@@ -171,14 +171,14 @@ public class GeneratorTest {
     var rootNode = getRootNode();
     var templateSchema = templateGenerator.generateTemplateSchemaArtifact(rootNode, templateId, templateName, version, preVersion, status, elementName);
 
-//    var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
-////    var fileName = elementName.replace(" ", "_") + "_Template_4.json";
-//    var fileName = input.replace(".csv", "_Template_Validated.json");
-//    var file = new File("../outputTemplates", fileName);
-//    mapper.writeValue(file, templateJson);
-//
-//    var errorFile = new File("../outputTemplates", fileName.replace(".json", "_Errors.json"));
-//    validateTemplate(templateJson, errorFile);
+    var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
+//    var fileName = elementName.replace(" ", "_") + "_Template_2.0.json";
+    var fileName = input.replace(".csv", "_Template_2.0.json");
+    var file = new File("../outputTemplates", fileName);
+    mapper.writeValue(file, templateJson);
+
+    var errorFile = new File("../outputTemplates", fileName.replace(".json", "_Errors.json"));
+    validateTemplate(templateJson, errorFile);
 
     return templateSchema;
   }

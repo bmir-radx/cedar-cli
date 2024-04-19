@@ -1,7 +1,8 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.CheckboxField;
+import org.metadatacenter.artifacts.model.core.ControlledTermField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.builders.ControlledTermFieldBuilder;
 import org.metadatacenter.artifacts.model.core.fields.constraints.ValueType;
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.constraints.EnumerationValueConstraints;
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class ControlledTermFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
-    var builder = FieldSchemaArtifact.controlledTermFieldBuilder();
+    var builder = ControlledTermField.builder();
     var constraints = node.getOntologyTermsConstraints();
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 
@@ -34,7 +35,7 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
         .build();
   }
 
-  private void buildWithOntologies(ControlledTermFieldBuilder builder, Optional<EnumerationValueConstraints> constraints){
+  private void buildWithOntologies(ControlledTermField.ControlledTermFieldBuilder builder, Optional<EnumerationValueConstraints> constraints){
     if(constraints.isPresent()){
       var branches = constraints.get().branches();
       var ontologies = constraints.get().ontologies();
@@ -57,7 +58,11 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
     }
   }
 
-  private void buildWithDefaultValue(ControlledTermFieldBuilder builder, Optional<String> iri, String label){
+  private void buildWithDefaultValue(ControlledTermField.ControlledTermFieldBuilder builder, Optional<String> iri, String label){
     iri.ifPresent(s -> builder.withDefaultValue(URI.create(s), label));
+  }
+
+  private void buildWithPropertyIri(ControlledTermField.ControlledTermFieldBuilder builder, Optional<String> propertyIri){
+    propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
   }
 }

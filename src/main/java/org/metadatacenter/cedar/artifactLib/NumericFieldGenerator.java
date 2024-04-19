@@ -1,7 +1,8 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.builders.NumericFieldBuilder;
+import org.metadatacenter.artifacts.model.core.ListField;
+import org.metadatacenter.artifacts.model.core.NumericField;
 import org.metadatacenter.artifacts.model.core.fields.XsdNumericDatatype;
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.NumberType;
@@ -19,14 +20,14 @@ public class NumericFieldGenerator implements FieldGenerator {
 
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
-    var builder = FieldSchemaArtifact.numericFieldBuilder();
+    var builder = NumericField.builder();
     var numericType = NumericTypeTransformer.getNumericType(node.getXsdDatatype());
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
     var defaultValue = NumericTypeTransformer.getTypedDefaultValue(node.getRow().getDefaultValue().getLabel(), numericType);
     if(defaultValue != null){
       builder.withDefaultValue(defaultValue);
     }
-    buildWithIdentifier(builder, node.getFieldIdentifier());
+
     buildWithPropertyIri(builder, node.getPropertyIri());
 
     return builder
@@ -39,5 +40,9 @@ public class NumericFieldGenerator implements FieldGenerator {
         .withHidden(node.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
+  }
+
+  private void buildWithPropertyIri(NumericField.NumericFieldBuilder builder, Optional<String> propertyIri){
+    propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
   }
 }

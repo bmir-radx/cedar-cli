@@ -1,6 +1,7 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.FieldInstanceArtifact;
+import org.metadatacenter.artifacts.model.core.NumericFieldInstance;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.TemplateInstanceGenerationMode;
 
@@ -10,7 +11,7 @@ public class NumericFieldInstanceGenerator implements FieldInstanceGenerator{
     var numericType = NumericTypeTransformer.getNumericType(node.getXsdDatatype());
     var value = getExampleOrDefault(node, mode);
     var typedNumber = NumericTypeTransformer.getTypedDefaultValue(value, numericType);
-    var fieldInstanceArtifactBuilder = FieldInstanceArtifact.numericFieldInstanceBuilder();
+    var fieldInstanceArtifactBuilder = NumericFieldInstance.builder();
     FieldInstanceArtifact fieldInstanceArtifact;
 
     if(typedNumber != null && !value.equals("")){

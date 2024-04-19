@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.ControlledTermFieldInstance;
 import org.metadatacenter.artifacts.model.core.FieldInstanceArtifact;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 import org.metadatacenter.cedar.csv.DefaultValueSpec;
@@ -10,7 +11,7 @@ import java.net.URI;
 public class ControlledTermFieldInstanceGenerator implements FieldInstanceGenerator{
   @Override
   public FieldInstanceArtifact generateFieldInstance(CedarCsvParser.Node node, TemplateInstanceGenerationMode mode) {
-    var builder = FieldInstanceArtifact.controlledTermFieldInstanceBuilder();
+    var builder = ControlledTermFieldInstance.builder();
     FieldInstanceArtifact fieldInstanceArtifact;
     var value = getExampleOrDefault(node, mode);
     if(value != null && !value.equals("")){

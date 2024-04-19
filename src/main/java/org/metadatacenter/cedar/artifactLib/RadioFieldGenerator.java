@@ -1,7 +1,8 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.builders.RadioFieldBuilder;
+import org.metadatacenter.artifacts.model.core.ListField;
+import org.metadatacenter.artifacts.model.core.RadioField;
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
 public class RadioFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
-    var builder = FieldSchemaArtifact.radioFieldBuilder();
+    var builder = RadioField.builder();
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
@@ -27,5 +28,9 @@ public class RadioFieldGenerator implements FieldGenerator {
         .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
+  }
+
+  private void buildWithPropertyIri(RadioField.RadioFieldBuilder builder, Optional<String> propertyIri){
+    propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
   }
 }

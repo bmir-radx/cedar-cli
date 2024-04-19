@@ -1,7 +1,8 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.builders.TemporalFieldBuilder;
+import org.metadatacenter.artifacts.model.core.ListField;
+import org.metadatacenter.artifacts.model.core.TemporalField;
 import org.metadatacenter.artifacts.model.core.fields.TemporalGranularity;
 import org.metadatacenter.artifacts.model.core.fields.XsdTemporalDatatype;
 import org.metadatacenter.cedar.api.CedarId;
@@ -20,7 +21,7 @@ public class TemporalFieldGenerator implements FieldGenerator {
   @Override
   public FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node) {
     var temporalType = TemporalTypeTransformer.getTemporalType(node.getXsdDatatype());
-    var builder = FieldSchemaArtifact.temporalFieldBuilder();
+    var builder = TemporalField.builder();
     var temporalGranularity = TemporalTypeTransformer.getTemporalGranularity(temporalType);
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 
@@ -38,5 +39,9 @@ public class TemporalFieldGenerator implements FieldGenerator {
         .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
+  }
+
+  private void buildWithPropertyIri(TemporalField.TemporalFieldBuilder builder, Optional<String> propertyIri){
+    propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
   }
 }
