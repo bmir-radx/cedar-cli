@@ -9,6 +9,12 @@ public class TextFiledInstanceGenerator implements FieldInstanceGenerator {
   public FieldInstanceArtifact generateFieldInstance(CedarCsvParser.Node node, TemplateInstanceGenerationMode mode) {
     var value = getExampleOrDefault(node, mode);
     var builder = FieldInstanceArtifact.textFieldInstanceBuilder();
+
+    //Add lang tag
+    if(node.getRow().hasLangTag()){
+     builder.withLanguage("en");
+    }
+
     FieldInstanceArtifact fieldInstanceArtifact;
     if(value != null && !value.equals("")){
       fieldInstanceArtifact = builder

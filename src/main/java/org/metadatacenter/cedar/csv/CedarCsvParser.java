@@ -607,13 +607,6 @@ public class CedarCsvParser {
             return row.getCardinality();
         }
 
-//        public Optional<CedarCsvInputType> getInputType(){
-//            if(row == null){
-//                return Optional.empty();
-//            }
-//            return row.getInputType();
-//        }
-
         public Optional<EnumerationValueConstraints> getOntologyTermsConstraints(){
             if(row == null){
                 return Optional.empty();
@@ -627,19 +620,5 @@ public class CedarCsvParser {
             }
             return Optional.of(CedarCsvParser.getFieldIdentifier(row));
         }
-
-//        public boolean isHidden(){
-//            if(row == null){
-//                return false;
-//            }
-//            return row.visibility().isHidden();
-//        }
-
-//        public Optional<String> getDefaultValue(){
-//            if(row == null){
-//                return Optional.empty();
-//            }
-//            return Optional.of(row.defaultValue().trim());
-//        }
     }
 }

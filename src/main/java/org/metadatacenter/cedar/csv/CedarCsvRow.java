@@ -24,6 +24,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Visibility") Visibility visibility,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
+                          @JsonProperty("Primitive Type") PrimitiveType primitiveType,
                           @JsonProperty("Derived") String derived,
                           @JsonProperty("Default Value") String defaultValue,
                           @JsonProperty("Example") String example,
@@ -39,6 +40,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Visibility") Visibility visibility,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Description") String description,
+                       @JsonProperty("Primitive Type") PrimitiveType primitiveType,
                        @JsonProperty("Derived") String derived,
                        @JsonProperty("Default Value") String defaultValue,
                        @JsonProperty("Example") String example,
@@ -54,6 +56,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.fieldTitle = fieldTitle != null ? fieldTitle.trim() : fieldTitle;
         this.propertyIri = propertyIri;
         this.description = description;
+        this.primitiveType = primitiveType;
         this.derived = derived;
         this.defaultValue = defaultValue;
         this.example = example;
@@ -181,5 +184,9 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
 
     public String getStrippedElementNameAsId() {
         return getStrippedElementName().trim().toLowerCase().replace(" ", "_");
+    }
+
+    public boolean hasLangTag(){
+        return primitiveType.equals(PrimitiveType.LANG_STRING);
     }
 }
