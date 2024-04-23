@@ -19,6 +19,11 @@ public class TextFiledGenerator implements FieldGenerator {
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
 
+    //Add lang tag
+    if(node.getRow().hasLangTag()){
+      builder.withLanguage("en");
+    }
+
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
