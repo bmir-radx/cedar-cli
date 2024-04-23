@@ -100,10 +100,10 @@ This corresponds to the _local identifier_ in the DataCite standard. All RADx st
 ,,,Recommended,Study Name,The name of the research study for which this data file was created.,,,,NHLBI GO-ESP: Lung Cohorts Exome Sequencing Project (COPDGene),,https://w3id.org/radx/radmo/parentStudyName,,,
 ,,,Optional,Study Start Date,"The official start date for the study for which this data file was created. This date must be in the ISO-8601 format of yyyy-mm-dd. For example, 2022-10-05 specifies October 5, 2022.
 
-This field is considered auxiliary information to the initially registered Study Start Date. It will not update the registered information, but may trigger a verification that the registered Start Date has not changed.",,,,2021-10-05,,https://w3id.org/radx/radmo/startDate,date,,
+This field is considered auxiliary information to the initially registered Study Start Date. It will not update the registered information, but may trigger a verification that the registered Start Date has not changed.",,,,10/5/21,,https://w3id.org/radx/radmo/startDate,date,,
 ,,,Optional,Study End Date,"The official end date for the study for which this data file was created. This date must be in the ISO-8601 format of yyyy-mm-dd. For example, 2022-10-05 specifies October 5, 2022.
 
-This field is considered auxiliary information to the initially registered Study End Date. It will not update the registered information, but may trigger a verification that the registered End Date has not changed.",,,,2022-10-05,,https://w3id.org/radx/radmo/endDate,date,,
+This field is considered auxiliary information to the initially registered Study End Date. It will not update the registered information, but may trigger a verification that the registered End Date has not changed.",,,,10/5/22,,https://w3id.org/radx/radmo/endDate,date,,
 ,Data File Funding Sources,MULTIPLE,,,A list of sources of funding that enabled and drove the creation of the data file. (Non-monetary sources are described under Contributor.) Each funding source may be described as a separate element (set of fields).,,,,,,https://w3id.org/radx/radmo/fundingSourceDescriptor,,,
 ,,,Optional,Award Title,"The human readable title of the award, grant, or other specific funding mechanism for the described data file.",,,,Safer At School Early Alert (SASEA),,https://w3id.org/radx/radmo/awardTitle,,,
 ,,,Optional,Award Page URL,The unique identifier (IRI) leading to a page provided by the funder for more information about the award (grant).,yes,,,https://reporter.nih.gov/search/44g5CsIy-EGIvKlnlFwXrA/project-details/10447530,,https://w3id.org/radx/radmo/awardPageUrl,IRI,,
@@ -168,7 +168,6 @@ Provenance,,,,,,,,,,,,,,
 ,Data Streams,MULTIPLE,,,"A list of one or more variable records that contribute to this data file. Each data stream originates from a single data source (e.g., sensor, process, or person). A data stream can grow over time. ",,,,,,https://w3id.org/radx/radmo/dataStreamDescriptor,,,
 ,,,Optional,Data Stream Name,"Human readable name of collection of records coming from a data source. A data stream is a collection of one or more variable records originating from a single data source (e.g., sensor, process, or person). A data stream can grow over time.",,,,,,https://w3id.org/radx/radmo/dataStreamName,,,
 ,,,Optional,Data Stream Identifier,Globally unique string that identifies the collection of records coming from a data source.,,,,,,https://w3id.org/radx/radmo/dataStreamIdentifier,,,
-,,,Optional,Data Stream Identifier Scheme,The name of the scheme or authority used for the Data Stream Identifier.,,,,,https://bioportal.bioontology.org/ontologies/GDMT/?p=classes&conceptid=https://w3id.org/gdmt/IdentifierType,https://w3id.org/radx/radmo/dataStreamIdentifierScheme,,,"ARK, arXiv, bibcode, DOI, EAN13, EISSN, Handle, IGSN, IRI, ISBN, ISSN, ISTC, LISSN, LSID, PMID, PURL, UPC, URI, URL, URN, w3id"
 ,,MULTIPLE,Optional,Data Stream Variable Names,The local names of variables contained in the data stream.,,,,,,https://w3id.org/radx/radmo/dataStreamVariableName,,,
 ,,,Optional,Data Stream Data Source Identifier,"Globally unique string that identifies the data source (e.g., PID of an instrument) that generated this Data Stream.",,,,,,https://w3id.org/radx/radmo/dataStreamDataSourceIdentifier,,,
 ,Data File Creation Processes,MULTIPLE,,,A list of processes (activities) used to make the data file.,,,,,,https://w3id.org/radx/radmo/dataFileCreationProcessDescriptor,,,
@@ -186,14 +185,14 @@ Note that dates must be specified in [ISO-8601](https://en.wikipedia.org/wiki/IS
 
 The date time 2022-11-23T01:23:45.678-07:00 specifies November 23, 2022 at just past 1:23am Pacific Daylight Time. Hyphens and colons are optional.
 
-The date 2022-09-23 specifies September 23, 2022 (without a time stamp). Dates are assumed GMT if no time zone is specified.",,,,2022-06-01,,https://w3id.org/radx/radmo/temporalExtentMinimumValue,date,,
+The date 2022-09-23 specifies September 23, 2022 (without a time stamp). Dates are assumed GMT if no time zone is specified.",,,,6/1/22,,https://w3id.org/radx/radmo/temporalExtentMinimumValue,date,,
 ,,,Optional,Temporal Extent Maximum Value,"The end date (and optionally time) of the data.
 
 Note that dates must be specified in [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) format. This format specifies date/times in a locale neutral way with temporal components ordered largest to smallest, for example year, month, day. Note that times are in 24 hour clock (military time) format, thus 13:43 is 1:43pm. When times are specified a time zone must also be specified (Z or +00:00 indicates Greenwich Mean Time).
 
 The date time 2022-11-23T01:23:45.678-07:00 specifies November 23, 2022 at just past 1:23am Pacific Daylight Time. Hyphens and colons are optional.
 
-The date 2022-09-23 specifies September 23, 2022 (without a time stamp). Dates are assumed GMT if no time zone is specified.",,,,2022-06-29,,https://w3id.org/radx/radmo/temporalExtentMaximumValue,date,,
+The date 2022-09-23 specifies September 23, 2022 (without a time stamp). Dates are assumed GMT if no time zone is specified.",,,,6/29/22,,https://w3id.org/radx/radmo/temporalExtentMaximumValue,date,,
 ,,,Optional,Temporal Resolution,"The nominal time interval between the measurement time of one data record and that of the following data record, in seconds. Measurement time can be considered as the beginning, end, or other known point in the measurement process.
 
 Most repeating measurement processes have some variation in the interval between measurements. If there is no planned schedule for the measurements, this value can be set to 0.",,,,3600,,https://w3id.org/radx/radmo/temporalResolution,,,
