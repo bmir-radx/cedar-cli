@@ -15,6 +15,7 @@
 	<description>A command line interface for interacting with CEDAR</description>
 	<properties>
 		<java.version>19</java.version>
+		<metadatacenter.version>2.6.58-SNAPSHOT</metadatacenter.version>
 	</properties>
 
 
@@ -133,13 +134,13 @@
 		<dependency>
 			<groupId>org.metadatacenter</groupId>
 			<artifactId>cedar-artifact-library</artifactId>
-			<version>2.6.58-SNAPSHOT</version>
+			<version>${metadatacenter.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.metadatacenter</groupId>
 			<artifactId>cedar-model-validation-library</artifactId>
-			<version>2.6.57</version>
+			<version>${metadatacenter.version}</version>
 		</dependency>
 	</dependencies>
 
