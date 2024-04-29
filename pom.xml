@@ -142,6 +142,13 @@
 			<artifactId>cedar-model-validation-library</artifactId>
 			<version>${metadatacenter.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>io.netty</groupId>
+			<artifactId>netty-resolver-dns-native-macos</artifactId>
+			<version>4.1.73.Final</version>
+			<classifier>osx-aarch_64</classifier>
+		</dependency>
 	</dependencies>
 
 
