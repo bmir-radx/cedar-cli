@@ -1,11 +1,7 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
-import org.metadatacenter.artifacts.model.core.FieldSchemaArtifactBuilder;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
-
-import java.net.URI;
-import java.util.Optional;
 
 public interface FieldGenerator {
   FieldSchemaArtifact generateFieldArtifactSchema(CedarCsvParser.Node node);

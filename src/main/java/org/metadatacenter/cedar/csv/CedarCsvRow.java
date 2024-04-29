@@ -187,6 +187,9 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
     }
 
     public boolean hasLangTag(){
+        if(primitiveType == null){
+            return false;
+        }
         return primitiveType.equals(PrimitiveType.LANG_STRING);
     }
 }
