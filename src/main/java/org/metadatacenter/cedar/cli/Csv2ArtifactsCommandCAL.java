@@ -35,9 +35,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
- * Matthew Horridge
+ * Yan Cao
  * Stanford Center for Biomedical Informatics Research
- * 2022-07-29
+ * 2024-04
  */
 @Component
 @Command(name = "csv2artifactsCAL",
