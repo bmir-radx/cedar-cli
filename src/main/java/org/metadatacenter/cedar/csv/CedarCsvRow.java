@@ -25,6 +25,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Description") String description,
                           @JsonProperty("Primitive Type") PrimitiveType primitiveType,
+                          @JsonProperty("Pattern") String pattern,
                           @JsonProperty("Derived") String derived,
                           @JsonProperty("Default Value") String defaultValue,
                           @JsonProperty("Example") String example,
@@ -41,6 +42,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Description") String description,
                        @JsonProperty("Primitive Type") PrimitiveType primitiveType,
+                       @JsonProperty("Pattern") String pattern,
                        @JsonProperty("Derived") String derived,
                        @JsonProperty("Default Value") String defaultValue,
                        @JsonProperty("Example") String example,
@@ -57,6 +59,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.propertyIri = propertyIri;
         this.description = description;
         this.primitiveType = primitiveType;
+        this.pattern = pattern;
         this.derived = derived;
         this.defaultValue = defaultValue;
         this.example = example;

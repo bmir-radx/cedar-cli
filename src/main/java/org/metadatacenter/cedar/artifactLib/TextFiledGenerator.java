@@ -24,6 +24,12 @@ public class TextFiledGenerator implements FieldGenerator {
       builder.withLanguage("en");
     }
 
+    //Add pattern
+    var pattern = node.getRow().pattern();
+    if(pattern != null){
+      builder.withRegex(pattern);
+    }
+
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
