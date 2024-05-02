@@ -13,7 +13,13 @@ public enum PrimitiveType {
   @JsonProperty
   YES("yes"),
   @JsonProperty
-  No("no");
+  No("no"),
+  @JsonProperty
+  LONG("long"),
+  @JsonProperty
+  INTEGER("integer"),
+  @JsonProperty
+  Boolean("boolean");
 
   private final String value;
   PrimitiveType(String value) {
