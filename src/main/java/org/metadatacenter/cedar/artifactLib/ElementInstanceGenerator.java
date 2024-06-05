@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Component
@@ -33,7 +34,7 @@ public class ElementInstanceGenerator {
         }
       } else if (child.getRow().getInputType().isPresent() && child.getRow().getInputType().get().equals(CedarCsvInputType.ATTRIBUTE_VALUE)) {
         //TODO: can build attribute value filed with value if needed
-        builder.withAttributeValueFieldGroup(name, Collections.emptyMap());
+        builder.withAttributeValueFieldGroup(name, new LinkedHashMap<>());
       } else{
         var fieldInstance = fieldInstanceGeneratorFactory.generateFieldInstance(child, mode);
         if(child.isMultiValued()){

@@ -173,7 +173,7 @@ public class GeneratorTest {
 
     var templateJson = jsonSchemaArtifactRenderer.renderTemplateSchemaArtifact(templateSchema);
 //    var fileName = elementName.replace(" ", "_") + "_Template_2.0.json";
-    var fileName = input.replace(".csv", "_Template_2.0.json");
+    var fileName = input.replace(".csv", ".json");
     var file = new File("../outputTemplates", fileName);
     mapper.writeValue(file, templateJson);
 

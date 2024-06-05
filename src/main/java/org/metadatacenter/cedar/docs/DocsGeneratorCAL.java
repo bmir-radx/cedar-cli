@@ -22,10 +22,7 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -232,7 +229,7 @@ public class DocsGeneratorCAL {
     var prunedFieldInstanceBuilder = ElementInstanceArtifact.builder();
     //Build attribute-value field
     if(node.getRow().getInputType().isPresent() && node.getRow().getInputType().get().equals(CedarCsvInputType.ATTRIBUTE_VALUE)){
-      prunedFieldInstanceBuilder.withAttributeValueFieldGroup(name, Collections.emptyMap());
+      prunedFieldInstanceBuilder.withAttributeValueFieldGroup(name, new LinkedHashMap<>());
     } else{
       if(node.isMultiValued()){
         prunedFieldInstanceBuilder.withMultiInstanceFieldInstances(name, List.of(field));
