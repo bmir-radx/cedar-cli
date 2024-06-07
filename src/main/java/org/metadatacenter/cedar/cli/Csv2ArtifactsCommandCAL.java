@@ -379,21 +379,24 @@ public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
         if(shouldPushToCedar()) {
             artifacts.forEach(artifact -> {
                 try {
+                    if(!(artifact instanceof AttributeValueField)){ //attribute-value fields are not post to CEDAR, because cedar model validation don't handle AV fields as standalone entities.
+                        var initialId = artifact.jsonLdId();
+                        var artifactWithNullId = replaceId(artifact, null);
+                        var posted = postArtifactToCedar(artifactWithNullId);
+                        counter.incrementAndGet();
+                        posted.ifPresent(r -> {
+                            System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.name(), counter.get(), artifacts.size());
+                            System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
+                            if(initialId.isPresent()){
+                                artifact2GeneratedIdMap.put(initialId.get(), URI.create(r.cedarId().value()));
+                                var postedArtifact = replaceId(artifact, URI.create(r.cedarId().value()));
+                                writeCedarArtifact(postedArtifact);
+                            }
 
-                    var initialId = artifact.jsonLdId();
-                    var artifactWithNullId = replaceId(artifact, null);
-                    var posted = postArtifactToCedar(artifactWithNullId);
-                    counter.incrementAndGet();
-                    posted.ifPresent(r -> {
-                        System.err.printf("\033[32;1mPosted\033[30;0m %s %d of %d to CEDAR\n", artifact.name(), counter.get(), artifacts.size());
-                        System.err.printf("    %s (id=%s)\n", r.schemaName(), r.cedarId().value());
-                        if(initialId.isPresent()){
-                            artifact2GeneratedIdMap.put(initialId.get(), URI.create(r.cedarId().value()));
-                            var postedArtifact = replaceId(artifact, r.cedarId().value());
-                            writeCedarArtifact(postedArtifact);
-                        }
-
-                    });
+                        });
+                    } else{
+                        writeCedarArtifact(artifact);
+                    }
                 } catch (IOException | InterruptedException e) {
                     System.err.println(e.getMessage());
                 }
@@ -435,23 +438,70 @@ public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
         Files.writeString(path, templateInstanceJson);
     }
 
-    private SchemaArtifact replaceId(SchemaArtifact artifact, String id){
-        var artifactNode = ArtifactRenderer.renderSchemaArtifact(artifact);
-        if (id == null) {
-            artifactNode.putNull("@id");
-        } else{
-            artifactNode.put("@id", id);
+    private SchemaArtifact replaceId(SchemaArtifact artifact, URI id) {
+        SchemaArtifact artifactWithNewId;
+
+        switch (artifact) {
+            case TemplateSchemaArtifact template -> {
+                artifactWithNewId = TemplateSchemaArtifact.builder(template).withJsonLdId(id).build();
+            }
+            case ElementSchemaArtifact element -> {
+                artifactWithNewId = ElementSchemaArtifact.builder(element).withJsonLdId(id).build();
+            }
+            case TextField textField -> {
+                artifactWithNewId = TextField.builder(textField).withJsonLdId(id).build();
+            }
+            case TextAreaField textAreaField -> {
+                artifactWithNewId = TextAreaField.builder(textAreaField).withJsonLdId(id).build();
+            }
+            case TemporalField temporalField -> {
+                artifactWithNewId = TemporalField.builder(temporalField).withJsonLdId(id).build();
+            }
+            case RadioField radioField -> {
+                artifactWithNewId = RadioField.builder(radioField).withJsonLdId(id).build();
+            }
+            case PhoneNumberField phoneNumberField -> {
+                artifactWithNewId = PhoneNumberField.builder(phoneNumberField).withJsonLdId(id).build();
+            }
+            case NumericField numericField -> {
+                artifactWithNewId = NumericField.builder(numericField).withJsonLdId(id).build();
+            }
+            case ListField listField -> {
+                artifactWithNewId = ListField.builder(listField).withJsonLdId(id).build();
+            }
+            case LinkField linkField -> {
+                artifactWithNewId = LinkField.builder(linkField).withJsonLdId(id).build();
+            }
+            case EmailField emailField -> {
+                artifactWithNewId = EmailField.builder(emailField).withJsonLdId(id).build();
+            }
+            case ControlledTermField controlledTermField -> {
+                artifactWithNewId = ControlledTermField.builder(controlledTermField).withJsonLdId(id).build();
+            }
+            case CheckboxField checkboxField -> {
+                artifactWithNewId = CheckboxField.builder(checkboxField).withJsonLdId(id).build();
+            }
+//            case AttributeValueField attributeValueField -> {
+//                artifactWithNewId = AttributeValueField.builder(attributeValueField).withJsonLdId(id).build();
+//            }
+            case PageBreakField pageBreakField -> {
+                artifactWithNewId = PageBreakField.builder(pageBreakField).withJsonLdId(id).build();
+            }
+            case SectionBreakField sectionBreakField -> {
+                artifactWithNewId = SectionBreakField.builder(sectionBreakField).withJsonLdId(id).build();
+            }
+            case ImageField imageField -> {
+                artifactWithNewId = ImageField.builder(imageField).withJsonLdId(id).build();
+            }
+            case YouTubeField youTubeField -> {
+                artifactWithNewId = YouTubeField.builder(youTubeField).withJsonLdId(id).build();
+            }
+            case RichTextField richTextField -> {
+                artifactWithNewId = RichTextField.builder(richTextField).withJsonLdId(id).build();
+            }
+            default -> throw new IllegalArgumentException("Unsupported artifact type: " + artifact.getClass().getName());
         }
 
-        var reader = new JsonSchemaArtifactReader();
-        if(artifact instanceof TemplateSchemaArtifact){
-            return reader.readTemplateSchemaArtifact(artifactNode);
-        } else if (artifact instanceof ElementSchemaArtifact) {
-            return reader.readElementSchemaArtifact(artifactNode);
-        } else if (artifact instanceof FieldSchemaArtifact) {
-            return reader.readFieldSchemaArtifact(artifactNode);
-        } else{
-            throw new IllegalArgumentException("Unsupported artifact type: " + artifact.getClass().getName());
-        }
+        return artifactWithNewId;
     }
 }
