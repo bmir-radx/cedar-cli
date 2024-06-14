@@ -7,13 +7,11 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import com.google.common.base.Strings;
-import org.apache.poi.sl.draw.geom.GuideIf;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.text.TextContentRenderer;
 import org.metadatacenter.cedar.api.*;
 import org.metadatacenter.cedar.api.constraints.*;
 
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
@@ -423,6 +421,21 @@ public class CedarCsvParser {
                 return "";
             }
             if(row.isSection()) {
+                return toCamelCase(row.section());
+            }
+            else if(row.isElement() || row.isField()) {
+                return cleanFieldName(row.propertyName(), '<');
+            }
+            else {
+                return "";
+            }
+        }
+
+        public String getTitle() {
+            if(row == null) {
+                return "";
+            }
+            if(row.isSection()) {
                 return row.section();
             }
             else if(row.isElement()) {
@@ -619,6 +632,27 @@ public class CedarCsvParser {
                 return Optional.empty();
             }
             return Optional.of(CedarCsvParser.getFieldIdentifier(row));
+        }
+
+        private String toCamelCase(String input) {
+            String[] words = input.split("\\s+");
+
+            StringBuilder camelCaseString = new StringBuilder();
+
+            for (int i = 0; i < words.length; i++) {
+                String word = words[i];
+                if (i == 0) {
+                    camelCaseString.append(word.toLowerCase());
+                } else {
+                    camelCaseString.append(Character.toUpperCase(word.charAt(0)));
+                    camelCaseString.append(word.substring(1).toLowerCase());
+                }
+            }
+            return camelCaseString.toString();
+        }
+
+        private String cleanFieldName(String input, char charToRemove){
+            return input.replaceAll(Character.toString(charToRemove), "");
         }
     }
 }

@@ -30,6 +30,7 @@ public class TemporalFieldGenerator implements FieldGenerator {
 
     return builder
         .withName(node.getName())
+        .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())

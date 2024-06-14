@@ -64,7 +64,7 @@ public class TypeScriptGenerator {
 //        var methodName = toCamelCase(cn.getSchemaName(), true);
 //
 //        var methodDecl = methodName + "() : " + returnType + " | undefined {\n"
-//                + "\treturn this[" + fieldName + "];\n}";
+//                + "\treturn this[" + propertyName + "];\n}";
 
 
         return fieldDecl + "\n";

@@ -32,6 +32,7 @@ public class NumericFieldGenerator implements FieldGenerator {
 
     return builder
         .withName(node.getSchemaName())
+        .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withIsMultiple(node.isMultiValued())

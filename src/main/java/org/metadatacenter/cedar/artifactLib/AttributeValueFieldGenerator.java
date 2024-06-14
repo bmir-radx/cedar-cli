@@ -20,6 +20,7 @@ public class AttributeValueFieldGenerator implements FieldGenerator{
 
     return builder
         .withName(node.getSchemaName())
+        .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withJsonLdId(URI.create(jsonLdId.value()))

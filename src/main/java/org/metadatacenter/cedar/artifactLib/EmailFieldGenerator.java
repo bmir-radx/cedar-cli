@@ -22,6 +22,7 @@ public class EmailFieldGenerator implements FieldGenerator {
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
+        .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withDefaultValue(node.getRow().getDefaultValue().getLabel())

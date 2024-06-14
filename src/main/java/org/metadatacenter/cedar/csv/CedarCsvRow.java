@@ -9,7 +9,6 @@ import org.metadatacenter.cedar.io.CedarFieldValueType;
 
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * Matthew Horridge
@@ -23,6 +22,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Required") Optionality optionality,
                           @JsonProperty("Visibility") Visibility visibility,
                           @JsonProperty("Field Title") String fieldTitle,
+                          @JsonProperty("Property Name") String propertyName,
                           @JsonProperty("Description") String description,
                           @JsonProperty("Primitive Type") PrimitiveType primitiveType,
                           @JsonProperty("Pattern") String pattern,
@@ -40,6 +40,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Required") Optionality optionality,
                        @JsonProperty("Visibility") Visibility visibility,
                        @JsonProperty("Field Title") String fieldTitle,
+                       @JsonProperty("Property Name") String propertyName,
                        @JsonProperty("Description") String description,
                        @JsonProperty("Primitive Type") PrimitiveType primitiveType,
                        @JsonProperty("Pattern") String pattern,
@@ -56,6 +57,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.optionality = optionality;
         this.visibility = Objects.requireNonNull(visibility);
         this.fieldTitle = fieldTitle != null ? fieldTitle.trim() : fieldTitle;
+        this.propertyName = propertyName != null ? propertyName.trim() : propertyName;
         this.propertyIri = propertyIri;
         this.description = description;
         this.primitiveType = primitiveType;

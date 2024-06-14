@@ -45,6 +45,7 @@ public class ElementGenerator {
 
     return builder
         .withName(name)
+        .withPreferredLabel(node.getTitle())
         .withDescription(description)
         .withJsonSchemaDescription(jsonSchemaDescription)
         .withIsMultiple(node.isMultiValued())
