@@ -26,6 +26,7 @@ public class ListFieldGenerator implements FieldGenerator {
     var builder = ListField.builder();
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
     buildWithPropertyIri(builder, node.getPropertyIri());
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel());
 
     if(node.getRow().getInputType().isPresent() && node.getRow().getInputType().get().getConstraintsType().equals(LANGUAGE_TAG)){
       buildWithLangCode(builder, node, languageCodes);
@@ -39,7 +40,6 @@ public class ListFieldGenerator implements FieldGenerator {
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
-        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
@@ -53,5 +53,11 @@ public class ListFieldGenerator implements FieldGenerator {
 
   private void buildWithPropertyIri(ListField.ListFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
+  }
+
+  private void buildWithDefaultValue(ListField.ListFieldBuilder builder, String defaultValue){
+    if(defaultValue != null && !defaultValue.isEmpty()){
+      builder.withDefaultValue(defaultValue);
+    }
   }
 }

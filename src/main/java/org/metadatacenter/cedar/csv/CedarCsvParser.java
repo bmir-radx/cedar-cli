@@ -96,6 +96,18 @@ public class CedarCsvParser {
                 currentParentNode = rootNode;
 //                currentParentNode.addChild(rowNode);
             }
+            else if(row.isIdentifierElement()) {
+                //add child to current parent node (identifier element)
+                //set current parent node to row node
+                //add child to current parent node (identifier field)
+                //add identifier scheme node to current parent node
+                //set current parent node to its parent node
+                currentParentNode.addChild(rowNode);
+                currentParentNode = rowNode;
+                var identifierNode = new Node(row);
+                rowNode.addChild(identifierNode);
+                currentParentNode = currentParentNode.parentNode;
+            }
             else if(row.isElement()) {
                 var elementDepth = row.getElementLevel();
                 var parentDepth = currentParentNode.getElementLevel();
@@ -358,6 +370,13 @@ public class CedarCsvParser {
         }
     }
 
+    private static EnumerationValueConstraints getIdentifierSchemeConstaints(CedarCsvRow row) {
+        var lookupSpec = new LookupSpec(Identifier.IDENTIFIER_SCHEME_ONTOLOGY_URL.getValue());
+        var ontologyTermSelectors = getOntologyTermsSelectors(lookupSpec);
+        return EnumerationValueConstraints.of(ontologyTermSelectors, null,
+            row.getRequired(), row.getCardinality());
+    }
+
     private static List<OntologyTermsSpecification> getOntologyTermsSelectors(LookupSpec theLookupSpec) {
         if(!theLookupSpec.getTermSpecList().isEmpty()) {
             return theLookupSpec.getTermSpecList()
@@ -426,8 +445,26 @@ public class CedarCsvParser {
             else if(row.isElement() || row.isField()) {
                 return cleanFieldName(row.propertyName(), '<');
             }
-            else {
+            else if (row.isIdentifierElement()) {
+                return toCamelCase(row.getElementName());
+            } else {
                 return "";
+            }
+        }
+
+        public String getIdentifierSchemaName(Identifier type){
+            if(type.equals(Identifier.IDENTIFIER_ELEMENT)){
+                return toCamelCase(row.getElementName());
+            } else{
+                return cleanFieldName(row.propertyName(), '<');
+            }
+        }
+
+        public String getIdentifierTitle(Identifier type){
+            if(type.equals(Identifier.IDENTIFIER_ELEMENT)){
+                return row.getStrippedElementName();
+            } else{
+                return row.fieldTitle();
             }
         }
 
@@ -541,6 +578,9 @@ public class CedarCsvParser {
         public boolean isSection() {
             return row != null && row.isSection();
         }
+        public boolean isIdentifyElement(){
+            return row != null && row.isIdentifierElement();
+        }
 
         public void validate() {
             var nodeNames = new HashSet<String>();
@@ -625,6 +665,13 @@ public class CedarCsvParser {
                 return Optional.empty();
             }
             return Optional.of(CedarCsvParser.getOntologyTermsConstaints(row));
+        }
+
+        public Optional<EnumerationValueConstraints> getIdentifierSchemeConstraints(){
+            if(row == null){
+                return Optional.empty();
+            }
+            return Optional.of(CedarCsvParser.getIdentifierSchemeConstaints(row));
         }
 
         public Optional<String> getFieldIdentifier(){

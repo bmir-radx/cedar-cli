@@ -7,19 +7,35 @@ public enum PrimitiveType {
   @JsonProperty
   STRING("String"),
   @JsonProperty
+  LANG_TAG("LangTag"),
+  @JsonProperty
   LANG_STRING("LangString"),
+//  @JsonProperty
+//  IRI("IRI"),
   @JsonProperty
-  IRI("IRI"),
-  @JsonProperty
-  YES("yes"),
-  @JsonProperty
-  NO("no"),
+  URL("URL"),
+//  @JsonProperty
+//  YES("yes"),
+//  @JsonProperty
+//  NO("no"),
   @JsonProperty
   LONG("long"),
   @JsonProperty
-  INTEGER("integer"),
+  INTEGER("Integer"),
   @JsonProperty
-  BOOLEAN("boolean");
+  DECIMAL("Decimal"),
+  @JsonProperty
+  BOOLEAN("Boolean"),
+  @JsonProperty
+  IDENTIFIER("Identifier"),
+  @JsonProperty
+  TERM("Term"),
+  @JsonProperty
+  CHARACTER("Character"),
+  @JsonProperty
+  DATETIME("DateTime"),
+  @JsonProperty
+  DURATION("Duration");
 
   private final String value;
   PrimitiveType(String value) {

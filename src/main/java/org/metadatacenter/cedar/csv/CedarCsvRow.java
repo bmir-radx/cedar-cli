@@ -16,7 +16,8 @@ import java.util.Optional;
  * 2022-07-26
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record CedarCsvRow(@JsonProperty("Section") String section,
+public record CedarCsvRow(@JsonProperty("Existing usage") String existingUsage,
+                          @JsonProperty("Section") String section,
                           @JsonProperty("Element") String element,
                           @JsonProperty("Cardinality") String cardinality,
                           @JsonProperty("Required") Optionality optionality,
@@ -24,17 +25,20 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                           @JsonProperty("Field Title") String fieldTitle,
                           @JsonProperty("Property Name") String propertyName,
                           @JsonProperty("Description") String description,
+                          @JsonProperty("Detailed Description") String detailedDescription,
+                          // add identity....
                           @JsonProperty("Primitive Type") PrimitiveType primitiveType,
                           @JsonProperty("Pattern") String pattern,
                           @JsonProperty("Derived") String derived,
                           @JsonProperty("Default Value") String defaultValue,
                           @JsonProperty("Example") String example,
-                          @JsonProperty("Property") String propertyIri,
+                          @JsonProperty("Property IRI") String propertyIri,
                           @JsonProperty("Type") CedarCsvInputType inputType,
                           @JsonProperty("Controlled Terms") String controlledTerms,
                           @JsonProperty("Lookup") String lookup) {
 
-    public CedarCsvRow(@JsonProperty("Section") String section,
+    public CedarCsvRow(@JsonProperty("Existing usage") String existingUsage,
+                       @JsonProperty("Section") String section,
                        @JsonProperty("Element") String element,
                        @JsonProperty("Cardinality") String cardinality,
                        @JsonProperty("Required") Optionality optionality,
@@ -42,15 +46,17 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
                        @JsonProperty("Field Title") String fieldTitle,
                        @JsonProperty("Property Name") String propertyName,
                        @JsonProperty("Description") String description,
+                       @JsonProperty("Detailed Description") String detailedDescription,
                        @JsonProperty("Primitive Type") PrimitiveType primitiveType,
                        @JsonProperty("Pattern") String pattern,
                        @JsonProperty("Derived") String derived,
                        @JsonProperty("Default Value") String defaultValue,
                        @JsonProperty("Example") String example,
-                       @JsonProperty("Property") String propertyIri,
+                       @JsonProperty("Property IRI") String propertyIri,
                        @JsonProperty("Type") CedarCsvInputType inputType,
                        @JsonProperty("Controlled Terms") String controlledTerms,
                        @JsonProperty("Lookup") String lookup) {
+        this.existingUsage = existingUsage;
         this.section = section;
         this.element = element;
         this.cardinality = cardinality;
@@ -60,6 +66,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         this.propertyName = propertyName != null ? propertyName.trim() : propertyName;
         this.propertyIri = propertyIri;
         this.description = description;
+        this.detailedDescription = detailedDescription;
         this.primitiveType = primitiveType;
         this.pattern = pattern;
         this.derived = derived;
@@ -74,8 +81,12 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         return section != null && !section.isBlank();
     }
 
+    public boolean isIdentifierElement(){
+        return primitiveType.equals(PrimitiveType.IDENTIFIER);
+    }
+
     public boolean isElement() {
-        return !isSection() && !element.isBlank();
+        return !isSection() && !element.isBlank() && !isIdentifierElement();
     }
 
     public int getElementLevel() {
@@ -97,7 +108,7 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
 
 
     public String getElementName() {
-        if(element.trim().startsWith("<")) {
+        if(element.trim().startsWith(">")) {
             return element.trim().substring(1);
         }
         else {
@@ -113,9 +124,11 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
 
     }
 
+
     public boolean isField() {
-        return !isSection() && !isElement() && !fieldTitle.isBlank();
+        return !isSection() && !isElement() && !isIdentifierElement() && !fieldTitle.isBlank();
     }
+
 
     public Required getRequired() {
         return Optional.ofNullable(optionality)
@@ -195,6 +208,6 @@ public record CedarCsvRow(@JsonProperty("Section") String section,
         if(primitiveType == null){
             return false;
         }
-        return primitiveType.equals(PrimitiveType.LANG_STRING);
+        return primitiveType.equals(PrimitiveType.LANG_TAG);
     }
 }

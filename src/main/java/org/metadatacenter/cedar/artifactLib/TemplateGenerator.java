@@ -34,8 +34,12 @@ public class TemplateGenerator {
 
     for(var child : rootnode.getChildNodes()){
 //      if(child.isElement() && child.getSchemaName().equals(elementName)){
+      System.out.println(child.getSchemaName());
       if(child.isElement()){
         var elementSchemaArtifact = elementGenerator.generateElementSchemaArtifact(child, null, null);
+        templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
+      } else if (child.isIdentifyElement()) {
+        var elementSchemaArtifact = elementGenerator.generateIdentifierElement(child, null, null);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
       } else if (child.isField()) {
         var fieldSchemaArtifact = generateFieldSchemaArtifact(child);

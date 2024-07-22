@@ -1,12 +1,12 @@
 package org.metadatacenter.cedar.artifactLib;
 
-import org.metadatacenter.artifacts.model.core.CheckboxField;
 import org.metadatacenter.artifacts.model.core.ControlledTermField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.fields.constraints.ValueType;
 import org.metadatacenter.cedar.api.CedarId;
 import org.metadatacenter.cedar.api.constraints.EnumerationValueConstraints;
 import org.metadatacenter.cedar.csv.CedarCsvParser;
+import org.metadatacenter.cedar.csv.Identifier;
 
 import java.net.URI;
 import java.util.Optional;
@@ -32,6 +32,29 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
+        .withJsonLdId(URI.create(jsonLdId.value()))
+        .build();
+  }
+
+  public FieldSchemaArtifact generateIdentifierSchemeFieldArtifactSchema(CedarCsvParser.Node identifierNode) {
+    var builder = ControlledTermField.builder();
+    var constraints = identifierNode.getIdentifierSchemeConstraints();
+    var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
+
+    buildWithOntologies(builder, constraints);
+//    buildWithIdentifier(builder, node.getFieldIdentifier());
+    //todo
+    buildWithIdentifierSchemePropertyIri(builder, identifierNode.getPropertyIri());
+//    buildWithDefaultValue(builder, identifierNode.getRow().getDefaultValue().getIri(), identifierNode.getRow().getDefaultValue().getLabel());
+
+    return builder
+        .withIsMultiple(false)
+        .withRequiredValue(identifierNode.isRequired())
+        .withName(identifierNode.getIdentifierSchemaName(Identifier.IDENTIFIER_FIELD) + "Scheme")
+        .withPreferredLabel(identifierNode.getIdentifierTitle(Identifier.IDENTIFIER_FIELD) + " Scheme")
+        .withDescription(identifierNode.getDescription())
+        .withJsonSchemaDescription(getJsonSchemaDescription(identifierNode))
+        .withHidden(identifierNode.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
@@ -65,5 +88,9 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
 
   private void buildWithPropertyIri(ControlledTermField.ControlledTermFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
+  }
+
+  private void buildWithIdentifierSchemePropertyIri(ControlledTermField.ControlledTermFieldBuilder builder, Optional<String> propertyIri){
+    propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s + "Scheme")));
   }
 }

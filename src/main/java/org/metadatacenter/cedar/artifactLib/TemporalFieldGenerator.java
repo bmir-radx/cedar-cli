@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.CheckboxField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.ListField;
 import org.metadatacenter.artifacts.model.core.TemporalField;
@@ -27,6 +28,7 @@ public class TemporalFieldGenerator implements FieldGenerator {
 
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel());
 
     return builder
         .withName(node.getName())
@@ -37,12 +39,17 @@ public class TemporalFieldGenerator implements FieldGenerator {
         .withTemporalType(temporalType)
         .withTemporalGranularity(temporalGranularity)
         .withHidden(node.getRow().visibility().isHidden())
-        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 
   private void buildWithPropertyIri(TemporalField.TemporalFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
+  }
+
+  private void buildWithDefaultValue(TemporalField.TemporalFieldBuilder builder, String defaultValue){
+    if(defaultValue != null && !defaultValue.isEmpty()){
+      builder.withDefaultValue(defaultValue);
+    }
   }
 }

@@ -1,6 +1,7 @@
 package org.metadatacenter.cedar.artifactLib;
 
 import org.metadatacenter.artifacts.model.core.ControlledTermField;
+import org.metadatacenter.artifacts.model.core.EmailField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.LinkField;
 import org.metadatacenter.cedar.api.CedarId;
@@ -17,6 +18,7 @@ public class LinkFieldGenerator implements FieldGenerator {
     var builder = LinkField.builder();
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
     buildWithPropertyIri(builder, node.getPropertyIri());
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel());
 
     return builder
         .withIsMultiple(node.isMultiValued())
@@ -26,12 +28,17 @@ public class LinkFieldGenerator implements FieldGenerator {
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
-        .withDefaultValue(URI.create(node.getRow().getDefaultValue().getLabel()))
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 
   private void buildWithPropertyIri(LinkField.LinkFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
+  }
+
+  private void buildWithDefaultValue(LinkField.LinkFieldBuilder builder, String defaultValue){
+    if(defaultValue != null && !defaultValue.isEmpty()){
+      builder.withDefaultValue(URI.create(defaultValue));
+    }
   }
 }

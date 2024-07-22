@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.EmailField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.ListField;
 import org.metadatacenter.artifacts.model.core.PhoneNumberField;
@@ -18,6 +19,7 @@ public class PhoneNumberFieldGenerator implements FieldGenerator {
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel());
 
     return builder
         .withIsMultiple(node.isMultiValued())
@@ -34,5 +36,11 @@ public class PhoneNumberFieldGenerator implements FieldGenerator {
 
   private void buildWithPropertyIri(PhoneNumberField.PhoneNumberFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
+  }
+
+  private void buildWithDefaultValue(PhoneNumberField.PhoneNumberFieldBuilder builder, String defaultValue){
+    if(defaultValue != null && !defaultValue.isEmpty()){
+      builder.withDefaultValue(defaultValue);
+    }
   }
 }

@@ -1,5 +1,6 @@
 package org.metadatacenter.cedar.artifactLib;
 
+import org.metadatacenter.artifacts.model.core.EmailField;
 import org.metadatacenter.artifacts.model.core.FieldSchemaArtifact;
 import org.metadatacenter.artifacts.model.core.ListField;
 import org.metadatacenter.artifacts.model.core.RadioField;
@@ -17,21 +18,26 @@ public class RadioFieldGenerator implements FieldGenerator {
     var jsonLdId = CedarId.resolveTemplateFieldId(UUID.randomUUID().toString());
 //    buildWithIdentifier(builder, node.getFieldIdentifier());
     buildWithPropertyIri(builder, node.getPropertyIri());
+    buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel());
 
     return builder
-        .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
         .withName(node.getSchemaName())
         .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
         .withJsonSchemaDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
-        .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 
   private void buildWithPropertyIri(RadioField.RadioFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s)));
+  }
+
+  private void buildWithDefaultValue(RadioField.RadioFieldBuilder builder, String defaultValue){
+    if(defaultValue != null && !defaultValue.isEmpty()){
+      builder.withDefaultValue(defaultValue);
+    }
   }
 }

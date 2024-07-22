@@ -210,6 +210,7 @@ public class Csv2ArtifactsCommandCAL implements CedarCliCommand {
         var cedarCsvParser = cedarCsvParserFactory.createParser(artifactStatus,
                                                                 version, previousVersion);
         try {
+            System.out.println("Getting root node...");
             var rootNode = cedarCsvParser.parseNodes(inputStream);
 
             if (generateTypeScript) {
