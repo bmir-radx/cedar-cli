@@ -33,8 +33,6 @@ public class TemplateGenerator {
     var jsonLdId = CedarId.resolveTemplateId(UUID.randomUUID().toString());
 
     for(var child : rootnode.getChildNodes()){
-//      if(child.isElement() && child.getSchemaName().equals(elementName)){
-      System.out.println(child.getSchemaName());
       if(child.isElement()){
         var elementSchemaArtifact = elementGenerator.generateElementSchemaArtifact(child, null, null);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
