@@ -685,11 +685,16 @@ public class CedarCsvParser {
             String[] words = input.split("\\s+");
 
             StringBuilder camelCaseString = new StringBuilder();
+            boolean firstWordProcessed = false;
 
-            for (int i = 0; i < words.length; i++) {
-                String word = words[i];
-                if (i == 0) {
+            for (String s : words) {
+                String word = s.trim();
+                if (word.isEmpty()) {
+                    continue;
+                }
+                if (!firstWordProcessed) {
                     camelCaseString.append(word.toLowerCase());
+                    firstWordProcessed = true;
                 } else {
                     camelCaseString.append(Character.toUpperCase(word.charAt(0)));
                     camelCaseString.append(word.substring(1).toLowerCase());

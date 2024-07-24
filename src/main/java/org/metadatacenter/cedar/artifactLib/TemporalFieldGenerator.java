@@ -31,7 +31,7 @@ public class TemporalFieldGenerator implements FieldGenerator {
     buildWithDefaultValue(builder, node.getRow().getDefaultValue().getLabel());
 
     return builder
-        .withName(node.getName())
+        .withName(node.getSchemaName())
         .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
         .withIsMultiple(node.isMultiValued())
