@@ -34,6 +34,7 @@ public class FieldGeneratorFactory {
         Map.entry(CedarCsvInputType.TIME, new TemporalFieldGenerator()),
         Map.entry(CedarCsvInputType.URL, new LinkFieldGenerator()),
         Map.entry(CedarCsvInputType.IRI, new LinkFieldGenerator()),
+        Map.entry(CedarCsvInputType.URI, new LinkFieldGenerator()),
         Map.entry(CedarCsvInputType.ATTRIBUTE_VALUE, new AttributeValueFieldGenerator()),
         Map.entry(CedarCsvInputType.LANGUAGE, new ListFieldGenerator(languageCodes))
     );

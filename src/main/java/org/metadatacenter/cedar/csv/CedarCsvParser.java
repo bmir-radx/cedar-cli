@@ -95,12 +95,10 @@ public class CedarCsvParser {
                 // We therefore reset the current parent as the root
                 currentParentNode = rootNode;
 //                currentParentNode.addChild(rowNode);
-            }
-            else if(row.isIdentifierElement()) {
+            }  else if(row.isIdentifierElement()) {
                 //add child to current parent node (identifier element)
                 //set current parent node to row node
                 //add child to current parent node (identifier field)
-                //add identifier scheme node to current parent node
                 //set current parent node to its parent node
                 currentParentNode.addChild(rowNode);
                 currentParentNode = rowNode;
@@ -370,7 +368,7 @@ public class CedarCsvParser {
         }
     }
 
-    private static EnumerationValueConstraints getIdentifierSchemeConstaints(CedarCsvRow row) {
+    private static EnumerationValueConstraints getIdentifierSchemeConstraints(CedarCsvRow row) {
         var lookupSpec = new LookupSpec(Identifier.IDENTIFIER_SCHEME_ONTOLOGY_URL.getValue());
         var ontologyTermSelectors = getOntologyTermsSelectors(lookupSpec);
         return EnumerationValueConstraints.of(ontologyTermSelectors, null,
@@ -575,6 +573,10 @@ public class CedarCsvParser {
             return row != null && row.isField();
         }
 
+        public boolean isIdentifierField() {
+            return row != null && row.isIdentifier();
+        }
+
         public boolean isSection() {
             return row != null && row.isSection();
         }
@@ -671,7 +673,7 @@ public class CedarCsvParser {
             if(row == null){
                 return Optional.empty();
             }
-            return Optional.of(CedarCsvParser.getIdentifierSchemeConstaints(row));
+            return Optional.of(CedarCsvParser.getIdentifierSchemeConstraints(row));
         }
 
         public Optional<String> getFieldIdentifier(){

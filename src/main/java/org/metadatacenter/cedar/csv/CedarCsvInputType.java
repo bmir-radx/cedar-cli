@@ -69,6 +69,7 @@ public enum CedarCsvInputType {
     DATE_TIME("datetime", CedarTemporalType.DATE_TIME, CedarConstraintsType.TEMPORAL, CedarFieldValueType.LITERAL),
 
     URL("url", InputType.LINK, CedarConstraintsType.NONE, CedarFieldValueType.IRI),
+    URI("uri", InputType.LINK, CedarConstraintsType.NONE, CedarFieldValueType.IRI),
 
     IRI("iri", InputType.LINK, CedarConstraintsType.NONE, CedarFieldValueType.IRI),
 

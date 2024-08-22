@@ -27,13 +27,13 @@ public record CedarCsvRow(@JsonProperty("Existing usage") String existingUsage,
                           @JsonProperty("Description") String description,
                           @JsonProperty("Detailed Description") String detailedDescription,
                           // add identity....
-                          @JsonProperty("Primitive Type") PrimitiveType primitiveType,
+                          @JsonProperty("Type") PrimitiveType primitiveType,
                           @JsonProperty("Pattern") String pattern,
                           @JsonProperty("Derived") String derived,
                           @JsonProperty("Default Value") String defaultValue,
                           @JsonProperty("Example") String example,
                           @JsonProperty("Property IRI") String propertyIri,
-                          @JsonProperty("Type") CedarCsvInputType inputType,
+                          @JsonProperty("UI Type") CedarCsvInputType inputType,
                           @JsonProperty("Controlled Terms") String controlledTerms,
                           @JsonProperty("Lookup") String lookup) {
 
@@ -47,13 +47,13 @@ public record CedarCsvRow(@JsonProperty("Existing usage") String existingUsage,
                        @JsonProperty("Property Name") String propertyName,
                        @JsonProperty("Description") String description,
                        @JsonProperty("Detailed Description") String detailedDescription,
-                       @JsonProperty("Primitive Type") PrimitiveType primitiveType,
+                       @JsonProperty("Type") PrimitiveType primitiveType,
                        @JsonProperty("Pattern") String pattern,
                        @JsonProperty("Derived") String derived,
                        @JsonProperty("Default Value") String defaultValue,
                        @JsonProperty("Example") String example,
                        @JsonProperty("Property IRI") String propertyIri,
-                       @JsonProperty("Type") CedarCsvInputType inputType,
+                       @JsonProperty("UI Type") CedarCsvInputType inputType,
                        @JsonProperty("Controlled Terms") String controlledTerms,
                        @JsonProperty("Lookup") String lookup) {
         this.existingUsage = existingUsage;
@@ -81,8 +81,12 @@ public record CedarCsvRow(@JsonProperty("Existing usage") String existingUsage,
         return section != null && !section.isBlank();
     }
 
-    public boolean isIdentifierElement(){
+    public boolean isIdentifier(){
         return primitiveType.equals(PrimitiveType.IDENTIFIER);
+    }
+
+    public boolean isIdentifierElement(){
+        return isIdentifier() && !element.isBlank();
     }
 
     public boolean isElement() {

@@ -39,6 +39,14 @@ public class TemplateGenerator {
       } else if (child.isIdentifyElement()) {
         var elementSchemaArtifact = elementGenerator.generateIdentifierElement(child, null, null);
         templateSchemaArtifactBuilder.withElementSchema(elementSchemaArtifact);
+      } else if (child.isIdentifierField()) {
+        //build with identifier field
+        var fieldSchemaArtifact = fieldGeneratorFactory.generateFieldSchemaArtifact(child);
+        templateSchemaArtifactBuilder.withFieldSchema(fieldSchemaArtifact);
+        //build with identifier scheme field
+        var controlledTermFieldGenerator = new ControlledTermFieldGenerator();
+        var identifierSchemeArtifact = controlledTermFieldGenerator.generateIdentifierSchemeFieldArtifactSchema(child);
+        templateSchemaArtifactBuilder.withFieldSchema(identifierSchemeArtifact);
       } else if (child.isField()) {
         var fieldSchemaArtifact = generateFieldSchemaArtifact(child);
         templateSchemaArtifactBuilder.withFieldSchema(fieldSchemaArtifact);
