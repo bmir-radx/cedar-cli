@@ -24,10 +24,11 @@ public class PhoneNumberFieldGenerator implements FieldGenerator {
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
+        .withRecommendedValue(node.isRecommended())
         .withName(node.getSchemaName())
         .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
-        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withInternalDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
         .withDefaultValue(node.getRow().getDefaultValue().getLabel())
         .withJsonLdId(URI.create(jsonLdId.value()))

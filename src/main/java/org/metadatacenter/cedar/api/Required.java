@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
 public enum Required {
 
     REQUIRED(1),
-
+    RECOMMENDED(0),
     @JsonEnumDefaultValue
     OPTIONAL(0);
 

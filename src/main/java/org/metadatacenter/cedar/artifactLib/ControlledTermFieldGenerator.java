@@ -27,10 +27,11 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
+        .withRecommendedValue(node.isRecommended())
         .withName(node.getSchemaName())
         .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
-        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withInternalDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
@@ -50,10 +51,11 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
     return builder
         .withIsMultiple(false)
         .withRequiredValue(identifierNode.isRequired())
+        .withRecommendedValue(identifierNode.isRecommended())
         .withName(identifierNode.getIdentifierSchemaName(Identifier.IDENTIFIER_FIELD) + "Scheme")
-        .withPreferredLabel(identifierNode.getIdentifierTitle(Identifier.IDENTIFIER_FIELD) + " Scheme")
-        .withDescription(identifierNode.getDescription())
-        .withJsonSchemaDescription(getJsonSchemaDescription(identifierNode))
+        .withPreferredLabel(identifierNode.getIdentifierTitle(Identifier.IDENTIFIER_FIELD) + " scheme")
+        .withDescription(getIdentifierSchemeDescription())
+        .withInternalDescription(getJsonSchemaDescription(identifierNode))
         .withHidden(identifierNode.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
@@ -92,5 +94,20 @@ public class ControlledTermFieldGenerator implements FieldGenerator {
 
   private void buildWithIdentifierSchemePropertyIri(ControlledTermField.ControlledTermFieldBuilder builder, Optional<String> propertyIri){
     propertyIri.ifPresent(s -> builder.withPropertyUri(URI.create(s + "Scheme")));
+  }
+
+  private String getIdentifierSchemeDescription(){
+    return """
+        **Identifier Scheme:**
+        - **Purpose:** This field specifies how to interpret an identifier when it is provided as a plain string.
+        - **Value:** The value of this field must be a controlled term.
+        - **Special Cases:**
+          - If the identifier is an Internationalized Resource Identifier (IRI), a Uniform Resource Identifier (URI), or a URL, this field should be left blank.
+        - **Recommendation:**
+          - We strongly recommend using URIs or IRIs whenever possible to ensure clarity and consistency in identifier interpretation.
+        - **Example:**
+          - If the value for an ORCID is provided as `https://orcid.org/0000-0002-1825-0097`, it is clear that this is a URI, and the identifier scheme field can be left blank.
+          - However, if the identifier is given as `0000-0002-1825-0097`, the identifier scheme must specify that this is an ORCID, so it can be correctly interpreted.\s
+        """;
   }
 }

@@ -35,10 +35,11 @@ public class TextFiledGenerator implements FieldGenerator {
     return builder
         .withIsMultiple(node.isMultiValued())
         .withRequiredValue(node.isRequired())
+        .withRecommendedValue(node.isRecommended())
         .withName(node.getSchemaName())
         .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
-        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withInternalDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
@@ -60,10 +61,11 @@ public class TextFiledGenerator implements FieldGenerator {
     return builder
         .withIsMultiple(false)
         .withRequiredValue(node.isRequired())
+        .withRecommendedValue(node.isRecommended())
         .withName(node.getIdentifierSchemaName(Identifier.IDENTIFIER_FIELD))
         .withPreferredLabel(node.getIdentifierTitle(Identifier.IDENTIFIER_FIELD))
         .withDescription(node.getDescription())
-        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withInternalDescription(getJsonSchemaDescription(node))
         .withHidden(node.getRow().visibility().isHidden())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();

@@ -32,7 +32,7 @@ public class ElementGenerator {
     var builder = ElementSchemaArtifact.builder();
 
     for (var child : node.getChildNodes()) {
-      System.out.println(child.getTitle());
+//      System.out.println(child.getTitle());
       if (child.isElement()) {
         var elementSchemaArtifact = generateElementSchemaArtifact(child, null, null);
         builder.withElementSchema(elementSchemaArtifact);
@@ -45,7 +45,7 @@ public class ElementGenerator {
         builder.withFieldSchema(fieldSchemaArtifact);
         //build with identifier scheme field
         var controlledTermFieldGenerator = new ControlledTermFieldGenerator();
-        var identifierSchemeArtifact = controlledTermFieldGenerator.generateIdentifierSchemeFieldArtifactSchema(node);
+        var identifierSchemeArtifact = controlledTermFieldGenerator.generateIdentifierSchemeFieldArtifactSchema(child);
         builder.withFieldSchema(identifierSchemeArtifact);
       } else if (child.isField()) {
         var fieldSchemaArtifact = fieldGeneratorFactory.generateFieldSchemaArtifact(child);
@@ -58,9 +58,9 @@ public class ElementGenerator {
 
     return builder
         .withName(name)
-        .withPreferredLabel(node.getTitle())
+        .withInternalName(node.getTitle())
         .withDescription(description)
-        .withJsonSchemaDescription(jsonSchemaDescription)
+        .withInternalDescription(jsonSchemaDescription)
         .withIsMultiple(node.isMultiValued())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
@@ -95,16 +95,16 @@ public class ElementGenerator {
 
     return builder
         .withName(elementName)
-        .withPreferredLabel(node.getIdentifierTitle(Identifier.IDENTIFIER_ELEMENT))
+        .withInternalName(node.getIdentifierTitle(Identifier.IDENTIFIER_ELEMENT))
         .withDescription(description)
-        .withJsonSchemaDescription(jsonSchemaDescription)
+        .withInternalDescription(jsonSchemaDescription)
         .withIsMultiple(node.isMultiValued())
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
 
   private void buildWithIdentifier(ElementSchemaArtifact.Builder builder, Optional<String> identifier){
-    identifier.ifPresent(builder::withSchemaOrgIdentifier);
+    identifier.ifPresent(builder::withIdentifier);
   }
 
   private void buildWithPropertyIri(ElementSchemaArtifact.Builder builder, Optional<String> propertyIri){

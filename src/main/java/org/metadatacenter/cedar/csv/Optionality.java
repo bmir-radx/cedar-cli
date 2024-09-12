@@ -20,7 +20,7 @@ public enum Optionality {
     public Required toCedarRequired() {
         return switch (this) {
             case OPTIONAL -> Required.OPTIONAL;
-            case RECOMMENDED -> Required.OPTIONAL;
+            case RECOMMENDED -> Required.RECOMMENDED;
             case REQUIRED -> Required.REQUIRED;
         };
     }

@@ -641,6 +641,13 @@ public class CedarCsvParser {
             return row.getRequired().equals(Required.REQUIRED);
         }
 
+        public boolean isRecommended(){
+            if(row == null){
+                return false;
+            }
+            return row.getRequired().equals(Required.RECOMMENDED);
+        }
+
         public boolean isMultiValued() {
             if(row == null) {
                 return false;

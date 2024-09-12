@@ -22,7 +22,7 @@ public class AttributeValueFieldGenerator implements FieldGenerator{
         .withName(node.getSchemaName())
         .withPreferredLabel(node.getTitle())
         .withDescription(node.getDescription())
-        .withJsonSchemaDescription(getJsonSchemaDescription(node))
+        .withInternalDescription(getJsonSchemaDescription(node))
         .withJsonLdId(URI.create(jsonLdId.value()))
         .build();
   }
